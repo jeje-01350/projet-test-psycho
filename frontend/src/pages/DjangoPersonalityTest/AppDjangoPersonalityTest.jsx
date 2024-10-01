@@ -11,9 +11,9 @@ const AppDjangoPersonalityTest = () => {
 
     const submitResponse = async () => {
         const scores = calculateScores(); // Calcul des scores basé sur les réponses
-
+        const API_URL = import.meta.env.VITE_API_URL;
         try {
-            const res = await fetch("http://localhost:5000/django-test/save", {
+            const res = await fetch(`${API_URL}/django-test/save`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

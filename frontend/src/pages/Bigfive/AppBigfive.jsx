@@ -20,9 +20,9 @@ const Bigfive = () => {
 
     const submitResponse = async () => {
         const scores = calculateScores();
-
+        const API_URL = import.meta.env.VITE_API_URL;
         try {
-            const res = await fetch("http://localhost:5000/bigfive/save", {
+            const res = await fetch(`${API_URL}/bigfive/save`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

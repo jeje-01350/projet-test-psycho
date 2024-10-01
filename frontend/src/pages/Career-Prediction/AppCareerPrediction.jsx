@@ -11,8 +11,9 @@ const Home = () => {
     const [currentQuestion, setCurrentQuestion] = useState(0);
 
     const submitResponse = async () => {
+        const API_URL = import.meta.env.VITE_API_URL;
         try {
-            const res = await fetch("http://localhost:5000/answer/submit-response", {
+            const res = await fetch(`${API_URL}/answer/submit-response`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

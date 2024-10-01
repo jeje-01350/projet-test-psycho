@@ -73,7 +73,8 @@ const AppMindFlareTest = () => {
 
     const submitTest = () => {
         const finalScores = calculateAverageScores();
-        fetch("http://localhost:5000/mindflare/save", {
+        const API_URL = import.meta.env.VITE_API_URL;
+        fetch(`${API_URL}/mindflare/save`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

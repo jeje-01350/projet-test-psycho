@@ -96,9 +96,8 @@ const AppRiasecTest = () => {
 
     const submitResponse = () => {
         const { dominantPersonnalite, secondaryPersonnalite } = calculateDominantPersonalities();
-
-        // Envoi des données au backend
-        fetch("http://localhost:5000/riasec/save", {
+        const API_URL = import.meta.env.VITE_API_URL;
+        fetch(`${API_URL}/riasec/save`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

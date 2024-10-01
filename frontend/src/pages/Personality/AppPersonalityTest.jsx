@@ -110,9 +110,9 @@ const AppPersonalityTest = () => {
     const submitResponse = async () => {
         const results = calculateResults(); // Calculer les résultats du test
         console.log("Sending results: ", results);
-
+        const API_URL = import.meta.env.VITE_API_URL;
         try {
-            const res = await fetch("http://localhost:5000/personality-test/save", {
+            const res = await fetch(`${API_URL}/personality-test/save`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
