@@ -19,7 +19,9 @@ const Home = () => {
         display: 'flex',
         justifyContent: 'center',
         gap: '20px',
+        flexWrap: 'wrap',
     };
+
 
     const buttonStyle = {
         backgroundColor: '#1e88e5',
@@ -108,6 +110,17 @@ const Home = () => {
                     onClick={() => navigate('/django-test')}
                 >
                     Django test de personalité
+                </button>
+
+                <button
+                    style={buttonStyle}
+                    onMouseOver={(e) => e.target.style.backgroundColor = buttonHoverStyle.backgroundColor}
+                    onMouseOut={(e) => e.target.style.backgroundColor = buttonStyle.backgroundColor}
+                    onMouseDown={(e) => e.target.style.transform = buttonActiveStyle.transform}
+                    onMouseUp={(e) => e.target.style.transform = 'scale(1)'}
+                    onClick={() => navigate('/mbti')}
+                >
+                    MBTI test de personalité
                 </button>
             </div>
         </div>

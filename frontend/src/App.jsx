@@ -21,6 +21,8 @@ import ResultsBigFive from "./pages/Bigfive/ResultsBigfive.jsx";
 import { Navbar } from "./components/index";
 import AppDjangoPersonalityTest from "./pages/DjangoPersonalityTest/AppDjangoPersonalityTest.jsx";
 import ResultsDjangoPersonalityTest from "./pages/DjangoPersonalityTest/ResultsDjangoPersonalityTest.jsx";
+import AppMbti from "./pages/Mbti/AppMbti.jsx";
+import ResultsMbti from "./pages/Mbti/ResultsMbti.jsx";
 
 const App = () => {
 
@@ -47,6 +49,9 @@ const App = () => {
 
         <Route path="/django-test" exact element={<AppDjangoPersonalityTest />} />
         <Route path="/django-test/results" exact element={<ResultsDjangoPersonalityTest />} />
+
+        <Route path="/mbti" exact element={<AppMbti />} />
+        <Route path="/mbti/results" exact element={<ResultsMbti />} />
       </Routes>
     </div>
   );

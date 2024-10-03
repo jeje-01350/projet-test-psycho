@@ -9,5 +9,6 @@ router.use("/riasec", require("./riasec"));
 router.use("/mindflare", require("./mindFlare"));
 router.use("/bigfive", require("./bigfive"));
 router.use("/django-test", require("./djangoPersonalityTest"));
+router.use("/mbti", require("./mbti"));
 
 module.exports = router;
