@@ -10,5 +10,6 @@ router.use("/mindflare", require("./mindFlare"));
 router.use("/bigfive", require("./bigfive"));
 router.use("/django-test", require("./djangoPersonalityTest"));
 router.use("/mbti", require("./mbti"));
+router.use("/papi", require("./papi"));
 
 module.exports = router;

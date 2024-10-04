@@ -122,6 +122,17 @@ const Home = () => {
                 >
                     MBTI test de personalité
                 </button>
+
+                <button
+                    style={buttonStyle}
+                    onMouseOver={(e) => e.target.style.backgroundColor = buttonHoverStyle.backgroundColor}
+                    onMouseOut={(e) => e.target.style.backgroundColor = buttonStyle.backgroundColor}
+                    onMouseDown={(e) => e.target.style.transform = buttonActiveStyle.transform}
+                    onMouseUp={(e) => e.target.style.transform = 'scale(1)'}
+                    onClick={() => navigate('/papi')}
+                >
+                    Test Papi
+                </button>
             </div>
         </div>
     );

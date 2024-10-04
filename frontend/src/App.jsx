@@ -23,6 +23,8 @@ import AppDjangoPersonalityTest from "./pages/DjangoPersonalityTest/AppDjangoPer
 import ResultsDjangoPersonalityTest from "./pages/DjangoPersonalityTest/ResultsDjangoPersonalityTest.jsx";
 import AppMbti from "./pages/Mbti/AppMbti.jsx";
 import ResultsMbti from "./pages/Mbti/ResultsMbti.jsx";
+import AppPapi from "./pages/Papi/AppPapi.jsx";
+import ResultsPapi from "./pages/Papi/ResultsPapi.jsx";
 
 const App = () => {
 
@@ -52,6 +54,9 @@ const App = () => {
 
         <Route path="/mbti" exact element={<AppMbti />} />
         <Route path="/mbti/results" exact element={<ResultsMbti />} />
+
+        <Route path="/papi" exact element={<AppPapi />} />
+        <Route path="/papi/results" exact element={<ResultsPapi />} />
       </Routes>
     </div>
   );

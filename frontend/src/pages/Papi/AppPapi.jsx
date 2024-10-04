@@ -1,8 +1,8 @@
-import React, {useRef, useState} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { BuzzFeedQuiz } from "react-buzzfeed-quiz";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import {mbtiQuestions, papiQuestions} from "../../constants/index"; // Assurez-vous que vos questions MBTI sont correctement importées
+import { papiQuestions } from "../../constants/index";
 import "react-buzzfeed-quiz/lib/styles.css";
 
 // Styled components for the layout
@@ -25,46 +25,50 @@ const SubmitButton = styled.button`
   align-self: center;
 `;
 
-const AppMbtiTest = () => {
+const AppPapiTest = () => {
     const [responses, setResponses] = useState([]);
     const [answersCount, setAnswersCount] = useState({
-        E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0
+        Leadership: 0, Initiative: 0, Organisation: 0, Flexibilité: 0, Collaboration: 0, Créativité: 0, Routine: 0, Autonomie: 0
     });
     const navigate = useNavigate();
     const submitButtonRef = useRef(null);
 
-    const quizQuestions = mbtiQuestions.map((question, index) => ({
+    const quizQuestions = papiQuestions.map((question, index) => ({
         question: question.question,
         answers: question.answerOptions.map((answer) => ({
             answer: answer.answer,
-            onAnswerSelection: () => handleAnswerSelection(answer.score, index), // On passe ici le score (type MBTI)
+            onAnswerSelection: () => handleAnswerSelection(answer.score, index), // On passe ici le score (type PAPI)
         })),
     }));
 
     const handleAnswerSelection = (score, index) => {
         const updatedAnswersCount = { ...answersCount };
-        updatedAnswersCount[score] += 1; // Incrémente le score du type MBTI sélectionné
+        updatedAnswersCount[score] += 1;
         setAnswersCount(updatedAnswersCount);
 
-        if (index === mbtiQuestions.length - 1) {
-            submitButtonRef.current.scrollIntoView({ behavior: 'smooth' });
+        console.log("Answer count after selection:", updatedAnswersCount);
+
+        if (index === papiQuestions.length - 1) {
+            if (submitButtonRef.current) {
+                submitButtonRef.current.scrollIntoView({ behavior: "smooth" });
+            }
         }
     };
 
     const calculateResults = () => {
-        const totalQuestions = mbtiQuestions.length;
+        const totalQuestions = papiQuestions.length;
 
         const calculatePercentage = (count) => (count / totalQuestions) * 100;
 
         return {
-            E: calculatePercentage(answersCount.E),
-            I: calculatePercentage(answersCount.I),
-            S: calculatePercentage(answersCount.S),
-            N: calculatePercentage(answersCount.N),
-            T: calculatePercentage(answersCount.T),
-            F: calculatePercentage(answersCount.F),
-            J: calculatePercentage(answersCount.J),
-            P: calculatePercentage(answersCount.P),
+            Leadership: calculatePercentage(answersCount.Leadership),
+            Initiative: calculatePercentage(answersCount.Initiative),
+            Organisation: calculatePercentage(answersCount.Organisation),
+            Flexibilité: calculatePercentage(answersCount.Flexibilité),
+            Collaboration: calculatePercentage(answersCount.Collaboration),
+            Créativité: calculatePercentage(answersCount.Créativité),
+            Routine: calculatePercentage(answersCount.Routine),
+            Autonomie: calculatePercentage(answersCount.Autonomie),
         };
     };
 
@@ -73,7 +77,7 @@ const AppMbtiTest = () => {
         console.log("Sending results: ", results);
         const API_URL = import.meta.env.VITE_API_URL;
         try {
-            const res = await fetch(`${API_URL}/mbti/save`, {
+            const res = await fetch(`${API_URL}/papi/save`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -89,7 +93,7 @@ const AppMbtiTest = () => {
                 const data = await res.json();
                 console.log("Data received from backend:", data);
 
-                navigate("/mbti/results", { state: { summary: data.summary, results } });
+                navigate("/papi/results", { state: { summary: data.summary, results } });
             }
         } catch (error) {
             console.error("An error occurred while submitting the response:", error);
@@ -99,9 +103,9 @@ const AppMbtiTest = () => {
     return (
         <QuizContainer>
             <BuzzFeedQuiz
-                title={"Test MBTI"}
+                title={"Test PAPI"}
                 byline={false}
-                description={"Répondez aux questions suivantes pour découvrir vos résultats."}
+                description={"Répondez aux questions suivantes pour découvrir vos résultats du PAPI."}
                 autoScroll={true}
                 onAnswerSelection={handleAnswerSelection}
                 questions={quizQuestions}
@@ -134,4 +138,4 @@ const AppMbtiTest = () => {
     );
 };
 
-export default AppMbtiTest;
+export default AppPapiTest;
