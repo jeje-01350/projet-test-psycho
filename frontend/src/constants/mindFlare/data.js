@@ -1,5 +1,4 @@
 let mindFlareQuestions = [
-    // Ouverture à l'expérience
     {
         text: "J'aime essayer de nouvelles choses et expériences.",
         category: "Ouverture"

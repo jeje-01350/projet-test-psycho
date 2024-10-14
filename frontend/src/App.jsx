@@ -25,6 +25,8 @@ import AppMbti from "./pages/Mbti/AppMbti.jsx";
 import ResultsMbti from "./pages/Mbti/ResultsMbti.jsx";
 import AppPapi from "./pages/Papi/AppPapi.jsx";
 import ResultsPapi from "./pages/Papi/ResultsPapi.jsx";
+import AppAncreSchein from "./pages/AncreSchein/AppAncreSchein.jsx";
+import ResultsAncreSchein from "./pages/AncreSchein/ResultsAncreSchein.jsx";
 
 const App = () => {
 
@@ -57,6 +59,9 @@ const App = () => {
 
         <Route path="/papi" exact element={<AppPapi />} />
         <Route path="/papi/results" exact element={<ResultsPapi />} />
+
+        <Route path="/schein" exact element={<AppAncreSchein />} />
+        <Route path="/schein/results" exact element={<ResultsAncreSchein />} />
       </Routes>
     </div>
   );

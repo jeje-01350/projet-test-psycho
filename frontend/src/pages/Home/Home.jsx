@@ -133,6 +133,17 @@ const Home = () => {
                 >
                     Test Papi
                 </button>
+
+                <button
+                    style={buttonStyle}
+                    onMouseOver={(e) => e.target.style.backgroundColor = buttonHoverStyle.backgroundColor}
+                    onMouseOut={(e) => e.target.style.backgroundColor = buttonStyle.backgroundColor}
+                    onMouseDown={(e) => e.target.style.transform = buttonActiveStyle.transform}
+                    onMouseUp={(e) => e.target.style.transform = 'scale(1)'}
+                    onClick={() => navigate('/schein')}
+                >
+                    Test Ancre de Schein
+                </button>
             </div>
         </div>
     );

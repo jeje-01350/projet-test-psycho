@@ -1,4 +1,4 @@
-const questions = [
+const ancreScheinQuestions = [
   {
     no: 1,
     text: "Je me considère comme quelqu'un qui a peu d'intérêts artistiques",
@@ -60,4 +60,4 @@ const questions = [
     reversed: false,
   },
 ];
-export default questions;
+export default ancreScheinQuestions;

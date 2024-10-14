@@ -11,5 +11,6 @@ router.use("/bigfive", require("./bigfive"));
 router.use("/django-test", require("./djangoPersonalityTest"));
 router.use("/mbti", require("./mbti"));
 router.use("/papi", require("./papi"));
+router.use("/schein", require("./ancreSchein"));
 
 module.exports = router;
