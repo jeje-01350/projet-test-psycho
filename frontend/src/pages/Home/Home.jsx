@@ -144,6 +144,17 @@ const Home = () => {
                 >
                     Test Ancre de Schein
                 </button>
+
+                <button
+                    style={buttonStyle}
+                    onMouseOver={(e) => e.target.style.backgroundColor = buttonHoverStyle.backgroundColor}
+                    onMouseOut={(e) => e.target.style.backgroundColor = buttonStyle.backgroundColor}
+                    onMouseDown={(e) => e.target.style.transform = buttonActiveStyle.transform}
+                    onMouseUp={(e) => e.target.style.transform = 'scale(1)'}
+                    onClick={() => navigate('/kapable')}
+                >
+                    Test Kapable
+                </button>
             </div>
         </div>
     );

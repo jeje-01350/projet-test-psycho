@@ -12,5 +12,6 @@ router.use("/django-test", require("./djangoPersonalityTest"));
 router.use("/mbti", require("./mbti"));
 router.use("/papi", require("./papi"));
 router.use("/schein", require("./ancreSchein"));
+router.use("/kapable", require("./kapable"));
 
 module.exports = router;

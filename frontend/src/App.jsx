@@ -27,6 +27,9 @@ import AppPapi from "./pages/Papi/AppPapi.jsx";
 import ResultsPapi from "./pages/Papi/ResultsPapi.jsx";
 import AppAncreSchein from "./pages/AncreSchein/AppAncreSchein.jsx";
 import ResultsAncreSchein from "./pages/AncreSchein/ResultsAncreSchein.jsx";
+import AppKapableTest from "./pages/Kapable/AppKapable.jsx";
+import ResultsKapable from "./pages/Kapable/ResultsKapable.jsx";
+import AppKapable from "./pages/Kapable/AppKapable.jsx";
 
 const App = () => {
 
@@ -62,6 +65,9 @@ const App = () => {
 
         <Route path="/schein" exact element={<AppAncreSchein />} />
         <Route path="/schein/results" exact element={<ResultsAncreSchein />} />
+
+        <Route path="/kapable" exact element={<AppKapable />} />
+        <Route path="/kapable/results" exact element={<ResultsKapable />} />
       </Routes>
     </div>
   );
