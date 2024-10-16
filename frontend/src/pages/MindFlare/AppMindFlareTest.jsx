@@ -6,20 +6,83 @@ import styled from "styled-components";
 const QuizContainer = styled.div`
   padding: 2rem;
   text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+`;
+
+const Title = styled.h1`
+  font-size: 2rem;
+  color: #007bff;
+  margin-bottom: 1.5rem;
+`;
+
+const InputField = styled.input`
+  width: 100%;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+`;
+
+const Label = styled.label`
+  text-align: left;
+  width: 100%;
+  font-size: 1rem;
+  color: #555;
+  display: block;
+  margin-bottom: 0.5rem;
 `;
 
 const QuestionContainer = styled.div`
   margin-bottom: 2rem;
+  transition: all 0.3s ease-in-out;
 `;
 
 const QuestionText = styled.p`
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   color: #333;
+  margin-bottom: 1.5rem;
 `;
 
 const RangeInput = styled.input`
   width: 80%;
   margin-top: 1rem;
+  appearance: none;
+  height: 8px;
+  background: #007bff;
+  border-radius: 5px;
+  outline: none;
+  cursor: pointer;
+  &::-webkit-slider-thumb {
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    background-color: #fff;
+    border: 2px solid #007bff;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+`;
+
+const ProgressContainer = styled.div`
+  margin-top: 1rem;
+  background: #e0e0e0;
+  border-radius: 10px;
+  height: 10px;
+  width: 80%;
+  margin: 0 auto;
+`;
+
+const ProgressBar = styled.div`
+  height: 100%;
+  border-radius: 10px;
+  background-color: #007bff;
+  width: ${(props) => props.progress}%;
+  transition: width 0.3s ease-in-out;
 `;
 
 const SubmitButton = styled.button`
@@ -28,6 +91,13 @@ const SubmitButton = styled.button`
   background-color: #007bff;
   color: #fff;
   cursor: pointer;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  &:hover {
+    background-color: #0056b3;
+  }
 `;
 
 const AppMindFlareTest = () => {
@@ -91,17 +161,23 @@ const AppMindFlareTest = () => {
             });
     };
 
+    const progressPercentage = ((currentQuestionIndex + 1) / mindFlareQuestions.length) * 100;
+
     return (
         <QuizContainer>
-            <h1>Test de personnalité MindFlare</h1>
-            <input
+            <Title>Test de personnalité MindFlare</Title>
+            <Label htmlFor="name">Votre nom</Label>
+            <InputField
                 type="text"
+                id="name"
                 placeholder="Votre nom"
                 value={userDetails.name}
                 onChange={(e) => setUserDetails({ ...userDetails, name: e.target.value })}
             />
-            <input
+            <Label htmlFor="age">Votre âge</Label>
+            <InputField
                 type="number"
+                id="age"
                 placeholder="Votre âge"
                 value={userDetails.age}
                 onChange={(e) => setUserDetails({ ...userDetails, age: e.target.value })}
@@ -117,6 +193,9 @@ const AppMindFlareTest = () => {
                         onChange={(e) => setCurrentAnswer(Number(e.target.value))}
                     />
                     <p>Je m'identifie à {currentAnswer} sur 10</p>
+                    <ProgressContainer>
+                        <ProgressBar progress={progressPercentage} />
+                    </ProgressContainer>
                     <SubmitButton onClick={handleAnswer}>
                         {currentQuestionIndex === mindFlareQuestions.length - 1 ? "Terminer" : "Suivant"}
                     </SubmitButton>
