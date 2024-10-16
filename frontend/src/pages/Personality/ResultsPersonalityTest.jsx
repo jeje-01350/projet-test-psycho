@@ -33,7 +33,6 @@ const ResultsPersonalityTest = () => {
         }
     };
 
-    // Définition des descriptions selon les résultats de Briggs
     const getBriggsDescription = (briggs) => {
         switch (briggs) {
             case 'ISTJ':
@@ -105,7 +104,6 @@ const ResultsPersonalityTest = () => {
         }
     };
 
-    // Définition des descriptions selon les résultats de Letters
     const getLettersDescription = (letter) => {
         switch (letter) {
             case 'A':

@@ -8,7 +8,7 @@ const ResultsCareerPrediction = () => {
     const [mbtiPersonality, setMbtiPersonality] = useState("");
 
     const location = useLocation();
-    const { summary } = location.state || {}; // Récupérer le summary ou initialiser à un objet vide
+    const { summary } = location.state || {};
 
     const fetchResults = async () => {
         const API_URL = import.meta.env.VITE_API_URL;
@@ -35,7 +35,6 @@ const ResultsCareerPrediction = () => {
     };
 
     useEffect(() => {
-        // Appeler fetchResults uniquement si les scores ne sont pas disponibles
         if (scores.length === 0) {
             fetchResults();
         }
@@ -60,7 +59,6 @@ const ResultsCareerPrediction = () => {
                 <Typography
                     variant="h5"
                     sx={{ fontSize: "2.1rem", fontWeight: "400", mt: "3rem", mb: "2rem" }}
-                    onClick={() => console.log(summary)} // Log the summary
                 >
                     Your Personality Score is:
                 </Typography>

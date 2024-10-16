@@ -41,7 +41,6 @@ const QuestionCard = ({ question, onRadioClick, no }) => {
           borderRadius: "1rem",
           border: "1px solid ",
           boxShadow: "3px 3px #c0c0c0",
-          // backgroundColor: "yellow",
         }}
       >
         <CardContent>
@@ -81,7 +80,6 @@ const QuestionCard = ({ question, onRadioClick, no }) => {
               className="radio-group"
               onChange={handleChange}
               sx={{
-                // width: "100%",
                 mx: "1rem",
                 display: "flex",
                 alignItems: "center",

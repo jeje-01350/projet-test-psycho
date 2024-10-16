@@ -2,10 +2,9 @@ import React, {useRef, useState} from "react";
 import { BuzzFeedQuiz } from "react-buzzfeed-quiz";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import {mbtiQuestions, papiQuestions} from "../../constants/index"; // Assurez-vous que vos questions MBTI sont correctement importées
+import {mbtiQuestions, papiQuestions} from "../../constants/index";
 import "react-buzzfeed-quiz/lib/styles.css";
 
-// Styled components for the layout
 const QuizContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -37,13 +36,13 @@ const AppMbtiTest = () => {
         question: question.question,
         answers: question.answerOptions.map((answer) => ({
             answer: answer.answer,
-            onAnswerSelection: () => handleAnswerSelection(answer.score, index), // On passe ici le score (type MBTI)
+            onAnswerSelection: () => handleAnswerSelection(answer.score, index),
         })),
     }));
 
     const handleAnswerSelection = (score, index) => {
         const updatedAnswersCount = { ...answersCount };
-        updatedAnswersCount[score] += 1; // Incrémente le score du type MBTI sélectionné
+        updatedAnswersCount[score] += 1;
         setAnswersCount(updatedAnswersCount);
 
         if (index === mbtiQuestions.length - 1) {
@@ -69,7 +68,7 @@ const AppMbtiTest = () => {
     };
 
     const submitResponse = async () => {
-        const results = calculateResults(); // Calculer les résultats du test
+        const results = calculateResults();
         console.log("Sending results: ", results);
         const API_URL = import.meta.env.VITE_API_URL;
         try {

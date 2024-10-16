@@ -5,7 +5,6 @@ import styled from "styled-components";
 import { papiQuestions } from "../../constants/index";
 import "react-buzzfeed-quiz/lib/styles.css";
 
-// Styled components for the layout
 const QuizContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -37,7 +36,7 @@ const AppPapiTest = () => {
         question: question.question,
         answers: question.answerOptions.map((answer) => ({
             answer: answer.answer,
-            onAnswerSelection: () => handleAnswerSelection(answer.score, index), // On passe ici le score (type PAPI)
+            onAnswerSelection: () => handleAnswerSelection(answer.score, index),
         })),
     }));
 
@@ -73,7 +72,7 @@ const AppPapiTest = () => {
     };
 
     const submitResponse = async () => {
-        const results = calculateResults(); // Calculer les résultats du test
+        const results = calculateResults();
         console.log("Sending results: ", results);
         const API_URL = import.meta.env.VITE_API_URL;
         try {

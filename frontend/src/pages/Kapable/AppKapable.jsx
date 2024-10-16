@@ -5,7 +5,6 @@ import styled from "styled-components";
 import { kapableQuestions } from "../../constants/index";
 import "react-buzzfeed-quiz/lib/styles.css";
 
-// Styled components for the layout
 const QuizContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -52,10 +51,6 @@ const AppKapableTest = () => {
         updatedAnswersCount[score] += points;
         setAnswersCount(updatedAnswersCount);
 
-        // Log for each selected answer
-        console.log(`Question ${index + 1}: Letter ${score}, Points: ${points}`);
-        console.log("Current total points:", updatedAnswersCount);
-
         if (index === kapableQuestions.length - 1) {
             submitButtonRef.current.scrollIntoView({ behavior: "smooth" });
         }
@@ -73,7 +68,6 @@ const AppKapableTest = () => {
             P: answersCount.P,
         };
 
-        // Determine which letters win by comparing E vs I, S vs N, T vs F, J vs P
         const finalResults = {
             EI: results.E > results.I ? "E" : "I",
             SN: results.S > results.N ? "S" : "N",

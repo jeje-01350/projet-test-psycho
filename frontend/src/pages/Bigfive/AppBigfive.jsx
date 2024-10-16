@@ -9,7 +9,6 @@ const Bigfive = () => {
     const [responses, setResponses] = useState([]);
     const [currentQuestion, setCurrentQuestion] = useState(0);
 
-    // Mapping des domaines aux traits de personnalité traduits en français
     const domainToTraitMap = {
         N: "Névrosisme",
         E: "Extraversion",
@@ -48,7 +47,7 @@ const Bigfive = () => {
     };
 
     const handleFormChange = (data) => {
-        console.log("Données reçues de QuestionCard:", data);  // Vérifier les données reçues
+        console.log("Données reçues de QuestionCard:", data);
 
         if (!data.domain || data.score === undefined) {
             console.error("Données de formulaire invalides: domaine ou score manquant", data);
@@ -61,7 +60,7 @@ const Bigfive = () => {
         if (currentQuestion < bigfiveQuestions.length - 1) {
             setCurrentQuestion(currentQuestion + 1);
         } else {
-            submitResponse();  // Lorsque toutes les questions sont répondues
+            submitResponse();
         }
     };
 
@@ -82,16 +81,14 @@ const Bigfive = () => {
             "Ouverture d'esprit": 0,
         };
 
-        // Ajouter les scores pour chaque domaine en français
         responses.forEach(({ domain, score }) => {
-            const trait = domainToTraitMap[domain]; // Correspondance entre le domaine et le trait traduit
+            const trait = domainToTraitMap[domain];
             if (trait) {
                 scores[trait] += score;
-                totalQuestionsPerDomain[trait] += 1; // Compter combien de questions sont liées à chaque trait
+                totalQuestionsPerDomain[trait] += 1;
             }
         });
 
-        // Normaliser les scores en pourcentage (sur la base de 5 points maximum par question)
         Object.keys(scores).forEach(key => {
             if (totalQuestionsPerDomain[key] > 0) {
                 scores[key] = Math.round((scores[key] / (totalQuestionsPerDomain[key] * 5)) * 100);
@@ -108,7 +105,7 @@ const Bigfive = () => {
                     key={bigfiveQuestions[currentQuestion].id}
                     question={bigfiveQuestions[currentQuestion].text}
                     no={bigfiveQuestions[currentQuestion].id}
-                    domain={bigfiveQuestions[currentQuestion].domain}  // Passer le domaine
+                    domain={bigfiveQuestions[currentQuestion].domain}
                     onRadioClick={handleFormChange}
                 />
                 {currentQuestion === bigfiveQuestions.length - 1 && (

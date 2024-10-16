@@ -4,19 +4,17 @@ import { useLocation } from "react-router-dom";
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 
-// Enregistrer les composants pour le graphique en barres
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const ResultsBigFive = () => {
     const location = useLocation();
     const { summary, scores } = location.state || {};
 
-    // Générer dynamiquement des couleurs pour chaque domaine
     const generateColors = (count) => {
         const colors = [];
         for (let i = 0; i < count; i++) {
-            const hue = (i * 360 / count) % 360;  // Répartir les couleurs sur le spectre
-            colors.push(`hsl(${hue}, 70%, 50%)`); // Utiliser des couleurs HSL pour une bonne répartition
+            const hue = (i * 360 / count) % 360;
+            colors.push(`hsl(${hue}, 70%, 50%)`);
         }
         return colors;
     };

@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { mindFlareQuestions } from "../../constants/index";
 import styled from "styled-components";
 
-// Styled components
 const QuizContainer = styled.div`
   padding: 2rem;
   text-align: center;
@@ -41,7 +40,7 @@ const AppMindFlareTest = () => {
         Névrosisme: [],
     });
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [currentAnswer, setCurrentAnswer] = useState(5); // Default value in the middle (5)
+    const [currentAnswer, setCurrentAnswer] = useState(5);
     const navigate = useNavigate();
 
     const handleAnswer = () => {
@@ -53,12 +52,11 @@ const AppMindFlareTest = () => {
             [category]: [...prevScores[category], currentAnswer],
         }));
 
-        // Pass to the next question
-        setCurrentAnswer(5); // Reset the slider to 5 for the next question
+        setCurrentAnswer(5);
         if (currentQuestionIndex < mindFlareQuestions.length - 1) {
             setCurrentQuestionIndex(currentQuestionIndex + 1);
         } else {
-            submitTest(); // If it's the last question, submit the test
+            submitTest();
         }
     };
 

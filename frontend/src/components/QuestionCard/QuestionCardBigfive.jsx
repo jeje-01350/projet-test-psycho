@@ -14,12 +14,12 @@ const QuestionCardBigfive = ({ question, no, domain, facet, onRadioClick }) => {
     const handleChange = (event) => {
         const answer = {
             no,
-            domain,  // Ajout du domaine
-            facet,   // Ajout de la facette
-            score: Number(event.target.value), // Convertir la valeur en nombre pour le score
+            domain,
+            facet,
+            score: Number(event.target.value),
         };
 
-        onRadioClick(answer); // Envoie les données au parent
+        onRadioClick(answer);
     };
 
     return (

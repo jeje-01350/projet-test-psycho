@@ -14,11 +14,11 @@ const QuestionCardDjangoPersonalityTest = ({ question, no, domain, onRadioClick 
     const handleChange = (event) => {
         const answer = {
             no,
-            domain,  // Domaine (code associé à la question)
-            score: Number(event.target.value), // Convertir la valeur en nombre pour le score
+            domain,
+            score: Number(event.target.value),
         };
 
-        onRadioClick(answer); // Envoie les données au parent (AppDjangoPersonalityTest)
+        onRadioClick(answer);
     };
 
     return (

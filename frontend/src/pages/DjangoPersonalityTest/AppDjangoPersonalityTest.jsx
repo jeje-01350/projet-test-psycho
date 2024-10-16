@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container, Button } from "@mui/material/";
-import { QuestionCardBigfive } from "../../components/index"; // Réutilisation du composant pour la question
-import { DjangoQuestions } from "../../constants/index.js"; // DjangoQuestions doit être importé
+import { QuestionCardBigfive } from "../../components/index";
+import { DjangoQuestions } from "../../constants/index.js";
 
 const AppDjangoPersonalityTest = () => {
     const navigate = useNavigate();
@@ -10,7 +10,7 @@ const AppDjangoPersonalityTest = () => {
     const [currentQuestion, setCurrentQuestion] = useState(0);
 
     const submitResponse = async () => {
-        const scores = calculateScores(); // Calcul des scores basé sur les réponses
+        const scores = calculateScores();
         const API_URL = import.meta.env.VITE_API_URL;
         try {
             const res = await fetch(`${API_URL}/django-test/save`, {
@@ -52,7 +52,7 @@ const AppDjangoPersonalityTest = () => {
         if (currentQuestion < DjangoQuestions.length - 1) {
             setCurrentQuestion(currentQuestion + 1);
         } else {
-            submitResponse();  // Lorsque toutes les questions sont répondues
+            submitResponse();
         }
     };
 
@@ -74,7 +74,6 @@ const AppDjangoPersonalityTest = () => {
         };
 
         responses.forEach(({ domain, score }) => {
-            // Associer chaque domaine à une catégorie
             let trait;
             if (domain.startsWith("H")) {
                 trait = "Confiance";
@@ -110,7 +109,7 @@ const AppDjangoPersonalityTest = () => {
                     key={DjangoQuestions[currentQuestion].code}
                     question={DjangoQuestions[currentQuestion].question}
                     no={DjangoQuestions[currentQuestion].code}
-                    domain={DjangoQuestions[currentQuestion].code}  // Passer le code comme domaine
+                    domain={DjangoQuestions[currentQuestion].code}
                     onRadioClick={handleFormChange}
                 />
                 {currentQuestion === DjangoQuestions.length - 1 && (

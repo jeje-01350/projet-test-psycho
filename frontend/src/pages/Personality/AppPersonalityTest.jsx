@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import { BuzzFeedQuiz } from "react-buzzfeed-quiz";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { personalityTestQuestion } from "../../constants/index"; // Assurez-vous que vos questions sont correctement importées
+import { personalityTestQuestion } from "../../constants/index";
 import "react-buzzfeed-quiz/lib/styles.css";
 
-// Styled components for the layout
 const QuizContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -40,7 +39,7 @@ const AppPersonalityTest = () => {
         answers: question.answers.map((answer) => ({
             answer: answer.content,
             onAnswerSelection: () =>
-                handleAnswerSelection(answer.type, index), // On passe ici le type pour le calcul
+                handleAnswerSelection(answer.type, index),
         })),
     }));
 
@@ -108,7 +107,7 @@ const AppPersonalityTest = () => {
     };
 
     const submitResponse = async () => {
-        const results = calculateResults(); // Calculer les résultats du test
+        const results = calculateResults();
         console.log("Sending results: ", results);
         const API_URL = import.meta.env.VITE_API_URL;
         try {
@@ -118,7 +117,7 @@ const AppPersonalityTest = () => {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    color: results.colors,  // Assurez-vous que la clé correspond bien à la structure des données
+                    color: results.colors,
                     letters: results.letters,
                     briggs: results.briggs,
                 }),
@@ -130,8 +129,7 @@ const AppPersonalityTest = () => {
                 const data = await res.json();
                 console.log("Data received from backend:", data);
 
-                // Naviguer vers la page des résultats avec les données reçues du backend
-                navigate("/test-personalite/results", { state: { data: data.data } }); // data.data contient probablement les données de résultat
+                navigate("/test-personalite/results", { state: { data: data.data } });
             }
         } catch (error) {
             console.error("An error occurred while submitting the response:", error);

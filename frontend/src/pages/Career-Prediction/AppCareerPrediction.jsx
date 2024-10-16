@@ -32,7 +32,7 @@ const Home = () => {
                 if (data.summary) {
                     console.log("Summary received from backend:", data.summary);
                     navigate("/career-prediction/results", {
-                        state: { summary: data.summary }, // Passer le summary via l'état
+                        state: { summary: data.summary },
                     });
                 } else {
                     console.log("Summary not available in the response");
@@ -44,15 +44,13 @@ const Home = () => {
     };
 
     const handleFormChange = (data) => {
-        // Mettre à jour les réponses pour la question actuelle
         let newArray = responses.filter((response) => response.no !== data.no);
         setResponses([...newArray, data]);
 
-        // Passer à la question suivante
         if (currentQuestion < questions.length - 1) {
             setCurrentQuestion(currentQuestion + 1);
         } else {
-            submitResponse(); // Appeler submitResponse une fois toutes les questions répondues
+            submitResponse();
         }
     };
 
@@ -66,7 +64,6 @@ const Home = () => {
                     textAlign: "center",
                 }}
             >
-                {/* Affiche uniquement la question actuelle */}
                 <QuestionCard
                     key={questions[currentQuestion].no}
                     question={questions[currentQuestion].text}
@@ -74,7 +71,6 @@ const Home = () => {
                     onRadioClick={handleFormChange}
                 />
 
-                {/* Bouton de soumission uniquement à la fin des questions */}
                 {currentQuestion === questions.length - 1 && (
                     <Button
                         sx={{
@@ -85,7 +81,7 @@ const Home = () => {
                             letterSpacing: "0.2rem",
                         }}
                         variant="contained"
-                        onClick={submitResponse} // Appeler submitResponse sur click
+                        onClick={submitResponse}
                     >
                         Submit
                     </Button>

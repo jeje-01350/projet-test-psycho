@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import { BuzzFeedQuiz } from "react-buzzfeed-quiz";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { riasecQuestions } from "../../constants/index"; // Assurez-vous que vos questions RIASEC sont correctement importées
+import { riasecQuestions } from "../../constants/index";
 import "react-buzzfeed-quiz/lib/styles.css";
 
-// Styled components for the layout
 const QuizContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -38,7 +37,6 @@ const AppRiasecTest = () => {
 
     const navigate = useNavigate();
 
-    // Fonction pour gérer la sélection des réponses
     const handleAnswerSelection = (value, personnalite_id) => {
         const personnaliteMap = {
             1: "Realiste",
@@ -51,7 +49,6 @@ const AppRiasecTest = () => {
 
         const personnaliteName = personnaliteMap[personnalite_id];
 
-        // Mise à jour des points pour la personnalité sélectionnée
         setPersonnalitePoints((prevPoints) => ({
             ...prevPoints,
             [personnaliteName]: prevPoints[personnaliteName] + parseInt(value),
@@ -79,17 +76,16 @@ const AppRiasecTest = () => {
         ].map((answer, answerIndex) => ({
             answer: answer.answer,
             onAnswerSelection: () =>
-                handleAnswerSelection(answer.value, answer.personnalite_id), // Passe la valeur pour le calcul des points
+                handleAnswerSelection(answer.value, answer.personnalite_id),
         })),
     }));
 
-    // Calcul de la personnalité dominante
+
     const calculateDominantPersonalities = () => {
-        // Convert the object into an array of [key, value] pairs, sort it by value, and get the two highest ones
         const sortedPersonalities = Object.entries(personnalitePoints).sort(([, a], [, b]) => b - a);
 
-        const dominantPersonnalite = sortedPersonalities[0][0]; // Principale
-        const secondaryPersonnalite = sortedPersonalities[1][0]; // Secondaire
+        const dominantPersonnalite = sortedPersonalities[0][0];
+        const secondaryPersonnalite = sortedPersonalities[1][0];
 
         return { dominantPersonnalite, secondaryPersonnalite };
     };
@@ -109,7 +105,7 @@ const AppRiasecTest = () => {
         })
             .then((res) => {
                 if (res.status === 201) {
-                    return res.json();  // Récupérer les données JSON de la réponse
+                    return res.json();
                 } else {
                     throw new Error("Erreur lors de l'envoi des résultats");
                 }
@@ -119,7 +115,7 @@ const AppRiasecTest = () => {
                     state: {
                         resultatFinal: dominantPersonnalite,
                         resultatSecondaire: secondaryPersonnalite,
-                        summary: data.summary  // Utiliser le summary renvoyé par le backend
+                        summary: data.summary
                     },
                 });
             })

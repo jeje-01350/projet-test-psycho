@@ -5,7 +5,6 @@ const client = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Function to save results sent from frontend
 exports.sauvegarderResultat = async (req, res) => {
     try {
         const { scores } = req.body;
@@ -14,7 +13,6 @@ exports.sauvegarderResultat = async (req, res) => {
             return res.status(400).json({ error: "Scores and facets are required." });
         }
 
-        // Generate summary using OpenAI
         const prompt = `Voici les scores d'un utilisateur pour les traits de la personnalité Big Five : ${JSON.stringify(scores)}. 
         Donne-moi un résumé général pour cette personne.`;
 
@@ -25,7 +23,6 @@ exports.sauvegarderResultat = async (req, res) => {
 
         const summary = response.choices[0].message.content;
 
-        // Create new result object
         const nouveauResultat = new ResultsBigfive({
             scores,
             summary,

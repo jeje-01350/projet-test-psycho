@@ -4,7 +4,6 @@ import { useLocation } from "react-router-dom";
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 
-// Enregistrer les composants pour le graphique en barres
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const ResultsMbti = () => {
@@ -13,7 +12,6 @@ const ResultsMbti = () => {
 
     console.log(results, summary)
 
-    // Définir les scores par défaut au cas où certaines valeurs ne sont pas présentes
     const defaultScores = {
         E: results.E || 0,
         I: results.I || 0,
@@ -25,7 +23,6 @@ const ResultsMbti = () => {
         P: results.P || 0,
     };
 
-    // Préparer les données pour le graphique en barres
     const chartData = {
         labels: ['Extraversion (E)', 'Introversion (I)', 'Sensation (S)', 'Intuition (N)', 'Pensée (T)', 'Sentiment (F)', 'Jugement (J)', 'Perception (P)'],
         datasets: [
@@ -66,12 +63,11 @@ const ResultsMbti = () => {
         ],
     };
 
-    // Options du graphique pour améliorer les visuels
     const chartOptions = {
         responsive: true,
         plugins: {
             legend: {
-                display: false, // Cacher la légende
+                display: false,
             },
             title: {
                 display: true,

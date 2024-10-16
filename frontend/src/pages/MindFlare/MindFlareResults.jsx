@@ -12,7 +12,6 @@ import {
 } from 'chart.js';
 import { Radar } from 'react-chartjs-2';
 
-// Enregistrer manuellement les composants nécessaires pour le graphique Radar
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
 const ResultsContainer = styled.div`

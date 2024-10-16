@@ -5,7 +5,6 @@ const client = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
-// Contrôleur pour sauvegarder le résultat
 exports.saveResult = async (req, res) => {
     try {
         const { user_name, user_age, scores } = req.body;
@@ -14,7 +13,6 @@ exports.saveResult = async (req, res) => {
             return res.status(400).json({ error: "Informations manquantes." });
         }
 
-        // Préparation du prompt pour ChatGPT
         const prompt = `
             Rôle : Vous êtes un analyste spécialisé dans les tests de personnalité.
         
@@ -35,7 +33,6 @@ exports.saveResult = async (req, res) => {
         `;
 
 
-        // Appel à l'API OpenAI pour générer un résumé
         const response = await client.chat.completions.create({
             model: "gpt-3.5-turbo",
             messages: [{ role: "user", content: prompt }]
@@ -43,7 +40,6 @@ exports.saveResult = async (req, res) => {
 
         const summary = response.choices[0].message.content;
 
-        // Sauvegarde du résultat dans la base de données
         const newResult = new MindFlareResult({
             user_name,
             user_age,

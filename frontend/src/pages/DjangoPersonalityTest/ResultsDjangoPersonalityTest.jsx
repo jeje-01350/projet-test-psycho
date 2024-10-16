@@ -4,20 +4,18 @@ import { useLocation } from "react-router-dom";
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 
-// Enregistrer les composants pour le graphique en barres
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const ResultsDjangoPersonalityTest = () => {
     const location = useLocation();
-    const { summary, scores } = location.state || {}; // Récupérer les scores et le résumé depuis la navigation
+    const { summary, scores } = location.state || {};
 
-    // Préparer les données pour le graphique en barres
     const data = {
-        labels: Object.keys(scores),  // Les labels des traits de personnalité (par ex : "Confiance", "Agréabilité", etc.)
+        labels: Object.keys(scores),
         datasets: [
             {
                 label: 'Scores de personnalité (%)',
-                data: Object.values(scores),  // Les scores correspondants
+                data: Object.values(scores),
                 backgroundColor: [
                     '#FF6384',
                     '#36A2EB',
@@ -37,12 +35,11 @@ const ResultsDjangoPersonalityTest = () => {
         ],
     };
 
-    // Options du graphique pour améliorer les visuels
     const options = {
         responsive: true,
         plugins: {
             legend: {
-                display: false, // Cacher la légende
+                display: false,
             },
             title: {
                 display: true,
