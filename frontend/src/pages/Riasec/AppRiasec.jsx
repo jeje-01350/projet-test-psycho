@@ -35,9 +35,11 @@ const AppRiasecTest = () => {
         Conventionnel: 0,
     });
 
+    const [userAnswers, setUserAnswers] = useState({});
+
     const navigate = useNavigate();
 
-    const handleAnswerSelection = (value, personnalite_id) => {
+    const handleAnswerSelection = (value, personnalite_id, questionText, answerText) => {
         const personnaliteMap = {
             1: "Realiste",
             2: "Investigatif",
@@ -53,9 +55,14 @@ const AppRiasecTest = () => {
             ...prevPoints,
             [personnaliteName]: prevPoints[personnaliteName] + parseInt(value),
         }));
+
+        setUserAnswers((prevAnswers) => ({
+            ...prevAnswers,
+            [questionText]: answerText,
+        }));
     };
 
-    const quizQuestions = riasecQuestions.map((question, index) => ({
+    const quizQuestions = riasecQuestions.map((question) => ({
         question: question.intitule,
         answers: [
             {
@@ -73,13 +80,12 @@ const AppRiasecTest = () => {
                 value: 1,
                 personnalite_id: question.personnalite_id,
             },
-        ].map((answer, answerIndex) => ({
+        ].map((answer) => ({
             answer: answer.answer,
             onAnswerSelection: () =>
-                handleAnswerSelection(answer.value, answer.personnalite_id),
+                handleAnswerSelection(answer.value, answer.personnalite_id, question.intitule, answer.answer),
         })),
     }));
-
 
     const calculateDominantPersonalities = () => {
         const sortedPersonalities = Object.entries(personnalitePoints).sort(([, a], [, b]) => b - a);
@@ -93,6 +99,7 @@ const AppRiasecTest = () => {
     const submitResponse = () => {
         const { dominantPersonnalite, secondaryPersonnalite } = calculateDominantPersonalities();
         const API_URL = import.meta.env.VITE_API_URL;
+
         fetch(`${API_URL}/riasec/save`, {
             method: "POST",
             headers: {
@@ -101,6 +108,7 @@ const AppRiasecTest = () => {
             body: JSON.stringify({
                 resultatPrincipal: dominantPersonnalite,
                 resultatSecondaire: secondaryPersonnalite,
+                userAnswers,
             }),
         })
             .then((res) => {
@@ -115,14 +123,12 @@ const AppRiasecTest = () => {
                     state: {
                         resultatFinal: dominantPersonnalite,
                         resultatSecondaire: secondaryPersonnalite,
-                        summary: data.summary
+                        summary: data.summary,
                     },
                 });
             })
             .catch((error) => console.error("Error submitting data:", error));
     };
-
-
 
     return (
         <QuizContainer>

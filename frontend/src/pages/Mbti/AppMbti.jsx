@@ -2,7 +2,7 @@ import React, {useRef, useState} from "react";
 import { BuzzFeedQuiz } from "react-buzzfeed-quiz";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import {mbtiQuestions, papiQuestions} from "../../constants/index";
+import {mbtiQuestions} from "../../constants/index";
 import "react-buzzfeed-quiz/lib/styles.css";
 
 const QuizContainer = styled.div`
@@ -36,14 +36,18 @@ const AppMbtiTest = () => {
         question: question.question,
         answers: question.answerOptions.map((answer) => ({
             answer: answer.answer,
-            onAnswerSelection: () => handleAnswerSelection(answer.score, index),
+            onAnswerSelection: () => handleAnswerSelection(answer, index, question.question),
         })),
     }));
 
-    const handleAnswerSelection = (score, index) => {
+    const handleAnswerSelection = (answer, index, questionText) => {
         const updatedAnswersCount = { ...answersCount };
-        updatedAnswersCount[score] += 1;
+        updatedAnswersCount[answer.score] += 1;
         setAnswersCount(updatedAnswersCount);
+
+        const updatedResponses = [...responses];
+        updatedResponses[index] = { question: questionText, answer: answer.answer };
+        setResponses(updatedResponses);
 
         if (index === mbtiQuestions.length - 1) {
             submitButtonRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -69,7 +73,14 @@ const AppMbtiTest = () => {
 
     const submitResponse = async () => {
         const results = calculateResults();
-        console.log("Sending results: ", results);
+
+        const userAnswers = {};
+        responses.forEach(({ question, answer }) => {
+            userAnswers[question] = answer;
+        });
+
+        console.log("Sending results and userAnswers: ", results, userAnswers);
+
         const API_URL = import.meta.env.VITE_API_URL;
         try {
             const res = await fetch(`${API_URL}/mbti/save`, {
@@ -79,6 +90,7 @@ const AppMbtiTest = () => {
                 },
                 body: JSON.stringify({
                     scores: results,
+                    userAnswers,
                 }),
             });
 

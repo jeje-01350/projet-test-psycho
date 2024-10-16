@@ -8,10 +8,10 @@ const client = new OpenAI({
 // Function to save results sent from frontend
 exports.sauvegarderResultat = async (req, res) => {
     try {
-        const { scores } = req.body;
+        const { scores, userAnswers } = req.body;
 
-        if (!scores) {
-            return res.status(400).json({ error: "Score is required." });
+        if (!scores || !userAnswers) {
+            return res.status(400).json({ error: "Scores and userAnswers are required." });
         }
 
         // Generate summary using OpenAI
@@ -29,11 +29,13 @@ exports.sauvegarderResultat = async (req, res) => {
         const nouveauResultat = new ResultsAncreSchein({
             scores,
             summary,
+            userAnswers
         });
 
         await nouveauResultat.save();
         res.status(201).json({ message: "Result saved successfully", summary, scores });
     } catch (err) {
-        res.status(500).json({ error: "Error saving result" });
+        console.error("Error saving result:", err);
+        res.status(500).json({ error: "Error saving result", details: err.message });
     }
 };

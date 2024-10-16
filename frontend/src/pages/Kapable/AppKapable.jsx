@@ -35,6 +35,7 @@ const AppKapableTest = () => {
         J: 0,
         P: 0,
     });
+    const [userAnswers, setUserAnswers] = useState({});
     const navigate = useNavigate();
     const submitButtonRef = useRef(null);
 
@@ -42,14 +43,18 @@ const AppKapableTest = () => {
         question: question.question,
         answers: question.answerOptions.map((answer) => ({
             answer: answer.answer,
-            onAnswerSelection: () => handleAnswerSelection(answer.score, answer.points, index),
+            onAnswerSelection: () => handleAnswerSelection(answer.score, answer.answer, answer.points, index),
         })),
     }));
 
-    const handleAnswerSelection = (score, points, index) => {
+    const handleAnswerSelection = (score, answerText, points, index) => {
         const updatedAnswersCount = { ...answersCount };
         updatedAnswersCount[score] += points;
         setAnswersCount(updatedAnswersCount);
+
+        const updatedUserAnswers = { ...userAnswers };
+        updatedUserAnswers[kapableQuestions[index].question] = answerText;
+        setUserAnswers(updatedUserAnswers);
 
         if (index === kapableQuestions.length - 1) {
             submitButtonRef.current.scrollIntoView({ behavior: "smooth" });
@@ -83,6 +88,7 @@ const AppKapableTest = () => {
     const submitResponse = async () => {
         const scores = calculateResults();
         console.log("Sending results: ", scores);
+        console.log("Sending user answers: ", userAnswers);
 
         const API_URL = import.meta.env.VITE_API_URL;
         try {
@@ -93,6 +99,7 @@ const AppKapableTest = () => {
                 },
                 body: JSON.stringify({
                     scores,
+                    userAnswers,
                 }),
             });
 

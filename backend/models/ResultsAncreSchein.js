@@ -14,6 +14,10 @@ const ResultsAncreScheinSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    userAnswers: {
+        type: Object,
+        required: true,
+    }
 });
 
 const ResultsAncreSchein = mongoose.model("ResultsAncreSchein", ResultsAncreScheinSchema);

@@ -14,6 +14,10 @@ const ResultsDjangoPersonalityTestSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    userAnswers: {
+        type: Object,
+        required: true,
+    }
 });
 
 const ResultsDjangoPersonalityTest = mongoose.model("ResultsDjangoPersonalityTest", ResultsDjangoPersonalityTestSchema);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { mindFlareQuestions } from "../../constants/index";
 import styled from "styled-components";
@@ -98,6 +98,16 @@ const SubmitButton = styled.button`
   &:hover {
     background-color: #0056b3;
   }
+  &:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+`;
+
+const Loader = styled.div`
+  margin-top: 2rem;
+  font-size: 1.2rem;
+  color: #007bff;
 `;
 
 const AppMindFlareTest = () => {
@@ -109,24 +119,37 @@ const AppMindFlareTest = () => {
         Amabilité: [],
         Névrosisme: [],
     });
+    const [userAnswers, setUserAnswers] = useState({});
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [currentAnswer, setCurrentAnswer] = useState(5);
+    const [loading, setLoading] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (submitted) {
+            submitTest();
+        }
+    }, [submitted]);
 
     const handleAnswer = () => {
         const currentQuestion = mindFlareQuestions[currentQuestionIndex];
-        const { category } = currentQuestion;
+        const { category, text } = currentQuestion;
+
+        setUserAnswers((prevAnswers) => ({
+            ...prevAnswers,
+            [text]: currentAnswer,
+        }));
 
         setScores((prevScores) => ({
             ...prevScores,
             [category]: [...prevScores[category], currentAnswer],
         }));
 
-        setCurrentAnswer(5);
-        if (currentQuestionIndex < mindFlareQuestions.length - 1) {
-            setCurrentQuestionIndex(currentQuestionIndex + 1);
+        if (currentQuestionIndex === mindFlareQuestions.length - 1) {
+            setSubmitted(true);
         } else {
-            submitTest();
+            setCurrentQuestionIndex(currentQuestionIndex + 1);
         }
     };
 
@@ -140,8 +163,12 @@ const AppMindFlareTest = () => {
     };
 
     const submitTest = () => {
+        if (loading) return;
+        setLoading(true);
+
         const finalScores = calculateAverageScores();
         const API_URL = import.meta.env.VITE_API_URL;
+
         fetch(`${API_URL}/mindflare/save`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -149,15 +176,21 @@ const AppMindFlareTest = () => {
                 user_name: userDetails.name,
                 user_age: userDetails.age,
                 scores: finalScores,
+                userAnswers,
             }),
         })
             .then((response) => response.json())
             .then((data) => {
+                setLoading(false);
                 if (data.summary) {
                     navigate("/mindflare/results", {
                         state: { summary: data.summary, scores: finalScores },
                     });
                 }
+            })
+            .catch((error) => {
+                setLoading(false);
+                console.error("Erreur lors de la soumission:", error);
             });
     };
 
@@ -182,7 +215,7 @@ const AppMindFlareTest = () => {
                 value={userDetails.age}
                 onChange={(e) => setUserDetails({ ...userDetails, age: e.target.value })}
             />
-            {currentQuestionIndex < mindFlareQuestions.length && (
+            {!loading && currentQuestionIndex < mindFlareQuestions.length && (
                 <QuestionContainer>
                     <QuestionText>{mindFlareQuestions[currentQuestionIndex].text}</QuestionText>
                     <RangeInput
@@ -196,11 +229,12 @@ const AppMindFlareTest = () => {
                     <ProgressContainer>
                         <ProgressBar progress={progressPercentage} />
                     </ProgressContainer>
-                    <SubmitButton onClick={handleAnswer}>
-                        {currentQuestionIndex === mindFlareQuestions.length - 1 ? "Terminer" : "Suivant"}
+                    <SubmitButton onClick={handleAnswer} disabled={loading}>
+                        {currentQuestionIndex === mindFlareQuestions.length - 1 ? "Valider" : "Suivant"}
                     </SubmitButton>
                 </QuestionContainer>
             )}
+            {loading && <Loader>Chargement...</Loader>}
         </QuizContainer>
     );
 };

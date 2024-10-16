@@ -7,9 +7,9 @@ const client = new OpenAI({
 
 exports.saveResult = async (req, res) => {
     try {
-        const { user_name, user_age, scores } = req.body;
+        const { user_name, user_age, scores, userAnswers } = req.body;
 
-        if (!user_name || !user_age || !scores) {
+        if (!user_name || !user_age || !scores || !userAnswers) {
             return res.status(400).json({ error: "Informations manquantes." });
         }
 
@@ -44,14 +44,15 @@ exports.saveResult = async (req, res) => {
             user_name,
             user_age,
             scores,
-            summary
+            summary,
+            userAnswers
         });
 
         await newResult.save();
 
         res.status(201).json({ message: "Résultat sauvegardé avec succès.", summary });
     } catch (err) {
-        console.error("Erreur :", err);
-        res.status(500).json({ error: "Erreur lors de la sauvegarde du résultat." });
+        console.error("Error saving result:", err);
+        res.status(500).json({ error: "Error saving result", details: err.message });
     }
 };

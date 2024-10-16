@@ -18,8 +18,10 @@ const Bigfive = () => {
     };
 
     const submitResponse = async () => {
-        const scores = calculateScores();
+        const scores = calculateScores(responses);
+        const userAnswers = buildUserAnswers(responses);
         const API_URL = import.meta.env.VITE_API_URL;
+
         try {
             const res = await fetch(`${API_URL}/bigfive/save`, {
                 method: "POST",
@@ -28,6 +30,7 @@ const Bigfive = () => {
                 },
                 body: JSON.stringify({
                     scores,
+                    userAnswers,
                 }),
             });
 
@@ -44,7 +47,10 @@ const Bigfive = () => {
         } catch (error) {
             console.error("Une erreur s'est produite lors de l'envoi des réponses:", error);
         }
+
+        console.log(scores, userAnswers);
     };
+
 
     const handleFormChange = (data) => {
         console.log("Données reçues de QuestionCard:", data);
@@ -55,16 +61,16 @@ const Bigfive = () => {
         }
 
         let newArray = responses.filter((response) => response.no !== data.no);
-        setResponses([...newArray, data]);
+        const updatedResponses = [...newArray, data];
+
+        setResponses(updatedResponses);
 
         if (currentQuestion < bigfiveQuestions.length - 1) {
             setCurrentQuestion(currentQuestion + 1);
-        } else {
-            submitResponse();
         }
     };
 
-    const calculateScores = () => {
+    const calculateScores = (responses) => {
         const scores = {
             "Agréabilité": 0,
             "Conscience": 0,
@@ -96,6 +102,15 @@ const Bigfive = () => {
         });
 
         return scores;
+    };
+
+    const buildUserAnswers = (responses) => {
+        const userAnswers = {};
+        responses.forEach(({ no, score }) => {
+            const questionText = bigfiveQuestions.find((q) => q.id === no).text;
+            userAnswers[questionText] = score;
+        });
+        return userAnswers;
     };
 
     return (

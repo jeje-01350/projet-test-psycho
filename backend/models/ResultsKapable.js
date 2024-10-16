@@ -13,6 +13,10 @@ const ResultsKapableSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    userAnswers: {
+        type: Object,
+        required: true,
+    }
 });
 
 const ResultsKapable = mongoose.model("ResultsKapable", ResultsKapableSchema);

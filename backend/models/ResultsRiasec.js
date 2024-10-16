@@ -17,6 +17,10 @@ const ResultsRiasecSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    userAnswers: {
+        type: Object,
+        required: true,
+    }
 });
 
 const ResultsRiasec = mongoose.model("ResultsRiasec", ResultsRiasecSchema);

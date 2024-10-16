@@ -14,6 +14,10 @@ const ResultsMbtiSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    userAnswers: {
+        type: Object,
+        required: true,
+    }
 });
 
 const ResultsMbti = mongoose.model("ResultsMbti", ResultsMbtiSchema);

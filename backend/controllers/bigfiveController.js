@@ -7,10 +7,10 @@ const client = new OpenAI({
 
 exports.sauvegarderResultat = async (req, res) => {
     try {
-        const { scores } = req.body;
+        const { scores, userAnswers } = req.body;
 
-        if (!scores) {
-            return res.status(400).json({ error: "Scores and facets are required." });
+        if (!scores || !userAnswers) {
+            return res.status(400).json({ error: "Scores and userAnswers are required." });
         }
 
         const prompt = `Voici les scores d'un utilisateur pour les traits de la personnalité Big Five : ${JSON.stringify(scores)}. 
@@ -26,11 +26,13 @@ exports.sauvegarderResultat = async (req, res) => {
         const nouveauResultat = new ResultsBigfive({
             scores,
             summary,
+            userAnswers
         });
 
         await nouveauResultat.save();
         res.status(201).json({ message: "Result saved successfully", summary, scores });
     } catch (err) {
-        res.status(500).json({ error: "Error saving result" });
+        console.error("Error saving result:", err);
+        res.status(500).json({ error: "Error saving result", details: err.message });
     }
 };

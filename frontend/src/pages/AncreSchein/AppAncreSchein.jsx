@@ -23,7 +23,9 @@ const AncreSchein = () => {
 
     const submitResponse = async () => {
         const scores = calculateScores();
+        const userAnswers = buildUserAnswers();
         const API_URL = import.meta.env.VITE_API_URL;
+
         try {
             const res = await fetch(`${API_URL}/schein/save`, {
                 method: "POST",
@@ -32,6 +34,7 @@ const AncreSchein = () => {
                 },
                 body: JSON.stringify({
                     scores,
+                    userAnswers,
                 }),
             });
 
@@ -49,11 +52,10 @@ const AncreSchein = () => {
             console.error("Une erreur s'est produite lors de l'envoi des réponses:", error);
         }
 
-        console.log(scores)
+        console.log(scores, userAnswers);
     };
 
     const handleFormChange = (data) => {
-
         if (!data.domain || data.score === undefined) {
             console.error("Données de formulaire invalides: domaine ou score manquant", data);
             return;
@@ -69,27 +71,27 @@ const AncreSchein = () => {
 
     const calculateScores = () => {
         const scores = {
-            "ancre technique" : 0,
-            "ancre managériale" : 0,
-            "ancre autonomie" : 0,
-            "ancre sécurité/stabilité" : 0,
-            "ancre créativité" : 0,
-            "ancre dévouement à une cause" : 0,
-            "ancre défi pur" : 0,
-            "ancre qualité de vie" : 0,
-            "ancre internationale" : 0,
+            "ancre technique": 0,
+            "ancre managériale": 0,
+            "ancre autonomie": 0,
+            "ancre sécurité/stabilité": 0,
+            "ancre créativité": 0,
+            "ancre dévouement à une cause": 0,
+            "ancre défi pur": 0,
+            "ancre qualité de vie": 0,
+            "ancre internationale": 0,
         };
 
         const totalQuestionsPerDomain = {
-            "ancre technique" : 0,
-            "ancre managériale" : 0,
-            "ancre autonomie" : 0,
-            "ancre sécurité/stabilité" : 0,
-            "ancre créativité" : 0,
-            "ancre dévouement à une cause" : 0,
-            "ancre défi pur" : 0,
-            "ancre qualité de vie" : 0,
-            "ancre internationale" : 0,
+            "ancre technique": 0,
+            "ancre managériale": 0,
+            "ancre autonomie": 0,
+            "ancre sécurité/stabilité": 0,
+            "ancre créativité": 0,
+            "ancre dévouement à une cause": 0,
+            "ancre défi pur": 0,
+            "ancre qualité de vie": 0,
+            "ancre internationale": 0,
         };
 
         responses.forEach(({ domain, score }) => {
@@ -100,13 +102,22 @@ const AncreSchein = () => {
             }
         });
 
-        Object.keys(scores).forEach(key => {
+        Object.keys(scores).forEach((key) => {
             if (totalQuestionsPerDomain[key] > 0) {
                 scores[key] = Math.round((scores[key] / (totalQuestionsPerDomain[key] * 5)) * 100);
             }
         });
 
         return scores;
+    };
+
+    const buildUserAnswers = () => {
+        const userAnswers = {};
+        responses.forEach(({ no, score }) => {
+            const questionText = ancreScheinQuestions.find((q) => q.id === no).text;
+            userAnswers[questionText] = score;
+        });
+        return userAnswers;
     };
 
     return (

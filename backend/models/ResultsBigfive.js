@@ -6,6 +6,10 @@ const ResultsBigfiveSchema = new mongoose.Schema({
         of: Number,
         required: true,
     },
+    userAnswers: {
+        type: Object,
+        required: true,
+    },
     summary: {
         type: String,
         required: true,

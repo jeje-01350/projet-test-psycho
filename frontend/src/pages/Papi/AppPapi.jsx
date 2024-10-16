@@ -26,6 +26,7 @@ const SubmitButton = styled.button`
 
 const AppPapiTest = () => {
     const [responses, setResponses] = useState([]);
+    const [userAnswers, setUserAnswers] = useState({});
     const [answersCount, setAnswersCount] = useState({
         Leadership: 0, Initiative: 0, Organisation: 0, Flexibilité: 0, Collaboration: 0, Créativité: 0, Routine: 0, Autonomie: 0
     });
@@ -36,16 +37,22 @@ const AppPapiTest = () => {
         question: question.question,
         answers: question.answerOptions.map((answer) => ({
             answer: answer.answer,
-            onAnswerSelection: () => handleAnswerSelection(answer.score, index),
+            onAnswerSelection: () => handleAnswerSelection(answer, index, question.question),
         })),
     }));
 
-    const handleAnswerSelection = (score, index) => {
+    const handleAnswerSelection = (answer, index, questionText) => {
         const updatedAnswersCount = { ...answersCount };
-        updatedAnswersCount[score] += 1;
+        updatedAnswersCount[answer.score] += 1;
         setAnswersCount(updatedAnswersCount);
 
+        setUserAnswers((prevAnswers) => ({
+            ...prevAnswers,
+            [questionText]: answer.answer,
+        }));
+
         console.log("Answer count after selection:", updatedAnswersCount);
+        console.log("User answers after selection:", userAnswers);
 
         if (index === papiQuestions.length - 1) {
             if (submitButtonRef.current) {
@@ -74,6 +81,8 @@ const AppPapiTest = () => {
     const submitResponse = async () => {
         const results = calculateResults();
         console.log("Sending results: ", results);
+        console.log("Sending user answers: ", userAnswers);
+
         const API_URL = import.meta.env.VITE_API_URL;
         try {
             const res = await fetch(`${API_URL}/papi/save`, {
@@ -83,6 +92,7 @@ const AppPapiTest = () => {
                 },
                 body: JSON.stringify({
                     scores: results,
+                    userAnswers,
                 }),
             });
 

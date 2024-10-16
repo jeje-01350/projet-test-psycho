@@ -11,6 +11,7 @@ const AppDjangoPersonalityTest = () => {
 
     const submitResponse = async () => {
         const scores = calculateScores();
+        const userAnswers = buildUserAnswers();
         const API_URL = import.meta.env.VITE_API_URL;
         try {
             const res = await fetch(`${API_URL}/django-test/save`, {
@@ -20,6 +21,7 @@ const AppDjangoPersonalityTest = () => {
                 },
                 body: JSON.stringify({
                     scores,
+                    userAnswers,
                 }),
             });
 
@@ -51,8 +53,6 @@ const AppDjangoPersonalityTest = () => {
 
         if (currentQuestion < DjangoQuestions.length - 1) {
             setCurrentQuestion(currentQuestion + 1);
-        } else {
-            submitResponse();
         }
     };
 
@@ -100,6 +100,15 @@ const AppDjangoPersonalityTest = () => {
         });
 
         return scores;
+    };
+
+    const buildUserAnswers = () => {
+        const userAnswers = {};
+        responses.forEach(({ no, score }) => {
+            const questionText = DjangoQuestions.find((q) => q.code === no).question;
+            userAnswers[questionText] = score;
+        });
+        return userAnswers;
     };
 
     return (

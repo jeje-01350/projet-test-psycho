@@ -21,6 +21,10 @@ const MindFlareResultSchema = new mongoose.Schema({
     date: {
         type: Date,
         default: Date.now
+    },
+    userAnswers: {
+        type: Object,
+        required: true,
     }
 });
 

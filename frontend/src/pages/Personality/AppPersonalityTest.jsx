@@ -39,7 +39,7 @@ const AppPersonalityTest = () => {
         answers: question.answers.map((answer) => ({
             answer: answer.content,
             onAnswerSelection: () =>
-                handleAnswerSelection(answer.type, index),
+                handleAnswerSelection(answer.content, index),
         })),
     }));
 
@@ -106,8 +106,18 @@ const AppPersonalityTest = () => {
         };
     };
 
+    const buildUserAnswers = () => {
+        const userAnswers = {};
+        responses.forEach(({ questionIndex, answer }) => {
+            const questionText = personalityTestQuestion[questionIndex].question;
+            userAnswers[questionText] = answer;
+        });
+        return userAnswers;
+    };
+
     const submitResponse = async () => {
         const results = calculateResults();
+        const userAnswers = buildUserAnswers();
         console.log("Sending results: ", results);
         const API_URL = import.meta.env.VITE_API_URL;
         try {
@@ -120,6 +130,7 @@ const AppPersonalityTest = () => {
                     color: results.colors,
                     letters: results.letters,
                     briggs: results.briggs,
+                    userAnswers,
                 }),
             });
 

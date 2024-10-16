@@ -18,6 +18,10 @@ const ResultsPersonalityTestSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+      userAnswers: {
+          type: Object,
+          required: true,
+      }
   },
   { timestamps: true }
 );
