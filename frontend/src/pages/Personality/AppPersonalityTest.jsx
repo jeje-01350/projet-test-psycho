@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { BuzzFeedQuiz } from "react-buzzfeed-quiz";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
+import { CircularProgress } from "@mui/material";
 import { personalityTestQuestion } from "../../constants/index";
 import "react-buzzfeed-quiz/lib/styles.css";
 
@@ -32,7 +33,13 @@ const AppPersonalityTest = () => {
         Letters: { A: 10, B: 10, C: 10, D: 10 },
         Briggs: { E: 5, I: 5, S: 5, N: 5, T: 5, F: 5, J: 5, P: 5 },
     });
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const searchParams = new URLSearchParams(location.search);
+    const userId = searchParams.get("user_id");
+    const token = searchParams.get("token");
 
     const quizQuestions = personalityTestQuestion.map((question, index) => ({
         question: question.question,
@@ -116,10 +123,12 @@ const AppPersonalityTest = () => {
     };
 
     const submitResponse = async () => {
+        setLoading(true);
         const results = calculateResults();
         const userAnswers = buildUserAnswers();
         console.log("Sending results: ", results);
         const API_URL = import.meta.env.VITE_API_URL;
+
         try {
             const res = await fetch(`${API_URL}/personality-test/save`, {
                 method: "POST",
@@ -136,52 +145,89 @@ const AppPersonalityTest = () => {
 
             if (res.status !== 201) {
                 console.log("Error in sending results");
+                setLoading(false);
             } else {
                 const data = await res.json();
+                const summary = data.data.summary;
                 console.log("Data received from backend:", data);
 
-                navigate("/test-personalite/results", { state: { data: data.data } });
+                const secondApiBody = {
+                    results: {
+                        color: results.colors,
+                        letters: results.letters,
+                        briggs: results.briggs,
+                        userAnswers,
+                        summary: summary,
+                    },
+                };
+
+                if (userId && token) {
+                    secondApiBody.user_id = userId;
+                    secondApiBody.token = token;
+                }
+
+                const secondRes = await fetch("https://formation.devstriker.com/psycho_tests/new_results", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(secondApiBody),
+                });
+
+                if (secondRes.status === 200) {
+                    navigate("/test-personalite/results", { state: { data: data.data } });
+                } else {
+                    console.error("Error in sending results to the second API");
+                }
             }
         } catch (error) {
             console.error("An error occurred while submitting the response:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
 
     return (
         <QuizContainer>
-            <BuzzFeedQuiz
-                title={"Test de personalité"}
-                byline={false}
-                description={"Répondez aux questions suivantes pour découvrir vos résultats."}
-                autoScroll={true}
-                onAnswerSelection={handleAnswerSelection}
-                questions={quizQuestions}
-                results={[
-                    {
-                        title: "Result 1",
-                        description: "Description for result 1",
-                        resultID: 0,
-                    },
-                    {
-                        title: "Result 2",
-                        description: "Description for result 2",
-                        resultID: 1,
-                    },
-                    {
-                        title: "Result 3",
-                        description: "Description for result 3",
-                        resultID: 2,
-                    },
-                ]}
-                copyShareButton
-                facebookShareButton
-                twitterShareButton
-            />
+            {loading ? (
+                <CircularProgress />
+            ) : (
+                <>
+                    <BuzzFeedQuiz
+                        title={"Test de personalité"}
+                        byline={false}
+                        description={"Répondez aux questions suivantes pour découvrir vos résultats."}
+                        autoScroll={true}
+                        onAnswerSelection={handleAnswerSelection}
+                        questions={quizQuestions}
+                        results={[
+                            {
+                                title: "Result 1",
+                                description: "Description for result 1",
+                                resultID: 0,
+                            },
+                            {
+                                title: "Result 2",
+                                description: "Description for result 2",
+                                resultID: 1,
+                            },
+                            {
+                                title: "Result 3",
+                                description: "Description for result 3",
+                                resultID: 2,
+                            },
+                        ]}
+                        copyShareButton
+                        facebookShareButton
+                        twitterShareButton
+                    />
 
-            <SubmitButton onClick={submitResponse}>
-                Submit
-            </SubmitButton>
+                    <SubmitButton onClick={submitResponse}>
+                        Submit
+                    </SubmitButton>
+                </>
+            )}
         </QuizContainer>
     );
 };

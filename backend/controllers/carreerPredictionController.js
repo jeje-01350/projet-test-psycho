@@ -97,7 +97,8 @@ module.exports.submitResponse = async (req, res) => {
 
   return res.status(200).json({
     message: "Answer were added to DB",
-    summary
+    summary,
+    type: mbti
   });
 };
 

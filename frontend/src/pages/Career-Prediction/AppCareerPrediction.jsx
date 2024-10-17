@@ -1,17 +1,24 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Container, Button } from "@mui/material/";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Container, Button, CircularProgress } from "@mui/material/";
 import { QuestionCard } from "../../components/index";
 import { questions } from "../../constants/index";
 
-const Home = () => {
+const CareerPrediction = () => {
     const navigate = useNavigate();
-
+    const location = useLocation();
     const [responses, setResponses] = useState([]);
     const [currentQuestion, setCurrentQuestion] = useState(0);
+    const [loading, setLoading] = useState(false);
+
+    const searchParams = new URLSearchParams(location.search);
+    const userId = searchParams.get("user_id");
+    const token = searchParams.get("token");
 
     const submitResponse = async () => {
+        setLoading(true);
         const API_URL = import.meta.env.VITE_API_URL;
+
         try {
             const res = await fetch(`${API_URL}/answer/submit-response`, {
                 method: "POST",
@@ -25,21 +32,50 @@ const Home = () => {
 
             if (res.status !== 200) {
                 console.log("Error in sending responses");
+                setLoading(false);
             } else {
                 const data = await res.json();
                 console.log("Data was sent to Backend");
 
                 if (data.summary) {
                     console.log("Summary received from backend:", data.summary);
-                    navigate("/career-prediction/results", {
-                        state: { summary: data.summary },
+
+                    const secondApiBody = {
+                        results: {
+                            type: data.type,
+                            summary: data.summary,
+                            answerArray: responses,
+                        },
+                    };
+
+                    if (userId && token) {
+                        secondApiBody.user_id = userId;
+                        secondApiBody.token = token;
+                    }
+
+                    const secondRes = await fetch("https://formation.devstriker.com/psycho_tests/new_results", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(secondApiBody),
                     });
+
+                    if (secondRes.status === 200) {
+                        navigate("/career-prediction/results", {
+                            state: { summary: data.summary },
+                        });
+                    } else {
+                        console.error("Error in second API request");
+                    }
                 } else {
                     console.log("Summary not available in the response");
                 }
             }
         } catch (error) {
             console.error("An error occurred while submitting the response:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -49,8 +85,6 @@ const Home = () => {
 
         if (currentQuestion < questions.length - 1) {
             setCurrentQuestion(currentQuestion + 1);
-        } else {
-            submitResponse();
         }
     };
 
@@ -64,31 +98,37 @@ const Home = () => {
                     textAlign: "center",
                 }}
             >
-                <QuestionCard
-                    key={questions[currentQuestion].no}
-                    question={questions[currentQuestion].text}
-                    no={questions[currentQuestion].no}
-                    onRadioClick={handleFormChange}
-                />
+                {loading ? (
+                    <CircularProgress />
+                ) : (
+                    <>
+                        <QuestionCard
+                            key={questions[currentQuestion].no}
+                            question={questions[currentQuestion].text}
+                            no={questions[currentQuestion].no}
+                            onRadioClick={handleFormChange}
+                        />
 
-                {currentQuestion === questions.length - 1 && (
-                    <Button
-                        sx={{
-                            width: "9rem",
-                            fontSize: "1.2rem",
-                            p: "0.8rem",
-                            mb: "2rem",
-                            letterSpacing: "0.2rem",
-                        }}
-                        variant="contained"
-                        onClick={submitResponse}
-                    >
-                        Submit
-                    </Button>
+                        {currentQuestion === questions.length - 1 && (
+                            <Button
+                                sx={{
+                                    width: "9rem",
+                                    fontSize: "1.2rem",
+                                    p: "0.8rem",
+                                    mb: "2rem",
+                                    letterSpacing: "0.2rem",
+                                }}
+                                variant="contained"
+                                onClick={submitResponse}
+                            >
+                                Submit
+                            </Button>
+                        )}
+                    </>
                 )}
             </Container>
         </div>
     );
 };
 
-export default Home;
+export default CareerPrediction;

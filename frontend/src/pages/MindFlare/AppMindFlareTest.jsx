@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { mindFlareQuestions } from "../../constants/index";
 import styled from "styled-components";
+import {CircularProgress} from "@mui/material";
 
 const QuizContainer = styled.div`
   padding: 2rem;
@@ -125,6 +126,11 @@ const AppMindFlareTest = () => {
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const searchParams = new URLSearchParams(location.search);
+    const userId = searchParams.get("user_id");
+    const token = searchParams.get("token");
 
     useEffect(() => {
         if (submitted) {
@@ -181,17 +187,51 @@ const AppMindFlareTest = () => {
         })
             .then((response) => response.json())
             .then((data) => {
-                setLoading(false);
                 if (data.summary) {
-                    navigate("/mindflare/results", {
-                        state: { summary: data.summary, scores: finalScores },
+                    const summary = data.summary; // Stocker le summary
+
+                    const secondApiBody = {
+                        results: {
+                            score: finalScores,
+                            userAnswers,
+                            summary: summary,  // Utiliser le summary récupéré ici
+                            nomTest: "mindflare",
+                        },
+                    };
+
+                    // Ajouter user_id et token si présents
+                    if (userId && token) {
+                        secondApiBody.user_id = userId;
+                        secondApiBody.token = token;
+                    }
+
+                    return fetch("https://formation.devstriker.com/psycho_tests/new_results", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(secondApiBody),
+                    }).then((secondResponse) => {
+                        if (secondResponse.ok) {
+                            // Utiliser le summary stocké pour la navigation
+                            navigate("/mindflare/results", {
+                                state: { summary: summary, scores: finalScores }, // Passer le summary ici
+                            });
+                        } else {
+                            throw new Error("Error in the second API call.");
+                        }
                     });
+                } else {
+                    throw new Error("No summary returned from the first API call.");
                 }
             })
             .catch((error) => {
-                setLoading(false);
                 console.error("Erreur lors de la soumission:", error);
+            })
+            .finally(() => {
+                setLoading(false);
             });
+
     };
 
     const progressPercentage = ((currentQuestionIndex + 1) / mindFlareQuestions.length) * 100;
@@ -234,7 +274,7 @@ const AppMindFlareTest = () => {
                     </SubmitButton>
                 </QuestionContainer>
             )}
-            {loading && <Loader>Chargement...</Loader>}
+            {loading && <CircularProgress />}
         </QuizContainer>
     );
 };

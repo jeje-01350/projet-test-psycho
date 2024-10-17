@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { BuzzFeedQuiz } from "react-buzzfeed-quiz";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { riasecQuestions } from "../../constants/index";
 import "react-buzzfeed-quiz/lib/styles.css";
+import {CircularProgress} from "@mui/material";
 
 const QuizContainer = styled.div`
   display: flex;
@@ -34,10 +35,14 @@ const AppRiasecTest = () => {
         Entrepreneur: 0,
         Conventionnel: 0,
     });
-
     const [userAnswers, setUserAnswers] = useState({});
-
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const searchParams = new URLSearchParams(location.search);
+    const userId = searchParams.get("user_id");
+    const token = searchParams.get("token");
 
     const handleAnswerSelection = (value, personnalite_id, questionText, answerText) => {
         const personnaliteMap = {
@@ -96,73 +101,105 @@ const AppRiasecTest = () => {
         return { dominantPersonnalite, secondaryPersonnalite };
     };
 
-    const submitResponse = () => {
+    const submitResponse = async () => {
+        setLoading(true);
         const { dominantPersonnalite, secondaryPersonnalite } = calculateDominantPersonalities();
         const API_URL = import.meta.env.VITE_API_URL;
 
-        fetch(`${API_URL}/riasec/save`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                resultatPrincipal: dominantPersonnalite,
-                resultatSecondaire: secondaryPersonnalite,
-                userAnswers,
-            }),
-        })
-            .then((res) => {
-                if (res.status === 201) {
-                    return res.json();
-                } else {
-                    throw new Error("Erreur lors de l'envoi des résultats");
-                }
-            })
-            .then((data) => {
-                navigate("/riasec/results", {
-                    state: {
-                        resultatFinal: dominantPersonnalite,
+        try {
+            const res = await fetch(`${API_URL}/riasec/save`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    resultatPrincipal: dominantPersonnalite,
+                    resultatSecondaire: secondaryPersonnalite,
+                    userAnswers,
+                }),
+            });
+
+            if (res.status === 201) {
+                const data = await res.json();
+
+                const secondApiBody = {
+                    results: {
+                        resultatPrincipal: dominantPersonnalite,
                         resultatSecondaire: secondaryPersonnalite,
+                        userAnswers,
                         summary: data.summary,
                     },
+                };
+
+                if (userId && token) {
+                    secondApiBody.user_id = userId;
+                    secondApiBody.token = token;
+                }
+
+                const secondRes = await fetch("https://formation.devstriker.com/psycho_tests/new_results", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(secondApiBody),
                 });
-            })
-            .catch((error) => console.error("Error submitting data:", error));
+
+                if (secondRes.status === 200) {
+                    navigate("/riasec/results", {
+                        state: {
+                            resultatFinal: dominantPersonnalite,
+                            resultatSecondaire: secondaryPersonnalite,
+                            summary: data.summary,
+                        },
+                    });
+                } else {
+                    console.error("Erreur lors de l'envoi des résultats à formation.devstriker.com");
+                }
+            }
+        } catch (error) {
+            console.error("Erreur lors des appels API:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
         <QuizContainer>
-            <BuzzFeedQuiz
-                title={"Test de personnalité RIASEC"}
-                byline={false}
-                description={"Répondez aux questions pour découvrir votre profil RIASEC."}
-                autoScroll={true}
-                questions={quizQuestions}
-                results={[
-                    {
-                        title: "Result 1",
-                        description: "Description for result 1",
-                        resultID: 0,
-                    },
-                    {
-                        title: "Result 2",
-                        description: "Description for result 2",
-                        resultID: 1,
-                    },
-                    {
-                        title: "Result 3",
-                        description: "Description for result 3",
-                        resultID: 2,
-                    },
-                ]}
-                copyShareButton
-                facebookShareButton
-                twitterShareButton
-            />
+            {loading ? (
+                <CircularProgress />
+            ) : (
+                <>
+                    <BuzzFeedQuiz
+                        title={"Test de personnalité RIASEC"}
+                        byline={false}
+                        description={"Répondez aux questions pour découvrir votre profil RIASEC."}
+                        autoScroll={true}
+                        questions={quizQuestions}
+                        results={[
+                            {
+                                title: "Result 1",
+                                description: "Description for result 1",
+                                resultID: 0,
+                            },
+                            {
+                                title: "Result 2",
+                                description: "Description for result 2",
+                                resultID: 1,
+                            },
+                            {
+                                title: "Result 3",
+                                description: "Description for result 3",
+                                resultID: 2,
+                            },
+                        ]}
+                        copyShareButton
+                        facebookShareButton
+                        twitterShareButton
+                    />
 
-            <SubmitButton onClick={submitResponse}>
-                Valider
-            </SubmitButton>
+                    <SubmitButton onClick={submitResponse}>Valider</SubmitButton>
+                </>
+            )}
         </QuizContainer>
     );
 };

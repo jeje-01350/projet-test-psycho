@@ -1,9 +1,10 @@
 import React, { useRef, useState } from "react";
 import { BuzzFeedQuiz } from "react-buzzfeed-quiz";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { kapableQuestions } from "../../constants/index";
 import "react-buzzfeed-quiz/lib/styles.css";
+import {CircularProgress} from "@mui/material";
 
 const QuizContainer = styled.div`
   display: flex;
@@ -36,8 +37,14 @@ const AppKapableTest = () => {
         P: 0,
     });
     const [userAnswers, setUserAnswers] = useState({});
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
     const submitButtonRef = useRef(null);
+
+    const searchParams = new URLSearchParams(location.search);
+    const userId = searchParams.get("user_id");
+    const token = searchParams.get("token");
 
     const quizQuestions = kapableQuestions.map((question, index) => ({
         question: question.question,
@@ -86,6 +93,7 @@ const AppKapableTest = () => {
     };
 
     const submitResponse = async () => {
+        setLoading(true);
         const scores = calculateResults();
         console.log("Sending results: ", scores);
         console.log("Sending user answers: ", userAnswers);
@@ -105,52 +113,87 @@ const AppKapableTest = () => {
 
             if (res.status !== 201) {
                 console.log("Error in sending results");
+                setLoading(false);
             } else {
                 const data = await res.json();
                 console.log("Data received from backend:", data);
 
-                navigate("/kapable/results", { state: { summary: data.summary, scores } });
+                const secondApiBody = {
+                    results: {
+                        score: scores,
+                        userAnswers,
+                        summary: data.summary,
+                        nomTest: "kapable",
+                    },
+                };
+
+                if (userId && token) {
+                    secondApiBody.user_id = userId;
+                    secondApiBody.token = token;
+                }
+
+                const secondRes = await fetch("https://formation.devstriker.com/psycho_tests/new_results", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(secondApiBody),
+                });
+
+                if (secondRes.status === 200) {
+                    navigate("/kapable/results", { state: { summary: data.summary, scores } });
+                } else {
+                    console.error("Error in sending results to formation.devstriker.com");
+                }
             }
         } catch (error) {
             console.error("An error occurred while submitting the response:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <QuizContainer>
-            <BuzzFeedQuiz
-                title={"Test MBTI"}
-                byline={false}
-                description={"Répondez aux questions suivantes pour découvrir vos résultats."}
-                autoScroll={true}
-                onAnswerSelection={handleAnswerSelection}
-                questions={quizQuestions}
-                results={[
-                    {
-                        title: "Result 1",
-                        description: "Description for result 1",
-                        resultID: 0,
-                    },
-                    {
-                        title: "Result 2",
-                        description: "Description for result 2",
-                        resultID: 1,
-                    },
-                    {
-                        title: "Result 3",
-                        description: "Description for result 3",
-                        resultID: 2,
-                    },
-                ]}
-                copyShareButton
-                facebookShareButton
-                twitterShareButton
-            />
+        <>
+            {loading ? (
+                <CircularProgress />
+                ) : (
+                <QuizContainer>
+                    <BuzzFeedQuiz
+                        title={"Test MBTI"}
+                        byline={false}
+                        description={"Répondez aux questions suivantes pour découvrir vos résultats."}
+                        autoScroll={true}
+                        onAnswerSelection={handleAnswerSelection}
+                        questions={quizQuestions}
+                        results={[
+                            {
+                                title: "Result 1",
+                                description: "Description for result 1",
+                                resultID: 0,
+                            },
+                            {
+                                title: "Result 2",
+                                description: "Description for result 2",
+                                resultID: 1,
+                            },
+                            {
+                                title: "Result 3",
+                                description: "Description for result 3",
+                                resultID: 2,
+                            },
+                        ]}
+                        copyShareButton
+                        facebookShareButton
+                        twitterShareButton
+                    />
 
-            <SubmitButton onClick={submitResponse} ref={submitButtonRef}>
-                Envoyer
-            </SubmitButton>
-        </QuizContainer>
+                    <SubmitButton onClick={submitResponse} ref={submitButtonRef}>
+                        Envoyer
+                    </SubmitButton>
+                </QuizContainer>
+            )}
+        </>
     );
 };
 

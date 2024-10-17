@@ -1,13 +1,19 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Container, Button } from "@mui/material/";
+import { useNavigate, useLocation } from "react-router-dom";
+import { Container, Button, CircularProgress } from "@mui/material/";
 import { QuestionCardBigfive } from "../../components/index";
 import { bigfiveQuestions } from "../../constants/index.js";
 
 const Bigfive = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const [responses, setResponses] = useState([]);
     const [currentQuestion, setCurrentQuestion] = useState(0);
+    const [loading, setLoading] = useState(false);
+
+    const searchParams = new URLSearchParams(location.search);
+    const userId = searchParams.get("user_id");
+    const token = searchParams.get("token");
 
     const domainToTraitMap = {
         N: "Névrosisme",
@@ -18,6 +24,7 @@ const Bigfive = () => {
     };
 
     const submitResponse = async () => {
+        setLoading(true);
         const scores = calculateScores(responses);
         const userAnswers = buildUserAnswers(responses);
         const API_URL = import.meta.env.VITE_API_URL;
@@ -36,21 +43,47 @@ const Bigfive = () => {
 
             if (res.status !== 201) {
                 console.log("Erreur lors de l'envoi des réponses");
+                setLoading(false);
             } else {
                 const data = await res.json();
                 if (data.summary) {
-                    navigate("/bigfive/results", {
-                        state: { summary: data.summary, scores },
+                    const secondApiBody = {
+                        results: {
+                            score: scores,
+                            userAnswers,
+                            summary: data.summary,
+                            nomTest: "bigfive"
+                        },
+                    };
+
+                    if (userId && token) {
+                        secondApiBody.user_id = userId;
+                        secondApiBody.token = token;
+                    }
+
+                    const secondRes = await fetch("https://formation.devstriker.com/psycho_tests/new_results", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(secondApiBody),
                     });
+
+                    if (secondRes.status === 200) {
+                        navigate("/bigfive/results", {
+                            state: { summary: data.summary, scores },
+                        });
+                    } else {
+                        console.error("Erreur lors de l'envoi des résultats à formation.devstriker.com");
+                    }
                 }
             }
         } catch (error) {
-            console.error("Une erreur s'est produite lors de l'envoi des réponses:", error);
+            console.error("Une erreur s'est produite lors des appels API:", error);
+        } finally {
+            setLoading(false);
         }
-
-        console.log(scores, userAnswers);
     };
-
 
     const handleFormChange = (data) => {
         console.log("Données reçues de QuestionCard:", data);
@@ -116,17 +149,23 @@ const Bigfive = () => {
     return (
         <div>
             <Container component="form" sx={{ minWidth: "100%", textAlign: "center" }}>
-                <QuestionCardBigfive
-                    key={bigfiveQuestions[currentQuestion].id}
-                    question={bigfiveQuestions[currentQuestion].text}
-                    no={bigfiveQuestions[currentQuestion].id}
-                    domain={bigfiveQuestions[currentQuestion].domain}
-                    onRadioClick={handleFormChange}
-                />
-                {currentQuestion === bigfiveQuestions.length - 1 && (
-                    <Button variant="contained" onClick={submitResponse}>
-                        Soumettre
-                    </Button>
+                {loading ? (
+                    <CircularProgress />
+                ) : (
+                    <>
+                        <QuestionCardBigfive
+                            key={bigfiveQuestions[currentQuestion].id}
+                            question={bigfiveQuestions[currentQuestion].text}
+                            no={bigfiveQuestions[currentQuestion].id}
+                            domain={bigfiveQuestions[currentQuestion].domain}
+                            onRadioClick={handleFormChange}
+                        />
+                        {currentQuestion === bigfiveQuestions.length - 1 && (
+                            <Button variant="contained" onClick={submitResponse}>
+                                Soumettre
+                            </Button>
+                        )}
+                    </>
                 )}
             </Container>
         </div>
