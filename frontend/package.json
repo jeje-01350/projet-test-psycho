@@ -24,6 +24,7 @@
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
     "react-material-ui-carousel": "^3.4.2",
+    "react-quiz-component": "^0.9.1",
     "react-router-dom": "^6.9.0",
     "styled-components": "^6.1.13"
   },

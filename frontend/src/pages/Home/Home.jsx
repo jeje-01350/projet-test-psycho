@@ -46,7 +46,7 @@ const Home = () => {
         <div style={containerStyle}>
             <h1 style={titleStyle}>Choisissez votre test</h1>
             <div style={buttonContainerStyle}>
-                <button
+              {/*  <button
                     style={buttonStyle}
                     onMouseOver={(e) => e.target.style.backgroundColor = buttonHoverStyle.backgroundColor}
                     onMouseOut={(e) => e.target.style.backgroundColor = buttonStyle.backgroundColor}
@@ -55,7 +55,7 @@ const Home = () => {
                     onClick={() => navigate('/career-prediction')}
                 >
                     Career Prediction
-                </button>
+                </button>*/}
 
                 <button
                     style={buttonStyle}
@@ -68,7 +68,7 @@ const Home = () => {
                     Test de personalité
                 </button>
 
-                <button
+                {/*<button
                     style={buttonStyle}
                     onMouseOver={(e) => e.target.style.backgroundColor = buttonHoverStyle.backgroundColor}
                     onMouseOut={(e) => e.target.style.backgroundColor = buttonStyle.backgroundColor}
@@ -154,7 +154,7 @@ const Home = () => {
                     onClick={() => navigate('/kapable')}
                 >
                     Test Kapable
-                </button>
+                </button>*/}
             </div>
         </div>
     );

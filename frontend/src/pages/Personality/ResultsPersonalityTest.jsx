@@ -1,10 +1,20 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { Card, CardContent, Typography, Grid, Container } from '@mui/material';
+import { Card, CardContent, Typography, Grid, Container, Box, Paper } from '@mui/material';
+import { styled } from '@mui/material/styles';
 
 const ResultsPersonalityTest = () => {
     const location = useLocation();
     const { data } = location.state || {};
+
+    // Styled components for custom designs
+    const StyledCard = styled(Card)(({ theme }) => ({
+        boxShadow: theme.shadows[3],
+        transition: 'transform 0.3s ease-in-out',
+        '&:hover': {
+            transform: 'scale(1.05)',
+        },
+    }));
 
     const getColorsDescription = (color) => {
         switch (color) {
@@ -128,57 +138,68 @@ const ResultsPersonalityTest = () => {
     };
 
     return (
-        <Container>
-            <Typography variant="h4" gutterBottom>
-                Résultats du test de personnalité
-            </Typography>
+        <Container maxWidth="lg">
+            <Box my={4}>
+                <Typography variant="h4" gutterBottom align="center">
+                    Résultats du test de personnalité
+                </Typography>
+            </Box>
 
-            {/* Utilisation de Grid pour un affichage en cartes */}
-            <Grid container spacing={4}>
+            {/* Utilisation de Grid pour un affichage en cartes avec ombrage */}
+            <Grid container spacing={4} justifyContent="center">
                 {/* Carte pour Colors */}
                 <Grid item xs={12} md={4}>
-                    <Card>
+                    <StyledCard>
                         <CardContent>
-                            <Typography variant="h5" gutterBottom>
+                            <Typography variant="h5" gutterBottom align="center" color="primary">
                                 Colors: {data.color}
                             </Typography>
                             <Typography variant="body1">
                                 {getColorsDescription(data.color)}
                             </Typography>
                         </CardContent>
-                    </Card>
+                    </StyledCard>
                 </Grid>
 
                 {/* Carte pour Briggs */}
                 <Grid item xs={12} md={4}>
-                    <Card>
+                    <StyledCard>
                         <CardContent>
-                            <Typography variant="h5" gutterBottom>
+                            <Typography variant="h5" gutterBottom align="center" color="secondary">
                                 Briggs: {data.briggs}
                             </Typography>
                             <Typography variant="body1">
                                 {getBriggsDescription(data.briggs)}
                             </Typography>
                         </CardContent>
-                    </Card>
+                    </StyledCard>
                 </Grid>
 
                 {/* Carte pour Letters */}
                 <Grid item xs={12} md={4}>
-                    <Card>
+                    <StyledCard>
                         <CardContent>
-                            <Typography variant="h5" gutterBottom>
+                            <Typography variant="h5" gutterBottom align="center" color="textSecondary">
                                 Letters: {data.letters}
                             </Typography>
                             <Typography variant="body1">
                                 {getLettersDescription(data.letters)}
                             </Typography>
                         </CardContent>
-                    </Card>
+                    </StyledCard>
                 </Grid>
             </Grid>
-<br/>
-            Summary : {data.summary}
+
+            <Box my={4}>
+                <Paper elevation={3} style={{ padding: '20px' }}>
+                    <Typography variant="h6" align="center">
+                        Résumé
+                    </Typography>
+                    <Typography variant="body1" align="center">
+                        {data.summary}
+                    </Typography>
+                </Paper>
+            </Box>
         </Container>
     );
 };

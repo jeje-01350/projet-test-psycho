@@ -1,10 +1,9 @@
-import React, { useState } from "react";
-import { BuzzFeedQuiz } from "react-buzzfeed-quiz";
+import React, { useState, useEffect } from "react";
+import Quiz from "react-quiz-component";
 import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { CircularProgress } from "@mui/material";
 import { personalityTestQuestion } from "../../constants/index";
-import "react-buzzfeed-quiz/lib/styles.css";
 
 const QuizContainer = styled.div`
   display: flex;
@@ -34,47 +33,91 @@ const AppPersonalityTest = () => {
         Briggs: { E: 5, I: 5, S: 5, N: 5, T: 5, F: 5, J: 5, P: 5 },
     });
     const [loading, setLoading] = useState(false);
+    const [userId, setUserId] = useState(null);
+    const [token, setToken] = useState(null);
     const navigate = useNavigate();
     const location = useLocation();
 
-    const searchParams = new URLSearchParams(location.search);
-    const userId = searchParams.get("user_id");
-    const token = searchParams.get("token");
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        const userIdFromURL = searchParams.get("user_id");
+        const tokenFromURL = searchParams.get("token");
 
-    const quizQuestions = personalityTestQuestion.map((question, index) => ({
-        question: question.question,
-        answers: question.answers.map((answer) => ({
-            answer: answer.content,
-            onAnswerSelection: () =>
-                handleAnswerSelection(answer.content, index),
+        if (userIdFromURL && tokenFromURL) {
+            setUserId(userIdFromURL);
+            setToken(tokenFromURL);
+            localStorage.setItem("user_id", userIdFromURL);
+            localStorage.setItem("token", tokenFromURL);
+
+            // Remove user_id and token from the URL
+            searchParams.delete("user_id");
+            searchParams.delete("token");
+            navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
+        } else {
+            // If not in the URL, load from localStorage
+            setUserId(localStorage.getItem("user_id"));
+            setToken(localStorage.getItem("token"));
+        }
+    }, [location.search, navigate]);
+
+    const quizData = {
+        quizTitle: "Test de personnalité",
+        quizSynopsis: "Répondez aux questions suivantes pour découvrir vos résultats.",
+        questions: personalityTestQuestion.map((question) => ({
+            question: question.question.replace(/\s*\(.*marks\)/i, ""), // Supprime "(10 marks)" de chaque question
+            questionType: "text",
+            answers: question.answers.map((answer) => answer.content),
+            correctAnswer: "1",
+            point: "10",
+            answerSelectionType: "single",
         })),
-    }));
+    };
 
-    const handleAnswerSelection = (answer, questionIndex) => {
-        const answer_array = answer.split(",");
-        let briggsAnswer = answer_array[0];
-        let colorsAnswer = answer_array[1];
-        let lettersAnswer = answer_array[2];
+    useEffect(() => {
+        const removeMarksText = () => {
+            const questionHeaders = document.querySelectorAll(".react-quiz-container h3");
+            questionHeaders.forEach((header) => {
+                header.innerHTML = header.innerHTML.replace(/\s*\(\d+\s*marks\)/i, "");
+            });
+        };
 
+        removeMarksText();
+
+    }, []);
+
+    const handleAnswerSelection = (questionIndex, selectedAnswerType) => {
+        if (selectedAnswerType.trim() === "") return;
+
+        const typeArray = selectedAnswerType.split(",");
+        const [briggsType, colorType, letterType, noFlag] = typeArray;
         const updatedAnswersCount = { ...answersCount };
 
-        if (answer_array.length === 3) {
-            updatedAnswersCount["Briggs"][briggsAnswer] += 1;
-            updatedAnswersCount["Colors"][colorsAnswer] += 1;
-            updatedAnswersCount["Letters"][lettersAnswer] += 1;
-        } else if (answer_array.length === 4) {
-            updatedAnswersCount["Briggs"][briggsAnswer] -= 1;
-            updatedAnswersCount["Colors"][colorsAnswer] -= 1;
-            updatedAnswersCount["Letters"][lettersAnswer] -= 1;
+        if (noFlag === "No") {
+            updatedAnswersCount["Briggs"][briggsType] -= 1;
+            updatedAnswersCount["Colors"][colorType] -= 1;
+            updatedAnswersCount["Letters"][letterType] -= 1;
+        } else {
+            updatedAnswersCount["Briggs"][briggsType] += 1;
+            updatedAnswersCount["Colors"][colorType] += 1;
+            updatedAnswersCount["Letters"][letterType] += 1;
         }
 
         setAnswersCount(updatedAnswersCount);
 
         const updatedResponses = [
             ...responses.filter((response) => response.questionIndex !== questionIndex),
-            { questionIndex, answer },
+            { questionIndex, answer: selectedAnswerType },
         ];
         setResponses(updatedResponses);
+    };
+
+    const buildUserAnswers = () => {
+        const userAnswers = {};
+        responses.forEach(({ questionIndex, answer }) => {
+            const questionText = personalityTestQuestion[questionIndex].question;
+            userAnswers[questionText] = answer;
+        });
+        return userAnswers;
     };
 
     const calculateResults = () => {
@@ -113,20 +156,14 @@ const AppPersonalityTest = () => {
         };
     };
 
-    const buildUserAnswers = () => {
-        const userAnswers = {};
-        responses.forEach(({ questionIndex, answer }) => {
-            const questionText = personalityTestQuestion[questionIndex].question;
-            userAnswers[questionText] = answer;
-        });
-        return userAnswers;
-    };
-
     const submitResponse = async () => {
         setLoading(true);
         const results = calculateResults();
         const userAnswers = buildUserAnswers();
-        console.log("Sending results: ", results);
+
+        console.log("Final Results:", results);
+        console.log("User Answers:", userAnswers);
+
         const API_URL = import.meta.env.VITE_API_URL;
 
         try {
@@ -143,10 +180,7 @@ const AppPersonalityTest = () => {
                 }),
             });
 
-            if (res.status !== 201) {
-                console.log("Error in sending results");
-                setLoading(false);
-            } else {
+            if (res.status === 201) {
                 const data = await res.json();
                 const summary = data.data.summary;
                 console.log("Data received from backend:", data);
@@ -175,10 +209,13 @@ const AppPersonalityTest = () => {
                 });
 
                 if (secondRes.status === 200) {
-                    navigate("/test-personalite/results", { state: { data: data.data } });
+                    const responseData = await secondRes.json();
+                    navigate("/test-personalite/results", { state: { data: { userAnswers, results, summary } } });
                 } else {
                     console.error("Error in sending results to the second API");
                 }
+            } else {
+                console.log("Error in sending results to the first API");
             }
         } catch (error) {
             console.error("An error occurred while submitting the response:", error);
@@ -187,46 +224,47 @@ const AppPersonalityTest = () => {
         }
     };
 
+    const onQuestionSubmit = (obj) => {
+        const questionIndex = personalityTestQuestion.findIndex(
+            (q) => q.question === obj.question.question
+        );
+
+        if (questionIndex !== -1) {
+            const selectedAnswerContent = obj.question.answers[obj.userAnswer - 1];
+            const selectedAnswerType = personalityTestQuestion[questionIndex].answers.find(
+                (answer) => answer.content === selectedAnswerContent
+            )?.type;
+
+            if (selectedAnswerType) {
+                handleAnswerSelection(questionIndex, selectedAnswerType);
+            } else {
+                console.error("Selected answer type is undefined in onQuestionSubmit for question index:", questionIndex);
+            }
+        } else {
+            console.error("Question not found in personalityTestQuestion:", obj.question);
+        }
+    };
 
     return (
         <QuizContainer>
             {loading ? (
                 <CircularProgress />
             ) : (
-                <>
-                    <BuzzFeedQuiz
-                        title={"Test de personalité"}
-                        byline={false}
-                        description={"Répondez aux questions suivantes pour découvrir vos résultats."}
-                        autoScroll={true}
-                        onAnswerSelection={handleAnswerSelection}
-                        questions={quizQuestions}
-                        results={[
-                            {
-                                title: "Result 1",
-                                description: "Description for result 1",
-                                resultID: 0,
-                            },
-                            {
-                                title: "Result 2",
-                                description: "Description for result 2",
-                                resultID: 1,
-                            },
-                            {
-                                title: "Result 3",
-                                description: "Description for result 3",
-                                resultID: 2,
-                            },
-                        ]}
-                        copyShareButton
-                        facebookShareButton
-                        twitterShareButton
-                    />
-
-                    <SubmitButton onClick={submitResponse}>
-                        Submit
-                    </SubmitButton>
-                </>
+                <Quiz
+                    quiz={quizData}
+                    shuffle={false}
+                    showInstantFeedback={false}
+                    disableScore={true}
+                    customTexts={{
+                        startQuizBtn: "Commencer le quiz",
+                        resultPageHeaderText: "",
+                        resultPagePoint: "",
+                        question: "Question {questionNumber}/{totalQuestions}",
+                        nextQuestionBtn: "Suivant",
+                    }}
+                    onQuestionSubmit={onQuestionSubmit} // Enregistre chaque réponse
+                    onComplete={submitResponse} // Exécute submitResponse à la fin
+                />
             )}
         </QuizContainer>
     );

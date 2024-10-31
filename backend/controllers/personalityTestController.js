@@ -31,7 +31,7 @@ exports.savePersonalityTestResult = async (req, res) => {
              - Conclusion
              - Concluez avec une synthèse finale et des encouragements pour l'avenir.
              - Résultats du Test :
-            ${JSON.stringify(scores)}
+            ${JSON.stringify(color, briggs)}
              - Instructions supplémentaires :
              - Adoptez un style accessible au grand public.
              - Utilisez un ton neutre et professionnel.

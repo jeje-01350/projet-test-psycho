@@ -27,9 +27,10 @@ import AppPapi from "./pages/Papi/AppPapi.jsx";
 import ResultsPapi from "./pages/Papi/ResultsPapi.jsx";
 import AppAncreSchein from "./pages/AncreSchein/AppAncreSchein.jsx";
 import ResultsAncreSchein from "./pages/AncreSchein/ResultsAncreSchein.jsx";
-import AppKapableTest from "./pages/Kapable/AppKapable.jsx";
 import ResultsKapable from "./pages/Kapable/ResultsKapable.jsx";
 import AppKapable from "./pages/Kapable/AppKapable.jsx";
+import Test from "./pages/Test.jsx";
+import TestResults from "./pages/TestResults.jsx";
 
 const App = () => {
 
@@ -39,13 +40,13 @@ const App = () => {
       <Routes>
         <Route path="/" exact element={<Home />} />
 
-        <Route path="/career-prediction" exact element={<AppCareerPrediction />} />
-        <Route path="/career-prediction/results" exact element={<ResultsCareerPrediction />} />
+        {/*<Route path="/career-prediction" exact element={<AppCareerPrediction />} />
+        <Route path="/career-prediction/results" exact element={<ResultsCareerPrediction />} />*/}
 
         <Route path="/test-personalite" exact element={<AppPersonalityTest />} />
         <Route path="/test-personalite/results" exact element={<ResultsPersonalityTest />} />
 
-        <Route path="/riasec" exact element={<AppRiasec />} />
+        {/*<Route path="/riasec" exact element={<AppRiasec />} />
         <Route path="/riasec/results" exact element={<ResultsRiasec />} />
 
         <Route path="/mindflare" exact element={<AppMindFlareTest />} />
@@ -67,7 +68,8 @@ const App = () => {
         <Route path="/schein/results" exact element={<ResultsAncreSchein />} />
 
         <Route path="/kapable" exact element={<AppKapable />} />
-        <Route path="/kapable/results" exact element={<ResultsKapable />} />
+        <Route path="/kapable/results" exact element={<ResultsKapable />} />*/}
+
       </Routes>
     </div>
   );

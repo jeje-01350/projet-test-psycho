@@ -4,3 +4,16 @@
   padding: 0;
   font-family: "Roboto";
 }
+
+/* Annule les couleurs de fond pour les réponses correctes et incorrectes */
+.questionWrapperBody button.correct.answerBtn.btn {
+  background-color: rgb(176 176 176) !important;
+  border-color: #e8e8e8 !important;
+  color: #000 !important;
+}
+
+.questionWrapperBody button.incorrect.answerBtn.btn {
+  background-color: rgb(176 176 176) !important;
+  border-color: #e8e8e8 !important;
+  color: #000 !important;
+}
