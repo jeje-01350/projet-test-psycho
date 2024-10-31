@@ -73,18 +73,6 @@ const AppPersonalityTest = () => {
         })),
     };
 
-    useEffect(() => {
-        const removeMarksText = () => {
-            const questionHeaders = document.querySelectorAll(".react-quiz-container h3");
-            questionHeaders.forEach((header) => {
-                header.innerHTML = header.innerHTML.replace(/\s*\(\d+\s*marks\)/i, "");
-            });
-        };
-
-        removeMarksText();
-
-    }, []);
-
     const handleAnswerSelection = (questionIndex, selectedAnswerType) => {
         if (selectedAnswerType.trim() === "") return;
 

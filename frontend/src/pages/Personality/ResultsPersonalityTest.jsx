@@ -152,10 +152,10 @@ const ResultsPersonalityTest = () => {
                     <StyledCard>
                         <CardContent>
                             <Typography variant="h5" gutterBottom align="center" color="primary">
-                                Colors: {data.color}
+                                Colors: {data.results.color}
                             </Typography>
                             <Typography variant="body1">
-                                {getColorsDescription(data.color)}
+                                {getColorsDescription(data.results.color)}
                             </Typography>
                         </CardContent>
                     </StyledCard>
@@ -166,10 +166,10 @@ const ResultsPersonalityTest = () => {
                     <StyledCard>
                         <CardContent>
                             <Typography variant="h5" gutterBottom align="center" color="secondary">
-                                Briggs: {data.briggs}
+                                Briggs: {data.results.briggs}
                             </Typography>
                             <Typography variant="body1">
-                                {getBriggsDescription(data.briggs)}
+                                {getBriggsDescription(data.results.briggs)}
                             </Typography>
                         </CardContent>
                     </StyledCard>
@@ -180,10 +180,10 @@ const ResultsPersonalityTest = () => {
                     <StyledCard>
                         <CardContent>
                             <Typography variant="h5" gutterBottom align="center" color="textSecondary">
-                                Letters: {data.letters}
+                                Letters: {data.results.letters}
                             </Typography>
                             <Typography variant="body1">
-                                {getLettersDescription(data.letters)}
+                                {getLettersDescription(data.results.letters)}
                             </Typography>
                         </CardContent>
                     </StyledCard>
