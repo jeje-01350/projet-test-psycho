@@ -73,7 +73,7 @@ const AppPersonalityTest = () => {
         })),
     };
 
-    const handleAnswerSelection = (questionIndex, selectedAnswerType) => {
+    const handleAnswerSelection = (questionIndex, selectedAnswerType, answerContent) => {
         if (selectedAnswerType.trim() === "") return;
 
         const typeArray = selectedAnswerType.split(",");
@@ -94,16 +94,16 @@ const AppPersonalityTest = () => {
 
         const updatedResponses = [
             ...responses.filter((response) => response.questionIndex !== questionIndex),
-            { questionIndex, answer: selectedAnswerType },
+            { questionIndex, answerContent }, // Stocke le contenu de la réponse
         ];
         setResponses(updatedResponses);
     };
 
     const buildUserAnswers = () => {
         const userAnswers = {};
-        responses.forEach(({ questionIndex, answer }) => {
+        responses.forEach(({ questionIndex, answerContent }) => {
             const questionText = personalityTestQuestion[questionIndex].question;
-            userAnswers[questionText] = answer;
+            userAnswers[questionText] = answerContent; // Utilise le contenu de la réponse
         });
         return userAnswers;
     };
@@ -224,7 +224,7 @@ const AppPersonalityTest = () => {
             )?.type;
 
             if (selectedAnswerType) {
-                handleAnswerSelection(questionIndex, selectedAnswerType);
+                handleAnswerSelection(questionIndex, selectedAnswerType, selectedAnswerContent); // Inclure answerContent
             } else {
                 console.error("Selected answer type is undefined in onQuestionSubmit for question index:", questionIndex);
             }
@@ -232,6 +232,7 @@ const AppPersonalityTest = () => {
             console.error("Question not found in personalityTestQuestion:", obj.question);
         }
     };
+
 
     return (
         <QuizContainer>
