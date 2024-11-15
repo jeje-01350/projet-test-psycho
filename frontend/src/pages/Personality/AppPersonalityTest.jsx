@@ -67,7 +67,7 @@ const AppPersonalityTest = () => {
             answers: question.answers.map((answer) => answer.content),
             correctAnswer: "1",
             answerSelectionType: "single",
-            point: 10
+            point: 1
         })),
     };
 
