@@ -29,8 +29,6 @@ import AppAncreSchein from "./pages/AncreSchein/AppAncreSchein.jsx";
 import ResultsAncreSchein from "./pages/AncreSchein/ResultsAncreSchein.jsx";
 import ResultsKapable from "./pages/Kapable/ResultsKapable.jsx";
 import AppKapable from "./pages/Kapable/AppKapable.jsx";
-import Test from "./pages/Test.jsx";
-import TestResults from "./pages/TestResults.jsx";
 
 const App = () => {
 
