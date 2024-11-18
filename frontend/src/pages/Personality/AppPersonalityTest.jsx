@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { CircularProgress } from "@mui/material";
 import { personalityTestQuestion } from "../../constants/index";
+import {useUserContext} from "../../context/userContext.jsx";
 
 const QuizContainer = styled.div`
   display: flex;
@@ -33,30 +34,8 @@ const AppPersonalityTest = () => {
         Briggs: { E: 5, I: 5, S: 5, N: 5, T: 5, F: 5, J: 5, P: 5 },
     });
     const [loading, setLoading] = useState(false);
-    const [userId, setUserId] = useState(null);
-    const [token, setToken] = useState(null);
+    const { userId, token } = useUserContext();
     const navigate = useNavigate();
-    const location = useLocation();
-
-    useEffect(() => {
-        const searchParams = new URLSearchParams(location.search);
-        const userIdFromURL = searchParams.get("user_id");
-        const tokenFromURL = searchParams.get("token");
-
-        if (userIdFromURL && tokenFromURL) {
-            setUserId(userIdFromURL);
-            setToken(tokenFromURL);
-            localStorage.setItem("user_id", userIdFromURL);
-            localStorage.setItem("token", tokenFromURL);
-
-            searchParams.delete("user_id");
-            searchParams.delete("token");
-            navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
-        } else {
-            setUserId(localStorage.getItem("user_id"));
-            setToken(localStorage.getItem("token"));
-        }
-    }, [location.search, navigate]);
 
     const quizData = {
         quizTitle: "Test de personnalité",
