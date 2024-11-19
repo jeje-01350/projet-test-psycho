@@ -35,22 +35,9 @@ const Navbar = () => {
                 variant="h5"
                 sx={{ fontSize: { xs: "1.7rem", md: "2.7rem" } }}
             >
-                Test Psycho
+                Sensei
             </Typography>
           </NavLink>
-
-        {/*<Box sx={{ display: { xs: "none", md: "flex" } }}>
-          <NavLink
-            to="/"
-            style={({ isActive }) => ({
-              color: isActive ? "#fff" : "#c3c3c3",
-            })}
-          >
-            <Button color="inherit" sx={{ fontSize: "1.1rem", ml: "2rem" }}>
-              Take the test
-            </Button>
-          </NavLink>
-        </Box>*/}
 
         <IconButton
           size="large"

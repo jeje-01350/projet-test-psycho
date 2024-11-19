@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { CircularProgress } from "@mui/material";
 import { personalityTestQuestion } from "../../constants/index";
+import {useUserContext} from "../../context/userContext.jsx";
 
 const QuizContainer = styled.div`
   display: flex;
@@ -33,47 +34,29 @@ const AppPersonalityTest = () => {
         Briggs: { E: 5, I: 5, S: 5, N: 5, T: 5, F: 5, J: 5, P: 5 },
     });
     const [loading, setLoading] = useState(false);
-    const [userId, setUserId] = useState(null);
-    const [token, setToken] = useState(null);
+    const { userId, token } = useUserContext();
     const navigate = useNavigate();
-    const location = useLocation();
-
-    useEffect(() => {
-        const searchParams = new URLSearchParams(location.search);
-        const userIdFromURL = searchParams.get("user_id");
-        const tokenFromURL = searchParams.get("token");
-
-        if (userIdFromURL && tokenFromURL) {
-            setUserId(userIdFromURL);
-            setToken(tokenFromURL);
-            localStorage.setItem("user_id", userIdFromURL);
-            localStorage.setItem("token", tokenFromURL);
-
-            // Remove user_id and token from the URL
-            searchParams.delete("user_id");
-            searchParams.delete("token");
-            navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
-        } else {
-            // If not in the URL, load from localStorage
-            setUserId(localStorage.getItem("user_id"));
-            setToken(localStorage.getItem("token"));
-        }
-    }, [location.search, navigate]);
 
     const quizData = {
         quizTitle: "Test de personnalité",
         quizSynopsis: "Répondez aux questions suivantes pour découvrir vos résultats.",
         questions: personalityTestQuestion.map((question) => ({
-            question: question.question.replace(/\s*\(.*marks\)/i, ""), // Supprime "(10 marks)" de chaque question
+            question: question.question,
             questionType: "text",
             answers: question.answers.map((answer) => answer.content),
             correctAnswer: "1",
-            point: "10",
             answerSelectionType: "single",
+            point: 1
         })),
     };
 
     const handleAnswerSelection = (questionIndex, selectedAnswerType, answerContent) => {
+        const updatedResponses = [
+            ...responses.filter((response) => response.questionIndex !== questionIndex),
+            { questionIndex, answerContent },
+        ];
+        setResponses(updatedResponses);
+
         if (selectedAnswerType.trim() === "") return;
 
         const typeArray = selectedAnswerType.split(",");
@@ -81,32 +64,48 @@ const AppPersonalityTest = () => {
         const updatedAnswersCount = { ...answersCount };
 
         if (noFlag === "No") {
-            updatedAnswersCount["Briggs"][briggsType] -= 1;
-            updatedAnswersCount["Colors"][colorType] -= 1;
-            updatedAnswersCount["Letters"][letterType] -= 1;
+            if (briggsType) updatedAnswersCount["Briggs"][briggsType] -= 1;
+            if (colorType) updatedAnswersCount["Colors"][colorType] -= 1;
+            if (letterType) updatedAnswersCount["Letters"][letterType] -= 1;
         } else {
-            updatedAnswersCount["Briggs"][briggsType] += 1;
-            updatedAnswersCount["Colors"][colorType] += 1;
-            updatedAnswersCount["Letters"][letterType] += 1;
+            if (briggsType) updatedAnswersCount["Briggs"][briggsType] += 1;
+            if (colorType) updatedAnswersCount["Colors"][colorType] += 1;
+            if (letterType) updatedAnswersCount["Letters"][letterType] += 1;
         }
 
         setAnswersCount(updatedAnswersCount);
-
-        const updatedResponses = [
-            ...responses.filter((response) => response.questionIndex !== questionIndex),
-            { questionIndex, answerContent }, // Stocke le contenu de la réponse
-        ];
-        setResponses(updatedResponses);
     };
 
     const buildUserAnswers = () => {
         const userAnswers = {};
-        responses.forEach(({ questionIndex, answerContent }) => {
-            const questionText = personalityTestQuestion[questionIndex].question;
-            userAnswers[questionText] = answerContent; // Utilise le contenu de la réponse
+        personalityTestQuestion.forEach((question, index) => {
+            const response = responses.find((res) => res.questionIndex === index);
+            userAnswers[question.question] = response ? response.answerContent : "Non répondu";
         });
         return userAnswers;
     };
+
+    const calculateMotivationalItems = () => {
+        const motivationScores = {};
+
+        responses.forEach(({ questionIndex, score }) => {
+            const question = personalityTestQuestion[questionIndex];
+
+            if (question.type) {
+                if (motivationScores[question.type]) {
+                    motivationScores[question.type] += score;
+                } else {
+                    motivationScores[question.type] = score;
+                }
+            }
+        });
+
+        const maxScore = Math.max(...Object.values(motivationScores));
+        return Object.keys(motivationScores).filter(
+            (item) => motivationScores[item] === maxScore
+        );
+    };
+
 
     const calculateResults = () => {
         const calculateBriggs = () => {
@@ -137,10 +136,13 @@ const AppPersonalityTest = () => {
             );
         };
 
+        const motivationalItems = calculateMotivationalItems();
+
         return {
             briggs: calculateBriggs(),
             colors: calculateColors(),
             letters: calculateLetters(),
+            motivationalItems,
         };
     };
 
@@ -149,13 +151,8 @@ const AppPersonalityTest = () => {
         const results = calculateResults();
         const userAnswers = buildUserAnswers();
 
-        console.log("Final Results:", results);
-        console.log("User Answers:", userAnswers);
-
-        const API_URL = import.meta.env.VITE_API_URL;
-
         try {
-            const res = await fetch(`${API_URL}/personality-test/save`, {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/personality-test/save`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -164,6 +161,7 @@ const AppPersonalityTest = () => {
                     color: results.colors,
                     letters: results.letters,
                     briggs: results.briggs,
+                    motivationalItems: results.motivationalItems,
                     userAnswers,
                 }),
             });
@@ -171,15 +169,15 @@ const AppPersonalityTest = () => {
             if (res.status === 201) {
                 const data = await res.json();
                 const summary = data.data.summary;
-                console.log("Data received from backend:", data);
 
                 const secondApiBody = {
                     results: {
                         color: results.colors,
                         letters: results.letters,
                         briggs: results.briggs,
+                        motivationalItems: results.motivationalItems,
                         userAnswers,
-                        summary: summary,
+                        summary,
                     },
                 };
 
@@ -197,7 +195,6 @@ const AppPersonalityTest = () => {
                 });
 
                 if (secondRes.status === 200) {
-                    const responseData = await secondRes.json();
                     navigate("/test-personalite/results", { state: { data: { userAnswers, results, summary } } });
                 } else {
                     console.error("Error in sending results to the second API");
@@ -219,14 +216,35 @@ const AppPersonalityTest = () => {
 
         if (questionIndex !== -1) {
             const selectedAnswerContent = obj.question.answers[obj.userAnswer - 1];
-            const selectedAnswerType = personalityTestQuestion[questionIndex].answers.find(
-                (answer) => answer.content === selectedAnswerContent
-            )?.type;
+            const question = personalityTestQuestion[questionIndex];
 
-            if (selectedAnswerType) {
-                handleAnswerSelection(questionIndex, selectedAnswerType, selectedAnswerContent); // Inclure answerContent
+            if (question.answers[0].type) {
+                // Première partie : réponses avec type
+                const selectedAnswerType = question.answers.find(
+                    (answer) => answer.content === selectedAnswerContent
+                )?.type;
+
+                if (selectedAnswerType) {
+                    handleAnswerSelection(questionIndex, selectedAnswerType, selectedAnswerContent);
+                } else {
+                    console.error(`Selected answer type is undefined for question: ${questionIndex}`);
+                }
+            } else if (question.answers[0].score !== undefined) {
+                // Deuxième partie : réponses avec score
+                const score = question.answers.find(
+                    (answer) => answer.content === selectedAnswerContent
+                )?.score;
+
+                if (score !== undefined) {
+                    setResponses((prevResponses) => [
+                        ...prevResponses.filter((res) => res.questionIndex !== questionIndex),
+                        { questionIndex, answerContent: selectedAnswerContent, score },
+                    ]);
+                } else {
+                    console.error(`Score is undefined for question: ${questionIndex}`);
+                }
             } else {
-                console.error("Selected answer type is undefined in onQuestionSubmit for question index:", questionIndex);
+                console.error(`Question type is not recognized for question: ${questionIndex}`);
             }
         } else {
             console.error("Question not found in personalityTestQuestion:", obj.question);
@@ -251,8 +269,8 @@ const AppPersonalityTest = () => {
                         question: "Question {questionNumber}/{totalQuestions}",
                         nextQuestionBtn: "Suivant",
                     }}
-                    onQuestionSubmit={onQuestionSubmit} // Enregistre chaque réponse
-                    onComplete={submitResponse} // Exécute submitResponse à la fin
+                    onQuestionSubmit={onQuestionSubmit}
+                    onComplete={submitResponse}
                 />
             )}
         </QuizContainer>
