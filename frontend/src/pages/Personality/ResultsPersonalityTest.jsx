@@ -7,7 +7,6 @@ const ResultsPersonalityTest = () => {
     const location = useLocation();
     const { data } = location.state || {};
 
-    // Styled components for custom designs
     const StyledCard = styled(Card)(({ theme }) => ({
         boxShadow: theme.shadows[3],
         transition: 'transform 0.3s ease-in-out',
@@ -16,6 +15,7 @@ const ResultsPersonalityTest = () => {
         },
     }));
 
+    console.log(data)
     const getColorsDescription = (color) => {
         switch (color) {
             case 'Blue':
@@ -145,17 +145,12 @@ const ResultsPersonalityTest = () => {
                 </Typography>
             </Box>
 
-            {/* Utilisation de Grid pour un affichage en cartes avec ombrage */}
             <Grid container spacing={4} justifyContent="center">
-                {/* Carte pour Colors */}
                 <Grid item xs={12} md={4}>
                     <StyledCard>
                         <CardContent>
                             <Typography variant="h5" gutterBottom align="center" color="primary">
-                                Colors: {data.results.color}
-                            </Typography>
-                            <Typography variant="body1">
-                                {getColorsDescription(data.results.color)}
+                                Colors: {data.results.colors}
                             </Typography>
                         </CardContent>
                     </StyledCard>
@@ -168,9 +163,6 @@ const ResultsPersonalityTest = () => {
                             <Typography variant="h5" gutterBottom align="center" color="secondary">
                                 Briggs: {data.results.briggs}
                             </Typography>
-                            <Typography variant="body1">
-                                {getBriggsDescription(data.results.briggs)}
-                            </Typography>
                         </CardContent>
                     </StyledCard>
                 </Grid>
@@ -181,9 +173,6 @@ const ResultsPersonalityTest = () => {
                         <CardContent>
                             <Typography variant="h5" gutterBottom align="center" color="textSecondary">
                                 Letters: {data.results.letters}
-                            </Typography>
-                            <Typography variant="body1">
-                                {getLettersDescription(data.results.letters)}
                             </Typography>
                         </CardContent>
                     </StyledCard>
