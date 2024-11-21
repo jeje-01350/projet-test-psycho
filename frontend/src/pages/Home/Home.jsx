@@ -148,7 +148,7 @@ const Home = () => {
                         onMouseUp={(e) => e.target.style.transform = 'scale(1)'}
                         onClick={() => navigate('/tous-les-tests')}
                     >
-                        Voir nos tests
+                        Voir tous vos tests disponibles
                     </button>
                 </div>
                 <div style={rightSectionStyle}>

@@ -11,6 +11,7 @@ export const UserProvider = ({ children }) => {
     const [userId, setUserId] = useState(null);
     const [token, setToken] = useState(null);
     const [email, setEmail] = useState(null);
+    const [test, setTest] = useState(null);
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -35,6 +36,7 @@ export const UserProvider = ({ children }) => {
         initializeValue("user_id", setUserId);
         initializeValue("token", setToken);
         initializeValue("mail", setEmail);
+        initializeValue("test", setTest);
 
         if (hasUpdated) {
             navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
@@ -42,7 +44,7 @@ export const UserProvider = ({ children }) => {
     }, [location.search, navigate]);
 
     return (
-        <UserContext.Provider value={{ userId, token, email }}>
+        <UserContext.Provider value={{ userId, token, email, test }}>
             {children}
         </UserContext.Provider>
     );

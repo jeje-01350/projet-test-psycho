@@ -1,8 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import {useUserContext} from "../../context/userContext.jsx";
 
 const AllTests = () => {
     const navigate = useNavigate();
+    const { test } = useUserContext();
 
     const containerStyle = {
         maxWidth: '1200px',
@@ -50,16 +52,19 @@ const AllTests = () => {
     };
 
     const testButtons = [
-        { label: 'Test MBTI', route: '/mbti' },
-        { label: 'Test Ancre de Schein', route: '/schein' },
-        // Ajoutez d'autres tests ici si nécessaire
+        { label: 'Test MBTI', route: '/mbti', key: 'mbti' },
+        { label: 'Test Ancre de Schein', route: '/schein', key: 'schein' },
     ];
+
+    const availableTests = test ? test.split(',') : [];
+
+    const filteredTests = testButtons.filter((test) => availableTests.includes(test.key));
 
     return (
         <div style={containerStyle}>
-            <h1 style={titleStyle}>Tous nos Tests</h1>
+            <h1 style={titleStyle}>Tous vos tests disponibles</h1>
             <div style={gridStyle}>
-                {testButtons.map((test, index) => (
+                {filteredTests.map((test, index) => (
                     <button
                         key={index}
                         style={buttonStyle}
