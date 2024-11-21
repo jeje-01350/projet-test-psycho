@@ -29,46 +29,29 @@ import AppAncreSchein from "./pages/AncreSchein/AppAncreSchein.jsx";
 import ResultsAncreSchein from "./pages/AncreSchein/ResultsAncreSchein.jsx";
 import ResultsKapable from "./pages/Kapable/ResultsKapable.jsx";
 import AppKapable from "./pages/Kapable/AppKapable.jsx";
+import AllTests from "./pages/Home/allTest.jsx";
 
 const App = () => {
 
   return (
     <div>
-      <Navbar />
-      <Routes>
-        <Route path="/" exact element={<Home />} />
+        <Navbar />
+        <Routes>
 
-        {/*<Route path="/career-prediction" exact element={<AppCareerPrediction />} />
-        <Route path="/career-prediction/results" exact element={<ResultsCareerPrediction />} />*/}
+            {/*  HOMEPAGE  */}
+            <Route path="/" exact element={<Home />} />
 
-        <Route path="/test-personalite" exact element={<AppPersonalityTest />} />
-        <Route path="/test-personalite/results" exact element={<ResultsPersonalityTest />} />
+            {/*  PAGE TOUT LES TESTS  */}
+            <Route path="/tous-les-tests" exact element={<AllTests />} />
 
-        {/*<Route path="/riasec" exact element={<AppRiasec />} />
-        <Route path="/riasec/results" exact element={<ResultsRiasec />} />
+            {/*  PAGES ANCRE DE TEST SCHEIN  */}
+            <Route path="/schein" exact element={<AppAncreSchein />} />
+            <Route path="/schein/results" exact element={<ResultsAncreSchein />} />
 
-        <Route path="/mindflare" exact element={<AppMindFlareTest />} />
-        <Route path="/mindflare/results" exact element={<MindFlareResults />} />
-
-        <Route path="/bigfive" exact element={<AppBigfive />} />
-        <Route path="/bigfive/results" exact element={<ResultsBigFive />} />
-
-        <Route path="/django-test" exact element={<AppDjangoPersonalityTest />} />
-        <Route path="/django-test/results" exact element={<ResultsDjangoPersonalityTest />} />
-
-        <Route path="/mbti" exact element={<AppMbti />} />
-        <Route path="/mbti/results" exact element={<ResultsMbti />} />
-
-        <Route path="/papi" exact element={<AppPapi />} />
-        <Route path="/papi/results" exact element={<ResultsPapi />} />
-
-        <Route path="/schein" exact element={<AppAncreSchein />} />
-        <Route path="/schein/results" exact element={<ResultsAncreSchein />} />
-
-        <Route path="/kapable" exact element={<AppKapable />} />
-        <Route path="/kapable/results" exact element={<ResultsKapable />} />*/}
-
-      </Routes>
+            {/*  PAGES TEST PERSONALITE MBTI  */}
+            <Route path="/mbti" exact element={<AppPersonalityTest />} />
+            <Route path="/mbti/results" exact element={<ResultsPersonalityTest />} />
+        </Routes>
     </div>
   );
 };

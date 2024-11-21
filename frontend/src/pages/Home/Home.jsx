@@ -146,9 +146,9 @@ const Home = () => {
                         onMouseOut={(e) => e.target.style.backgroundColor = buttonStyle.backgroundColor}
                         onMouseDown={(e) => e.target.style.transform = buttonActiveStyle.transform}
                         onMouseUp={(e) => e.target.style.transform = 'scale(1)'}
-                        onClick={() => navigate('/test-personalite')}
+                        onClick={() => navigate('/tous-les-tests')}
                     >
-                        Test de personnalité
+                        Voir nos tests
                     </button>
                 </div>
                 <div style={rightSectionStyle}>
