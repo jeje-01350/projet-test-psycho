@@ -199,7 +199,7 @@ const AppPersonalityTest = () => {
                 });
 
                 if (secondRes.status === 200) {
-                    navigate("/test-personalite/results", { state: { data: { userAnswers, results, summary } } });
+                    navigate("/mbti/results", { state: { data: { userAnswers, results, summary } } });
                 } else {
                     console.error("Error in sending results to the second API");
                 }
