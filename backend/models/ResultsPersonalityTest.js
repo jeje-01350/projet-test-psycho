@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const ResultsPersonalityTestSchema = new mongoose.Schema(
   {
-      scores: {
+      score: {
           type: Object,
           required: true,
       },
