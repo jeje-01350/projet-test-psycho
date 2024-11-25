@@ -7,9 +7,9 @@ const client = new OpenAI({
 
 exports.savePersonalityTestResult = async (req, res) => {
     try {
-        const { color, letters, briggs, userAnswers } = req.body;
+        const { scores, userAnswers } = req.body;
 
-        if (!color || !letters || !briggs || !userAnswers) {
+        if (!scores || !userAnswers) {
             return res.status(400).json({ error: 'Veuillez fournir toutes les informations.' });
         }
 
@@ -31,7 +31,7 @@ exports.savePersonalityTestResult = async (req, res) => {
              - Conclusion
              - Concluez avec une synthèse finale et des encouragements pour l'avenir.
              - Résultats du Test :
-            ${JSON.stringify(color, briggs)}
+            ${JSON.stringify(scores.color, scores.briggs)}
              - Instructions supplémentaires :
              - Adoptez un style accessible au grand public.
              - Utilisez un ton neutre et professionnel.
@@ -49,9 +49,7 @@ exports.savePersonalityTestResult = async (req, res) => {
         const summary = response.choices[0].message.content;
 
         const newResult = new ResultsPersonalityTest({
-            color,
-            letters,
-            briggs,
+            scores,
             userAnswers,
             summary
         });

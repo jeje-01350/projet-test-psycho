@@ -158,9 +158,11 @@ const AppPersonalityTest = () => {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    color: results.colors,
-                    letters: results.letters,
-                    briggs: results.briggs,
+                    scores: {
+                        color: results.colors,
+                        letters: results.letters,
+                        briggs: results.briggs,
+                    },
                     motivationalItems: results.motivationalItems,
                     userAnswers,
                 }),
@@ -172,9 +174,11 @@ const AppPersonalityTest = () => {
 
                 const secondApiBody = {
                     results: {
-                        color: results.colors,
-                        letters: results.letters,
-                        briggs: results.briggs,
+                        scores: {
+                            color: results.colors,
+                            letters: results.letters,
+                            briggs: results.briggs,
+                        },
                         motivationalItems: results.motivationalItems,
                         userAnswers,
                         summary,
@@ -208,6 +212,7 @@ const AppPersonalityTest = () => {
             setLoading(false);
         }
     };
+
 
     const onQuestionSubmit = (obj) => {
         const questionIndex = personalityTestQuestion.findIndex(

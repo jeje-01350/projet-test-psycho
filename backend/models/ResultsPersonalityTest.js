@@ -2,22 +2,14 @@ const mongoose = require("mongoose");
 
 const ResultsPersonalityTestSchema = new mongoose.Schema(
   {
-    color: {
-      type: String,
-      required: true,
-    },
-    letters: {
-      type: String,
-      required: true,
-    },
-    summary: {
-      type: String,
-      required: true,
-    },
-    briggs: {
-      type: String,
-      required: true,
-    },
+      scores: {
+          type: Object,
+          required: true,
+      },
+        summary: {
+          type: String,
+          required: true,
+        },
       userAnswers: {
           type: Object,
           required: true,
