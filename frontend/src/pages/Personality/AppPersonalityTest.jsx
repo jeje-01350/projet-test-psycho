@@ -158,7 +158,7 @@ const AppPersonalityTest = () => {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    scores: {
+                    score: {
                         color: results.colors,
                         letters: results.letters,
                         briggs: results.briggs,
@@ -174,7 +174,7 @@ const AppPersonalityTest = () => {
 
                 const secondApiBody = {
                     results: {
-                        scores: {
+                        score: {
                             color: results.colors,
                             letters: results.letters,
                             briggs: results.briggs,
