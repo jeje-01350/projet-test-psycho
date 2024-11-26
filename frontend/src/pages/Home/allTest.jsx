@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import {useUserContext} from "../../context/userContext.jsx";
+import { useUserContext } from "../../context/userContext.jsx";
 
 const AllTests = () => {
     const navigate = useNavigate();
@@ -57,8 +57,9 @@ const AllTests = () => {
     ];
 
     const availableTests = test ? test.split(',') : [];
-
-    const filteredTests = testButtons.filter((test) => availableTests.includes(test.key));
+    const filteredTests = availableTests.length > 0
+        ? testButtons.filter((test) => availableTests.includes(test.key))
+        : testButtons;
 
     return (
         <div style={containerStyle}>
