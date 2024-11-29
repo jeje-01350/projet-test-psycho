@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Container, Button, CircularProgress } from "@mui/material/";
 import { QuestionCardBigfive } from "../../components/index";
 import { ancreScheinQuestions } from "../../constants/index.js";
-import {useUserContext} from "../../context/userContext.jsx";
+import { useUserContext } from "../../context/userContext.jsx";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AncreSchein = () => {
     const navigate = useNavigate();
@@ -43,7 +45,7 @@ const AncreSchein = () => {
             });
 
             if (res.status !== 201) {
-                console.log("Erreur lors de l'envoi des réponses");
+                toast.error("Erreur lors de l'envoi des réponses au serveur principal.");
                 setLoading(false);
             } else {
                 const data = await res.json();
@@ -75,15 +77,17 @@ const AncreSchein = () => {
                     });
 
                     if (secondRes.status === 200) {
+                        toast.success("Résultats enregistrés avec succès !");
                         navigate("/schein/results", {
                             state: { summary: data.summary, scores },
                         });
                     } else {
-                        console.error("Erreur lors de l'envoi des résultats à formation.devstriker.com");
+                        toast.error("Erreur lors de l'envoi des résultats à formation.devstriker.com.");
                     }
                 }
             }
         } catch (error) {
+            toast.error("Une erreur s'est produite lors de la soumission.");
             console.error("Une erreur s'est produite lors des appels API:", error);
         } finally {
             setLoading(false);
@@ -92,6 +96,7 @@ const AncreSchein = () => {
 
     const handleFormChange = (data) => {
         if (!data.domain || data.score === undefined) {
+            toast.error("Données de formulaire invalides. Domaine ou score manquant.");
             console.error("Données de formulaire invalides: domaine ou score manquant", data);
             return;
         }
@@ -157,6 +162,7 @@ const AncreSchein = () => {
 
     return (
         <div>
+            <ToastContainer />
             <Container component="form" sx={{ minWidth: "100%", textAlign: "center" }}>
                 {loading ? (
                     <CircularProgress />

@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Quiz from "react-quiz-component";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { CircularProgress } from "@mui/material";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Import des styles de react-toastify
 import { personalityTestQuestion } from "../../constants/index";
-import {useUserContext} from "../../context/userContext.jsx";
+import { useUserContext } from "../../context/userContext.jsx";
 
 const QuizContainer = styled.div`
   display: flex;
@@ -12,18 +14,6 @@ const QuizContainer = styled.div`
   align-items: center;
   justify-content: center;
   padding: 2rem;
-`;
-
-const SubmitButton = styled.button`
-  margin-top: 2rem;
-  padding: 1rem 2rem;
-  font-size: 1.2rem;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  align-self: center;
 `;
 
 const AppPersonalityTest = () => {
@@ -46,7 +36,7 @@ const AppPersonalityTest = () => {
             answers: question.answers.map((answer) => answer.content),
             correctAnswer: "1",
             answerSelectionType: "single",
-            point: 1
+            point: 1,
         })),
     };
 
@@ -179,7 +169,6 @@ const AppPersonalityTest = () => {
                             letters: results.letters,
                             briggs: results.briggs,
                         },
-                        motivationalItems: results.motivationalItems,
                         userAnswers,
                         summary,
                     },
@@ -203,66 +192,25 @@ const AppPersonalityTest = () => {
                 });
 
                 if (secondRes.status === 200) {
+                    toast.success("Résultats enregistrés avec succès !");
                     navigate("/mbti/results", { state: { data: { userAnswers, results, summary } } });
                 } else {
-                    console.error("Error in sending results to the second API");
+                    toast.error("Erreur lors de l'envoi des résultats au deuxième serveur.");
                 }
             } else {
-                console.log("Error in sending results to the first API");
+                toast.error("Erreur lors de l'envoi des résultats au premier serveur.");
             }
         } catch (error) {
+            toast.error("Une erreur s'est produite lors de la soumission.");
             console.error("An error occurred while submitting the response:", error);
         } finally {
             setLoading(false);
         }
     };
 
-
-    const onQuestionSubmit = (obj) => {
-        const questionIndex = personalityTestQuestion.findIndex(
-            (q) => q.question === obj.question.question
-        );
-
-        if (questionIndex !== -1) {
-            const selectedAnswerContent = obj.question.answers[obj.userAnswer - 1];
-            const question = personalityTestQuestion[questionIndex];
-
-            if (question.answers[0].type) {
-                // Première partie : réponses avec type
-                const selectedAnswerType = question.answers.find(
-                    (answer) => answer.content === selectedAnswerContent
-                )?.type;
-
-                if (selectedAnswerType) {
-                    handleAnswerSelection(questionIndex, selectedAnswerType, selectedAnswerContent);
-                } else {
-                    console.error(`Selected answer type is undefined for question: ${questionIndex}`);
-                }
-            } else if (question.answers[0].score !== undefined) {
-                // Deuxième partie : réponses avec score
-                const score = question.answers.find(
-                    (answer) => answer.content === selectedAnswerContent
-                )?.score;
-
-                if (score !== undefined) {
-                    setResponses((prevResponses) => [
-                        ...prevResponses.filter((res) => res.questionIndex !== questionIndex),
-                        { questionIndex, answerContent: selectedAnswerContent, score },
-                    ]);
-                } else {
-                    console.error(`Score is undefined for question: ${questionIndex}`);
-                }
-            } else {
-                console.error(`Question type is not recognized for question: ${questionIndex}`);
-            }
-        } else {
-            console.error("Question not found in personalityTestQuestion:", obj.question);
-        }
-    };
-
-
     return (
         <QuizContainer>
+            <ToastContainer />
             {loading ? (
                 <CircularProgress />
             ) : (
@@ -278,7 +226,19 @@ const AppPersonalityTest = () => {
                         question: "Question {questionNumber}/{totalQuestions}",
                         nextQuestionBtn: "Suivant",
                     }}
-                    onQuestionSubmit={onQuestionSubmit}
+                    onQuestionSubmit={(obj) => {
+                        const questionIndex = personalityTestQuestion.findIndex(
+                            (q) => q.question === obj.question.question
+                        );
+
+                        if (questionIndex !== -1) {
+                            const selectedAnswerContent =
+                                obj.question.answers[obj.userAnswer - 1];
+                            handleAnswerSelection(questionIndex, "typePlaceholder", selectedAnswerContent);
+                        } else {
+                            toast.error("Question introuvable dans personalityTestQuestion.");
+                        }
+                    }}
                     onComplete={submitResponse}
                 />
             )}
