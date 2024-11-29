@@ -12,6 +12,7 @@ export const UserProvider = ({ children }) => {
     const [token, setToken] = useState(null);
     const [email, setEmail] = useState(null);
     const [test, setTest] = useState(null);
+    const [projectTaskId, setProjectTaskId] = useState(null);
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -37,6 +38,7 @@ export const UserProvider = ({ children }) => {
         initializeValue("token", setToken);
         initializeValue("mail", setEmail);
         initializeValue("test", setTest);
+        initializeValue("project_task_id", setProjectTaskId);
 
         if (hasUpdated) {
             navigate(`${location.pathname}?${searchParams.toString()}`, { replace: true });
@@ -44,7 +46,7 @@ export const UserProvider = ({ children }) => {
     }, [location.search, navigate]);
 
     return (
-        <UserContext.Provider value={{ userId, token, email, test }}>
+        <UserContext.Provider value={{ userId, token, email, test, projectTaskId }}>
             {children}
         </UserContext.Provider>
     );

@@ -3,17 +3,14 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Container, Button, CircularProgress } from "@mui/material/";
 import { QuestionCardBigfive } from "../../components/index";
 import { ancreScheinQuestions } from "../../constants/index.js";
+import {useUserContext} from "../../context/userContext.jsx";
 
 const AncreSchein = () => {
     const navigate = useNavigate();
-    const location = useLocation();
     const [responses, setResponses] = useState([]);
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [loading, setLoading] = useState(false);
-
-    const searchParams = new URLSearchParams(location.search);
-    const userId = searchParams.get("user_id");
-    const token = searchParams.get("token");
+    const { userId, token, projectTaskId } = useUserContext();
 
     const domainToTraitMap = {
         TECH: "ancre technique",
@@ -63,6 +60,10 @@ const AncreSchein = () => {
                     if (userId && token) {
                         secondApiBody.user_id = userId;
                         secondApiBody.token = token;
+                    }
+
+                    if (projectTaskId) {
+                        secondApiBody.project_task_id = projectTaskId;
                     }
 
                     const secondRes = await fetch("https://formation.devstriker.com/psycho_tests/new_results", {

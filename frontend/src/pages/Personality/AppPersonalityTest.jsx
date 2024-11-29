@@ -34,7 +34,7 @@ const AppPersonalityTest = () => {
         Briggs: { E: 5, I: 5, S: 5, N: 5, T: 5, F: 5, J: 5, P: 5 },
     });
     const [loading, setLoading] = useState(false);
-    const { userId, token } = useUserContext();
+    const { userId, token, projectTaskId } = useUserContext();
     const navigate = useNavigate();
 
     const quizData = {
@@ -188,6 +188,10 @@ const AppPersonalityTest = () => {
                 if (userId && token) {
                     secondApiBody.user_id = userId;
                     secondApiBody.token = token;
+                }
+
+                if (projectTaskId) {
+                    secondApiBody.project_task_id = projectTaskId;
                 }
 
                 const secondRes = await fetch("https://formation.devstriker.com/psycho_tests/new_results", {
