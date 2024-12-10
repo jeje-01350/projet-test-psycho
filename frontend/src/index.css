@@ -17,3 +17,7 @@
   border-color: #e8e8e8 !important;
   color: #000 !important;
 }
+
+.questionWrapperBody .tag-container{
+  display: none;
+}

@@ -39,33 +39,6 @@ const Navbar = () => {
                     </Typography>
                 </NavLink>
 
-                <Box
-                    sx={{
-                        display: { xs: "none", md: "flex" },
-                        alignItems: "center",
-                        gap: "1.5rem",
-                    }}
-                >
-                    <NavLink
-                        to="/tous-les-tests"
-                        style={({ isActive }) => ({
-                            color: isActive ? "#fff" : "#c3c3c3",
-                            textDecoration: "none",
-                        })}
-                    >
-                        <Button
-                            variant="text"
-                            sx={{
-                                color: "inherit",
-                                fontSize: "1rem",
-                                "&:hover": { color: "#fff" },
-                            }}
-                        >
-                            Tous les Tests
-                        </Button>
-                    </NavLink>
-                </Box>
-
                 <IconButton
                     size="large"
                     edge="start"

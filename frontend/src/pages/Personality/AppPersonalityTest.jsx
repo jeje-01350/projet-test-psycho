@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import Quiz from "react-quiz-component";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -18,6 +18,7 @@ const QuizContainer = styled.div`
 
 const AppPersonalityTest = () => {
     const [responses, setResponses] = useState([]);
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [answersCount, setAnswersCount] = useState({
         Colors: { Green: 10, Brown: 10, Blue: 10, Red: 10 },
         Letters: { A: 10, B: 10, C: 10, D: 10 },
@@ -29,14 +30,14 @@ const AppPersonalityTest = () => {
 
     const quizData = {
         quizTitle: "Test de personnalité",
-        quizSynopsis: "Répondez aux questions suivantes pour découvrir vos résultats.",
+        quizSynopsis: "Répondez aux questions en choisissant la réponse qui vous correspond le mieux.\n\nÀ la fin du test, vos résultats vous seront restitués.",
         questions: personalityTestQuestion.map((question) => ({
             question: question.question,
             questionType: "text",
             answers: question.answers.map((answer) => answer.content),
             correctAnswer: "1",
             answerSelectionType: "single",
-            point: 1,
+            point: "2",
         })),
     };
 
@@ -65,6 +66,15 @@ const AppPersonalityTest = () => {
 
         setAnswersCount(updatedAnswersCount);
     };
+
+    useEffect(() => {
+        const headers = document.querySelectorAll('.questionWrapperBody h3');
+        headers.forEach(header => {
+            if (header.textContent.includes('(1 marks)')) {
+                header.textContent = header.textContent.replace('(1 marks)', '');
+            }
+        });
+    }, [currentQuestionIndex]);
 
     const buildUserAnswers = () => {
         const userAnswers = {};
@@ -214,34 +224,38 @@ const AppPersonalityTest = () => {
             {loading ? (
                 <CircularProgress />
             ) : (
-                <Quiz
-                    quiz={quizData}
-                    shuffle={false}
-                    showInstantFeedback={false}
-                    disableScore={true}
-                    customTexts={{
-                        startQuizBtn: "Commencer le quiz",
-                        resultPageHeaderText: "",
-                        resultPagePoint: "",
-                        question: "Question {questionNumber}/{totalQuestions}",
-                        nextQuestionBtn: "Suivant",
-                    }}
-                    onQuestionSubmit={(obj) => {
-                        const questionIndex = personalityTestQuestion.findIndex(
-                            (q) => q.question === obj.question.question
-                        );
+                <div style={{ whiteSpace: "pre-line" }}>
+                    <Quiz
+                        quiz={quizData}
+                        shuffle={false}
+                        showInstantFeedback={false}
+                        disableScore={true}
+                        customTexts={{
+                            startQuizBtn: "Commencer le quiz",
+                            resultPageHeaderText: "",
+                            resultPagePoint: "",
+                            question: "Question {questionNumber}/{totalQuestions}",
+                            nextQuestionBtn: "Suivant",
+                        }}
+                        onQuestionSubmit={(obj) => {
+                            const questionIndex = personalityTestQuestion.findIndex(
+                                (q) => q.question === obj.question.question
+                            );
 
-                        if (questionIndex !== -1) {
-                            const selectedAnswerContent =
-                                obj.question.answers[obj.userAnswer - 1];
-                            handleAnswerSelection(questionIndex, "typePlaceholder", selectedAnswerContent);
-                        } else {
-                            toast.error("Question introuvable dans personalityTestQuestion.");
-                        }
-                    }}
-                    onComplete={submitResponse}
-                />
+                            if (questionIndex !== -1) {
+                                const selectedAnswerContent =
+                                    obj.question.answers[obj.userAnswer - 1];
+                                handleAnswerSelection(questionIndex, "typePlaceholder", selectedAnswerContent);
+                            } else {
+                                toast.error("Question introuvable dans personalityTestQuestion.");
+                            }
+                            setCurrentQuestionIndex(prev => prev + 1);
+                        }}
+                        onComplete={submitResponse}
+                    />
+                </div>
             )}
+
         </QuizContainer>
     );
 };
