@@ -84,7 +84,7 @@ exports.savePersonalityTestResult = async (req, res) => {
                 - Évitez toute mention ou indication que le rapport est généré par une intelligence artificielle.
                 - Si pertinent, incluez des descriptions de tableaux ou de graphiques illustrant les scores
                 - rajouter en conclusion un disclaimer du style, ces résultats peuvent être utilisés dans le cadre d'une analyse plus approfondie en fonction du contexte professionnel et personnel du candidat par un professionnel.
-            `;
+        `;
 
         const responsePhaseCommercial = await client.chat.completions.create({
             model: 'gpt-3.5-turbo',
@@ -106,7 +106,7 @@ exports.savePersonalityTestResult = async (req, res) => {
             messages: [{ role: 'user', content: promptPhaseIntegration }]
         });
 
-        const promptIntegration = responsePhaseIntegration.choices[0].message.content;
+        const bilanLetter = responsePhaseIntegration.choices[0].message.content;
 
         const promptPhaseFinal = `
             Rédiges un rapport détaillé basé sur l'analyse de la couleur obtenue par le candidat. 
@@ -121,7 +121,7 @@ exports.savePersonalityTestResult = async (req, res) => {
             messages: [{ role: 'user', content: promptPhaseFinal }]
         });
 
-        const promptFinal = responsePhaseFinal.choices[0].message.content;
+        const bilanColor = responsePhaseFinal.choices[0].message.content;
 
         const newResult = new ResultsPersonalityTest({
             score,
@@ -131,7 +131,7 @@ exports.savePersonalityTestResult = async (req, res) => {
 
         await newResult.save();
 
-        res.status(201).json({ message: 'Résultat sauvegardé avec succès.', data: newResult, promptIntegration, promptFinal });
+        res.status(201).json({ message: 'Résultat sauvegardé avec succès.', data: newResult, bilanLetter, bilanColor });
     } catch (err) {
         console.error("Error saving result:", err);
         res.status(500).json({ error: "Error saving result", details: err.message });
