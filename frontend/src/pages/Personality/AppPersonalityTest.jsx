@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { CircularProgress } from "@mui/material";
 import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css"; // Import des styles de react-toastify
+import "react-toastify/dist/ReactToastify.css";
 import { personalityTestQuestion } from "../../constants/index";
 import { useUserContext } from "../../context/userContext.jsx";
 
@@ -20,7 +20,7 @@ const AppPersonalityTest = () => {
     const [responses, setResponses] = useState([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [answersCount, setAnswersCount] = useState({
-        Colors: { Green: 10, Brown: 10, Blue: 10, Red: 10 },
+        Colors: { Vert: 10, Marron: 10, Bleu: 10, Rouge: 10 },
         Letters: { A: 10, B: 10, C: 10, D: 10 },
         Briggs: { E: 5, I: 5, S: 5, N: 5, T: 5, F: 5, J: 5, P: 5 },
     });
@@ -30,7 +30,13 @@ const AppPersonalityTest = () => {
 
     const quizData = {
         quizTitle: "Test de personnalité",
-        quizSynopsis: "Répondez aux questions en choisissant la réponse qui vous correspond le mieux.\n\nÀ la fin du test, vos résultats vous seront restitués.",
+        quizSynopsis: "" +
+            "Ce test a pour vocation de faire le point sur les éléments clés de votre personnalité, nous permettant d'adapter au plus près nos accompagnements\n" +
+            "Ce test utilise le principe de base du MBTI (Myers Briggs Type Indicator) qui fonctionne sur la base des 16 personnalité. \n" +
+            "\n" +
+            "Consignes et durée de passation: Réaliser le test seul, au calme. Il n'y a pas de bonnes ou de mauvaises réponses. Répondre aux questions de la manière la plus spontanée possible. Durée de passation: La durée moyenne de passation de ce test est de 10 minutes environ.\n" +
+            "\n" +
+            "Résultats: A la fin du test, une typologie de Briggs vous sera attribuée sous la forme de Lettre + Couleur.",
         questions: personalityTestQuestion.map((question) => ({
             question: question.question,
             questionType: "text",
@@ -41,29 +47,60 @@ const AppPersonalityTest = () => {
         })),
     };
 
-    const handleAnswerSelection = (questionIndex, selectedAnswerType, answerContent) => {
+    const handleAnswerSelection = (questionIndex, selectedAnswerIndex) => {
+        const question = personalityTestQuestion[questionIndex];
+        const selectedAnswer = question.answers[selectedAnswerIndex - 1];
+
+        if (!selectedAnswer) return;
+
+        const selectedAnswerType = selectedAnswer.type;
+        const answerContent = selectedAnswer.content;
+
         const updatedResponses = [
             ...responses.filter((response) => response.questionIndex !== questionIndex),
             { questionIndex, answerContent },
         ];
         setResponses(updatedResponses);
 
-        if (selectedAnswerType.trim() === "") return;
+        if (!selectedAnswerType || selectedAnswerType.trim() === "") return;
 
         const typeArray = selectedAnswerType.split(",");
         const [briggsType, colorType, letterType, noFlag] = typeArray;
         const updatedAnswersCount = { ...answersCount };
 
+        console.log(`Question Index: ${questionIndex}`);
+        console.log(`Selected Answer: ${answerContent}`);
+        console.log(`Selected Answer Types: ${selectedAnswerType}`);
+
         if (noFlag === "No") {
-            if (briggsType) updatedAnswersCount["Briggs"][briggsType] -= 1;
-            if (colorType) updatedAnswersCount["Colors"][colorType] -= 1;
-            if (letterType) updatedAnswersCount["Letters"][letterType] -= 1;
+            if (briggsType) {
+                updatedAnswersCount["Briggs"][briggsType] -= 1;
+                console.log(`-1 point for Briggs: ${briggsType}`);
+            }
+            if (colorType) {
+                updatedAnswersCount["Colors"][colorType] -= 1;
+                console.log(`-1 point for Color: ${colorType}`);
+            }
+            if (letterType) {
+                updatedAnswersCount["Letters"][letterType] -= 1;
+                console.log(`-1 point for Letter: ${letterType}`);
+            }
         } else {
-            if (briggsType) updatedAnswersCount["Briggs"][briggsType] += 1;
-            if (colorType) updatedAnswersCount["Colors"][colorType] += 1;
-            if (letterType) updatedAnswersCount["Letters"][letterType] += 1;
+            if (briggsType) {
+                updatedAnswersCount["Briggs"][briggsType] += 1;
+                console.log(`+1 point for Briggs: ${briggsType}`);
+            }
+            if (colorType) {
+                updatedAnswersCount["Colors"][colorType] += 1;
+                console.log(`+1 point for Color: ${colorType}`);
+            }
+            if (letterType) {
+                updatedAnswersCount["Letters"][letterType] += 1;
+                console.log(`+1 point for Letter: ${letterType}`);
+            }
         }
 
+        console.log("Updated Answers Count:", updatedAnswersCount);
         setAnswersCount(updatedAnswersCount);
     };
 
@@ -181,6 +218,14 @@ const AppPersonalityTest = () => {
                         },
                         userAnswers,
                         summary,
+                        /*rapportColor,
+                        rapportLetter,
+                        user_hubspot: {
+                            hubspot_id,
+                            name,
+                            firstname,
+                            mail
+                        }*/
                     },
                 };
 
@@ -243,9 +288,7 @@ const AppPersonalityTest = () => {
                             );
 
                             if (questionIndex !== -1) {
-                                const selectedAnswerContent =
-                                    obj.question.answers[obj.userAnswer - 1];
-                                handleAnswerSelection(questionIndex, "typePlaceholder", selectedAnswerContent);
+                                handleAnswerSelection(questionIndex, obj.userAnswer);
                             } else {
                                 toast.error("Question introuvable dans personalityTestQuestion.");
                             }

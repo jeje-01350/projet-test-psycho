@@ -66,7 +66,7 @@ const ResultsPersonalityTest = () => {
                     <StyledCard>
                         <CardContent>
                             <Typography variant="h5" gutterBottom align="center" sx={{ fontWeight: 600 }}>
-                                Colors: {data?.results?.colors || 'N/A'}
+                                Couleur: {data?.results?.colors || 'N/A'}
                             </Typography>
                         </CardContent>
                     </StyledCard>
@@ -86,7 +86,7 @@ const ResultsPersonalityTest = () => {
                     <StyledCard>
                         <CardContent>
                             <Typography variant="h5" gutterBottom align="center" sx={{ fontWeight: 600 }}>
-                                Letters: {data?.results?.letters || 'N/A'}
+                                Lettre: {data?.results?.letters || 'N/A'}
                             </Typography>
                         </CardContent>
                     </StyledCard>
