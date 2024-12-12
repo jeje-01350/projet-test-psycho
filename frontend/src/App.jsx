@@ -6,9 +6,6 @@ import { Home } from "./pages/index";
 import AppCareerPrediction from "./pages/Career-Prediction/AppCareerPrediction.jsx";
 import ResultsCareerPrediction from "./pages/Career-Prediction/ResultsCareerPrediction.jsx";
 
-import AppPersonalityTest from "./pages/Personality/AppPersonalityTest.jsx";
-import ResultsPersonalityTest from "./pages/Personality/ResultsPersonalityTest.jsx";
-
 import AppRiasec from "./pages/Riasec/AppRiasec.jsx";
 import ResultsRiasec from "./pages/Riasec/ResultsRiasec.jsx";
 
@@ -47,10 +44,6 @@ const App = () => {
             {/*  PAGES ANCRE DE TEST SCHEIN  */}
             <Route path="/schein" exact element={<AppAncreSchein />} />
             <Route path="/schein/results" exact element={<ResultsAncreSchein />} />
-
-            {/*  PAGES TEST PERSONALITE MBTI  */}
-            <Route path="/mbti" exact element={<AppPersonalityTest />} />
-            <Route path="/mbti/results" exact element={<ResultsPersonalityTest />} />
         </Routes>
     </div>
   );
