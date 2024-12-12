@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import Quiz from "react-quiz-component";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, LinearProgress, Box } from "@mui/material";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { personalityTestQuestion } from "../../constants/index";
@@ -16,6 +16,11 @@ const QuizContainer = styled.div`
   padding: 2rem;
 `;
 
+const ProgressContainer = styled(Box)`
+  width: 100%;
+  margin-bottom: 1rem;
+`;
+
 const AppPersonalityTest = () => {
     const [responses, setResponses] = useState([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -27,6 +32,9 @@ const AppPersonalityTest = () => {
     const [loading, setLoading] = useState(false);
     const { userId, token, projectTaskId } = useUserContext();
     const navigate = useNavigate();
+
+    const totalQuestions = personalityTestQuestion.length;
+    const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
 
     const quizData = {
         quizTitle: "Test de personnalité",
@@ -266,6 +274,9 @@ const AppPersonalityTest = () => {
     return (
         <QuizContainer>
             <ToastContainer />
+            <ProgressContainer>
+                <LinearProgress variant="determinate" value={progress} />
+            </ProgressContainer>
             {loading ? (
                 <CircularProgress />
             ) : (
