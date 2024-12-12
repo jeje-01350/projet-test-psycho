@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from "react";
-import Quiz from "react-quiz-component";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { CircularProgress, LinearProgress, Box } from "@mui/material";
+import { CircularProgress, LinearProgress, Button, Box } from "@mui/material";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { personalityTestQuestion } from "../../constants/index";
@@ -14,20 +13,57 @@ const QuizContainer = styled.div`
   align-items: center;
   justify-content: center;
   padding: 2rem;
+  width: 100%;
+  max-width: 600px;
+  margin: auto;
+`;
+
+const QuestionText = styled.div`
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  text-align: center;
+`;
+
+const AnswersContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
 `;
 
 const ProgressContainer = styled(Box)`
   width: 100%;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+`;
+
+const NavigationButtons = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+  width: 100%;
+`;
+
+const StyledButton = styled(Button)`
+  width: 100%;
+  padding: 0.8rem;
+  font-size: 1rem;
+  border-radius: 8px;
+`;
+
+const SelectedButton = styled(StyledButton)`
+  background-color: #e0e0e0 !important;
+  color: #000 !important;
 `;
 
 const AppPersonalityTest = () => {
     const [responses, setResponses] = useState([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+    const [selectedAnswerIndex, setSelectedAnswerIndex] = useState(null);
     const [answersCount, setAnswersCount] = useState({
         Colors: { Vert: 10, Marron: 10, Bleu: 10, Rouge: 10 },
         Letters: { A: 10, B: 10, C: 10, D: 10 },
-        Briggs: { E: 5, I: 5, S: 5, N: 5, T: 5, F: 5, J: 5, P: 5 },
+        Briggs: { E: 10, I: 10, S: 10, N: 10, T: 10, F: 10, J: 10, P: 10 },
     });
     const [loading, setLoading] = useState(false);
     const { userId, token, projectTaskId } = useUserContext();
@@ -36,236 +72,118 @@ const AppPersonalityTest = () => {
     const totalQuestions = personalityTestQuestion.length;
     const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
 
-    const quizData = {
-        quizTitle: "Test de personnalité",
-        quizSynopsis: "" +
-            "Ce test a pour vocation de faire le point sur les éléments clés de votre personnalité, nous permettant d'adapter au plus près nos accompagnements\n" +
-            "Ce test utilise le principe de base du MBTI (Myers Briggs Type Indicator) qui fonctionne sur la base des 16 personnalité. \n" +
-            "\n" +
-            "Consignes et durée de passation: Réaliser le test seul, au calme. Il n'y a pas de bonnes ou de mauvaises réponses. Répondre aux questions de la manière la plus spontanée possible. Durée de passation: La durée moyenne de passation de ce test est de 10 minutes environ.\n" +
-            "\n" +
-            "Résultats: A la fin du test, une typologie de Briggs vous sera attribuée sous la forme de Lettre + Couleur.",
-        questions: personalityTestQuestion.map((question) => ({
-            question: question.question,
-            questionType: "text",
-            answers: question.answers.map((answer) => answer.content),
-            correctAnswer: "1",
-            answerSelectionType: "single",
-            point: "2",
-        })),
-    };
-
-    const handleAnswerSelection = (questionIndex, selectedAnswerIndex) => {
-        const question = personalityTestQuestion[questionIndex];
-        const selectedAnswer = question.answers[selectedAnswerIndex - 1];
-
-        if (!selectedAnswer) return;
-
-        const selectedAnswerType = selectedAnswer.type;
-        const answerContent = selectedAnswer.content;
-
-        const updatedResponses = [
-            ...responses.filter((response) => response.questionIndex !== questionIndex),
-            { questionIndex, answerContent },
-        ];
-        setResponses(updatedResponses);
-
-        if (!selectedAnswerType || selectedAnswerType.trim() === "") return;
-
-        const typeArray = selectedAnswerType.split(",");
-        const [briggsType, colorType, letterType, noFlag] = typeArray;
+    const updateAnswerCount = (answerType, increment) => {
         const updatedAnswersCount = { ...answersCount };
+        const types = answerType.split(",");
 
-        console.log(`Question Index: ${questionIndex}`);
-        console.log(`Selected Answer: ${answerContent}`);
-        console.log(`Selected Answer Types: ${selectedAnswerType}`);
+        types.forEach((type) => {
+            const typeKey = type.trim();
 
-        if (noFlag === "No") {
-            if (briggsType) {
-                updatedAnswersCount["Briggs"][briggsType] -= 1;
-                console.log(`-1 point for Briggs: ${briggsType}`);
-            }
-            if (colorType) {
-                updatedAnswersCount["Colors"][colorType] -= 1;
-                console.log(`-1 point for Color: ${colorType}`);
-            }
-            if (letterType) {
-                updatedAnswersCount["Letters"][letterType] -= 1;
-                console.log(`-1 point for Letter: ${letterType}`);
-            }
-        } else {
-            if (briggsType) {
-                updatedAnswersCount["Briggs"][briggsType] += 1;
-                console.log(`+1 point for Briggs: ${briggsType}`);
-            }
-            if (colorType) {
-                updatedAnswersCount["Colors"][colorType] += 1;
-                console.log(`+1 point for Color: ${colorType}`);
-            }
-            if (letterType) {
-                updatedAnswersCount["Letters"][letterType] += 1;
-                console.log(`+1 point for Letter: ${letterType}`);
-            }
-        }
-
-        console.log("Updated Answers Count:", updatedAnswersCount);
-        setAnswersCount(updatedAnswersCount);
-    };
-
-    useEffect(() => {
-        const headers = document.querySelectorAll('.questionWrapperBody h3');
-        headers.forEach(header => {
-            if (header.textContent.includes('(1 marks)')) {
-                header.textContent = header.textContent.replace('(1 marks)', '');
-            }
-        });
-    }, [currentQuestionIndex]);
-
-    const buildUserAnswers = () => {
-        const userAnswers = {};
-        personalityTestQuestion.forEach((question, index) => {
-            const response = responses.find((res) => res.questionIndex === index);
-            userAnswers[question.question] = response ? response.answerContent : "Non répondu";
-        });
-        return userAnswers;
-    };
-
-    const calculateMotivationalItems = () => {
-        const motivationScores = {};
-
-        responses.forEach(({ questionIndex, score }) => {
-            const question = personalityTestQuestion[questionIndex];
-
-            if (question.type) {
-                if (motivationScores[question.type]) {
-                    motivationScores[question.type] += score;
-                } else {
-                    motivationScores[question.type] = score;
+            if (typeKey === "No") {
+                // Handle the `No` flag explicitly by subtracting points
+                types.forEach((subType) => {
+                    const subKey = subType.trim();
+                    if (updatedAnswersCount.Colors[subKey] !== undefined) {
+                        updatedAnswersCount.Colors[subKey] -= increment;
+                    }
+                    if (updatedAnswersCount.Letters[subKey] !== undefined) {
+                        updatedAnswersCount.Letters[subKey] -= increment;
+                    }
+                    if (updatedAnswersCount.Briggs[subKey] !== undefined) {
+                        updatedAnswersCount.Briggs[subKey] -= increment;
+                    }
+                });
+            } else {
+                // Otherwise, add points normally
+                if (updatedAnswersCount.Colors[typeKey] !== undefined) {
+                    updatedAnswersCount.Colors[typeKey] += increment;
+                }
+                if (updatedAnswersCount.Letters[typeKey] !== undefined) {
+                    updatedAnswersCount.Letters[typeKey] += increment;
+                }
+                if (updatedAnswersCount.Briggs[typeKey] !== undefined) {
+                    updatedAnswersCount.Briggs[typeKey] += increment;
                 }
             }
         });
 
-        const maxScore = Math.max(...Object.values(motivationScores));
-        return Object.keys(motivationScores).filter(
-            (item) => motivationScores[item] === maxScore
-        );
+        setAnswersCount(updatedAnswersCount);
+        console.log("Updated Counts: ", updatedAnswersCount);
     };
 
-
-    const calculateResults = () => {
-        const calculateBriggs = () => {
-            const briggsAnswer = answersCount["Briggs"];
-            let briggsType = "";
-
-            briggsType += briggsAnswer.E >= briggsAnswer.I ? "E" : "I";
-            briggsType += briggsAnswer.S >= briggsAnswer.N ? "S" : "N";
-            briggsType += briggsAnswer.T >= briggsAnswer.F ? "T" : "F";
-            briggsType += briggsAnswer.J >= briggsAnswer.P ? "J" : "P";
-
-            return briggsType;
-        };
-
-        const calculateColors = () => {
-            const colorsAnswer = answersCount["Colors"];
-            const maxAnswerCountColors = Math.max(...Object.values(colorsAnswer));
-            return Object.keys(colorsAnswer).find(
-                (key) => colorsAnswer[key] === maxAnswerCountColors
-            );
-        };
-
-        const calculateLetters = () => {
-            const lettersAnswer = answersCount["Letters"];
-            const maxAnswerCountLetters = Math.max(...Object.values(lettersAnswer));
-            return Object.keys(lettersAnswer).find(
-                (key) => lettersAnswer[key] === maxAnswerCountLetters
-            );
-        };
-
-        const motivationalItems = calculateMotivationalItems();
-
-        return {
-            briggs: calculateBriggs(),
-            colors: calculateColors(),
-            letters: calculateLetters(),
-            motivationalItems,
-        };
+    const handleAnswerSelection = (index) => {
+        setSelectedAnswerIndex(index);
+        console.log(`Answer selected for question ${currentQuestionIndex + 1}:`, personalityTestQuestion[currentQuestionIndex].answers[index].content);
     };
 
-    const submitResponse = async () => {
+    const handleNextQuestion = () => {
+        if (selectedAnswerIndex === null) {
+            toast.warn("Veuillez sélectionner une réponse avant de continuer.");
+            return;
+        }
+
+        const question = personalityTestQuestion[currentQuestionIndex];
+        const selectedAnswer = question.answers[selectedAnswerIndex];
+
+        const existingResponse = responses.find((res) => res.questionIndex === currentQuestionIndex);
+        if (existingResponse) {
+            updateAnswerCount(existingResponse.answerType, -1);
+        }
+
+        updateAnswerCount(selectedAnswer.type, 1);
+
+        const updatedResponses = [
+            ...responses.filter((response) => response.questionIndex !== currentQuestionIndex),
+            { questionIndex: currentQuestionIndex, answerContent: selectedAnswer.content, answerType: selectedAnswer.type },
+        ];
+        setResponses(updatedResponses);
+        console.log(`Responses updated:`, updatedResponses);
+
+        if (currentQuestionIndex < totalQuestions - 1) {
+            setCurrentQuestionIndex(currentQuestionIndex + 1);
+            setSelectedAnswerIndex(null);
+        } else {
+            submitResponse(updatedResponses);
+        }
+    };
+
+    const handlePreviousQuestion = () => {
+        if (currentQuestionIndex > 0) {
+            setCurrentQuestionIndex(currentQuestionIndex - 1);
+            const previousResponse = responses.find((res) => res.questionIndex === currentQuestionIndex - 1);
+            setSelectedAnswerIndex(
+                previousResponse ?
+                    personalityTestQuestion[currentQuestionIndex - 1].answers.findIndex(
+                        (ans) => ans.content === previousResponse.answerContent
+                    ) :
+                    null
+            );
+        }
+    };
+
+    const submitResponse = async (answers) => {
         setLoading(true);
-        const results = calculateResults();
-        const userAnswers = buildUserAnswers();
-
+        console.log("Submitting final answers:", answers);
+        console.log("Final Briggs counts:", answersCount.Briggs);
+        console.log("Final Colors counts:", answersCount.Colors);
+        console.log("Final Letters counts:", answersCount.Letters);
         try {
             const res = await fetch(`${import.meta.env.VITE_API_URL}/personality-test/save`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({
-                    score: {
-                        color: results.colors,
-                        letters: results.letters,
-                        briggs: results.briggs,
-                    },
-                    motivationalItems: results.motivationalItems,
-                    userAnswers,
-                }),
+                body: JSON.stringify({ answers }),
             });
 
             if (res.status === 201) {
-                const data = await res.json();
-                const summary = data.data.summary;
-
-                const secondApiBody = {
-                    results: {
-                        score: {
-                            color: results.colors,
-                            letters: results.letters,
-                            briggs: results.briggs,
-                        },
-                        userAnswers,
-                        summary,
-                        /*rapportColor,
-                        rapportLetter,
-                        user_hubspot: {
-                            hubspot_id,
-                            name,
-                            firstname,
-                            mail
-                        }*/
-                    },
-                };
-
-                if (userId && token) {
-                    secondApiBody.user_id = userId;
-                    secondApiBody.token = token;
-                }
-
-                if (projectTaskId) {
-                    secondApiBody.project_task_id = projectTaskId;
-                }
-
-                const secondRes = await fetch("https://formation.devstriker.com/psycho_tests/new_results", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(secondApiBody),
-                });
-
-                if (secondRes.status === 200) {
-                    toast.success("Résultats enregistrés avec succès !");
-                    navigate("/mbti/results", { state: { data: { userAnswers, results, summary } } });
-                } else {
-                    toast.error("Erreur lors de l'envoi des résultats au deuxième serveur.");
-                }
+                toast.success("Test soumis avec succès!");
+                navigate("/mbti/results");
             } else {
-                toast.error("Erreur lors de l'envoi des résultats au premier serveur.");
+                toast.error("Erreur lors de la soumission du test.");
             }
         } catch (error) {
-            toast.error("Une erreur s'est produite lors de la soumission.");
-            console.error("An error occurred while submitting the response:", error);
+            toast.error("Une erreur est survenue.");
         } finally {
             setLoading(false);
         }
@@ -280,36 +198,47 @@ const AppPersonalityTest = () => {
             {loading ? (
                 <CircularProgress />
             ) : (
-                <div style={{ whiteSpace: "pre-line" }}>
-                    <Quiz
-                        quiz={quizData}
-                        shuffle={false}
-                        showInstantFeedback={false}
-                        disableScore={true}
-                        customTexts={{
-                            startQuizBtn: "Commencer le quiz",
-                            resultPageHeaderText: "",
-                            resultPagePoint: "",
-                            question: "Question {questionNumber}/{totalQuestions}",
-                            nextQuestionBtn: "Suivant",
-                        }}
-                        onQuestionSubmit={(obj) => {
-                            const questionIndex = personalityTestQuestion.findIndex(
-                                (q) => q.question === obj.question.question
-                            );
-
-                            if (questionIndex !== -1) {
-                                handleAnswerSelection(questionIndex, obj.userAnswer);
-                            } else {
-                                toast.error("Question introuvable dans personalityTestQuestion.");
-                            }
-                            setCurrentQuestionIndex(prev => prev + 1);
-                        }}
-                        onComplete={submitResponse}
-                    />
-                </div>
+                <>
+                    <QuestionText>
+                        {`Question ${currentQuestionIndex + 1} / ${totalQuestions}: ${personalityTestQuestion[currentQuestionIndex].question}`}
+                    </QuestionText>
+                    <AnswersContainer>
+                        {personalityTestQuestion[currentQuestionIndex].answers.map((answer, index) => (
+                            index === selectedAnswerIndex ? (
+                                <SelectedButton
+                                    key={index}
+                                    onClick={() => handleAnswerSelection(index)}
+                                >
+                                    {answer.content}
+                                </SelectedButton>
+                            ) : (
+                                <StyledButton
+                                    key={index}
+                                    variant="outlined"
+                                    onClick={() => handleAnswerSelection(index)}
+                                >
+                                    {answer.content}
+                                </StyledButton>
+                            )
+                        ))}
+                    </AnswersContainer>
+                    <NavigationButtons>
+                        <Button
+                            variant="contained"
+                            onClick={handlePreviousQuestion}
+                            disabled={currentQuestionIndex === 0}
+                        >
+                            Précédent
+                        </Button>
+                        <Button
+                            variant="contained"
+                            onClick={handleNextQuestion}
+                        >
+                            Suivant
+                        </Button>
+                    </NavigationButtons>
+                </>
             )}
-
         </QuizContainer>
     );
 };
