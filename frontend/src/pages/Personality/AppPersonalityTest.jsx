@@ -1,11 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
+import styled, { createGlobalStyle } from "styled-components";
 import { CircularProgress, LinearProgress, Button, Box } from "@mui/material";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { personalityTestQuestion as originalQuestions } from "../../constants/index";
 import { useUserContext } from "../../context/userContext.jsx";
+import styleSensei from '../../images/style-sensei.png';
+
+const GlobalStyle = createGlobalStyle`
+  @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&family=Nunito:wght@400;600&display=swap');
+  body {
+    background-color: #fdf6f1;
+    font-family: "Nunito", sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+`;
 
 const QuizContainer = styled.div`
   display: flex;
@@ -15,14 +26,30 @@ const QuizContainer = styled.div`
   padding: 2rem;
   width: 100%;
   max-width: 600px;
-  margin: auto;
+  margin: 100px auto auto;
+  border-radius: 12px;
 `;
 
 const QuestionText = styled.div`
-  font-size: 1.5rem;
-  font-weight: bold;
+  font-size: 22px !important;
+  font-family: "Kanit", sans-serif !important;
+  font-weight: 600;
   margin-bottom: 1.5rem;
   text-align: center;
+  color: #333;
+  position: relative;
+`;
+
+const SenseiImage = styled.img`
+  position: absolute;
+  right: -100px;
+  bottom: -50px;
+  width: 100px;
+  height: auto;
+
+  @media (max-width: 750px) {
+    display: none;
+  }
 `;
 
 const AnswersContainer = styled.div`
@@ -30,6 +57,29 @@ const AnswersContainer = styled.div`
   flex-direction: column;
   gap: 1rem;
   width: 100%;
+  margin-top: 50px;
+`;
+
+const StyledButton = styled(Button)`
+  width: 100%;
+  padding: 0.8rem;
+  font-size: 14px !important;
+  font-family: "Nunito", sans-serif !important;
+  text-transform: none !important;
+  border-radius: 12px !important;
+  background-color: #ffffff !important;
+  border: 1px solid #000 !important;
+  color: #000 !important;
+
+  &:hover {
+    background-color: #919191 !important;
+    color: #000 !important;
+  }
+`;
+
+const SelectedButton = styled(StyledButton)`
+  background-color: #919191 !important;
+  color: #000 !important;
 `;
 
 const ProgressContainer = styled(Box)`
@@ -44,16 +94,24 @@ const NavigationButtons = styled.div`
   width: 100%;
 `;
 
-const StyledButton = styled(Button)`
-  width: 100%;
-  padding: 0.8rem;
-  font-size: 1rem;
-  border-radius: 8px;
+const PreviousButton = styled(Button)`
+  background-color: #808080 !important;
+  color: #fff !important;
+  text-transform: none !important;
+  border-radius: 12px !important;
+  &:hover {
+    background-color: #6c6c6c;
+  }
 `;
 
-const SelectedButton = styled(StyledButton)`
-  background-color: #e0e0e0 !important;
-  color: #000 !important;
+const NextButton = styled(Button)`
+  background-color: #ffa7a7 !important;
+  color: #fff !important;
+  text-transform: none !important;
+  border-radius: 12px !important;
+  &:hover {
+    background-color: #ff8f8f;
+  }
 `;
 
 const AppPersonalityTest = () => {
@@ -123,7 +181,7 @@ const AppPersonalityTest = () => {
 
     const calculateResults = () => {
         const dominantColor = Object.entries(answersCount.Colors).reduce((a, b) => (b[1] > a[1] ? b : a))[0];
-        const dominantLetter = Object.entries(answersCount.Letters).reduce((a, b) => (b[1] > a[1] ? b : a))[0];
+        const dominantLetter = Object.entries(answersCount.Colors).reduce((a, b) => (b[1] > a[1] ? b : a))[0];
 
         console.log("Dominant Color: ", dominantColor);
         console.log("Dominant Letter: ", dominantLetter);
@@ -146,10 +204,8 @@ const AppPersonalityTest = () => {
 
     const handleAnswerProcessing = (question, selectedAnswer) => {
         if (question.type) {
-            // Motivation question
             updateMotivationScores(question, selectedAnswer.score);
         } else {
-            // Regular scoring question
             const existingResponse = responses.find((res) => res.questionIndex === currentQuestionIndex);
             if (existingResponse) {
                 updateAnswerCount(existingResponse.answerType, -1);
@@ -277,58 +333,59 @@ const AppPersonalityTest = () => {
     };
 
     return (
-        <QuizContainer>
-            <ToastContainer />
-            <ProgressContainer>
-                <LinearProgress variant="determinate" value={progress} />
-            </ProgressContainer>
-            {loading ? (
-                <CircularProgress />
-            ) : (
-                <>
-                    <QuestionText>
-                        {`Question ${currentQuestionIndex + 1} / ${totalQuestions}: ${
-                            questions[currentQuestionIndex]?.question
-                        }`}
-                    </QuestionText>
-                    <AnswersContainer>
-                        {questions[currentQuestionIndex]?.answers.map((answer, index) => (
-                            index === selectedAnswerIndex ? (
-                                <SelectedButton
-                                    key={index}
-                                    onClick={() => handleAnswerSelection(index)}
-                                >
-                                    {answer.content}
-                                </SelectedButton>
-                            ) : (
-                                <StyledButton
-                                    key={index}
-                                    variant="outlined"
-                                    onClick={() => handleAnswerSelection(index)}
-                                >
-                                    {answer.content}
-                                </StyledButton>
-                            )
-                        ))}
-                    </AnswersContainer>
-                    <NavigationButtons>
-                        <Button
-                            variant="contained"
-                            onClick={handlePreviousQuestion}
-                            disabled={currentQuestionIndex === 0}
-                        >
-                            Précédent
-                        </Button>
-                        <Button
-                            variant="contained"
-                            onClick={handleNextQuestion}
-                        >
-                            Suivant
-                        </Button>
-                    </NavigationButtons>
-                </>
-            )}
-        </QuizContainer>
+        <>
+            <GlobalStyle />
+            <QuizContainer>
+                <ToastContainer />
+                <ProgressContainer>
+                    <LinearProgress variant="determinate" value={progress} />
+                </ProgressContainer>
+                {loading ? (
+                    <CircularProgress />
+                ) : (
+                    <>
+                        <QuestionText>
+                            {`Question ${currentQuestionIndex + 1} / ${totalQuestions}: ${
+                                questions[currentQuestionIndex]?.question
+                            }`}
+                            <SenseiImage src={styleSensei} alt="" />
+                        </QuestionText>
+                        <AnswersContainer>
+                            {questions[currentQuestionIndex]?.answers.map((answer, index) => (
+                                index === selectedAnswerIndex ? (
+                                    <SelectedButton
+                                        key={index}
+                                        onClick={() => handleAnswerSelection(index)}
+                                    >
+                                        {answer.content}
+                                    </SelectedButton>
+                                ) : (
+                                    <StyledButton
+                                        key={index}
+                                        variant="outlined"
+                                        onClick={() => handleAnswerSelection(index)}
+                                    >
+                                        {answer.content}
+                                    </StyledButton>
+                                )
+                            ))}
+                        </AnswersContainer>
+                        <NavigationButtons>
+                            <PreviousButton
+                                variant="contained"
+                                onClick={handlePreviousQuestion}
+                                disabled={currentQuestionIndex === 0}
+                            >
+                                Précédent
+                            </PreviousButton>
+                            <NextButton variant="contained" onClick={handleNextQuestion}>
+                                Suivant
+                            </NextButton>
+                        </NavigationButtons>
+                    </>
+                )}
+            </QuizContainer>
+        </>
     );
 };
 
