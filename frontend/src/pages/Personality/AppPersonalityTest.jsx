@@ -125,7 +125,7 @@ const AppPersonalityTest = () => {
     const [motivationScores, setMotivationScores] = useState({});
     const [loading, setLoading] = useState(false);
     const [questions, setQuestions] = useState([]);
-    const { userId, token, projectTaskId } = useUserContext();
+    const { userId, token, projectTaskId, recordID, name, firstname, email } = useUserContext();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -181,7 +181,7 @@ const AppPersonalityTest = () => {
 
     const calculateResults = () => {
         const dominantColor = Object.entries(answersCount.Colors).reduce((a, b) => (b[1] > a[1] ? b : a))[0];
-        const dominantLetter = Object.entries(answersCount.Colors).reduce((a, b) => (b[1] > a[1] ? b : a))[0];
+        const dominantLetter = Object.entries(answersCount.Letters).reduce((a, b) => (b[1] > a[1] ? b : a))[0];
 
         console.log("Dominant Color: ", dominantColor);
         console.log("Dominant Letter: ", dominantLetter);
@@ -238,6 +238,8 @@ const AppPersonalityTest = () => {
             if (res.status === 201) {
                 const data = await res.json();
                 const summary = data.data.summary;
+                const rapportCouleur = data.bilanLetter;
+                const rapportLettre = data.bilanColor;
 
                 const secondApiBody = {
                     results: {
@@ -247,6 +249,14 @@ const AppPersonalityTest = () => {
                         },
                         userAnswers,
                         summary,
+                        rapportCouleur,
+                        rapportLettre,
+                        user_hubspot: {
+                            hubspot_id: recordID,
+                            hubspot_name: name,
+                            hubspot_firstname: firstname,
+                            hubspot_mail: email
+                        }
                     },
                 };
 
@@ -268,6 +278,24 @@ const AppPersonalityTest = () => {
                 });
 
                 if (secondRes.status === 200) {
+
+                    const hubspotPayload = {
+                        couleur_situatio: results.colors,
+                        rapport_couleur_situatio: rapportCouleur,
+                        lettre_situatio: results.letters,
+                        rapport_lettre_situatio: rapportLettre,
+                        rapport_commercial_situatio: summary,
+                        email : email,
+                    };
+
+                    await fetch(`${import.meta.env.VITE_API_URL}/personality-test/hubspot`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(hubspotPayload),
+                    });
+
                     toast.success("Résultats enregistrés avec succès !");
                     navigate("/mbti/results", { state: { data: { userAnswers, results, summary } } });
                 } else {

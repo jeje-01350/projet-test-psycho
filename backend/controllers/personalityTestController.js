@@ -5,6 +5,29 @@ const client = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
+const axios = require('axios');
+
+exports.saveHubspotTest = async (req, res) => {
+    try {
+        const { body } = req;
+
+        if (!body) {
+            return res.status(400).json({ error: 'Aucun corps de requête fourni.' });
+        }
+
+        const response = await axios.post('https://hooks.zapier.com/hooks/catch/11072818/2saof9s/', body, {
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+
+        res.status(200).json({ message: 'Données envoyées avec succès à HubSpot.', data: response.data });
+    } catch (error) {
+        console.error('Erreur lors de l\'envoi à HubSpot:', error);
+        res.status(500).json({ error: 'Erreur lors de l\'envoi à HubSpot.', details: error.message });
+    };
+}
+
 exports.savePersonalityTestResult = async (req, res) => {
     try {
         const { score, userAnswers } = req.body;
@@ -73,7 +96,6 @@ exports.savePersonalityTestResult = async (req, res) => {
                 - N'interprete pas le resultat du test anonce uniquement le libelle sans expliquer a quoi celui ci correspond
                 - Résultats du Test :
                     couleur :  ${JSON.stringify(score.color)}
-                    briggs :  ${JSON.stringify(score.briggs)}
                     lettre :  ${JSON.stringify(score.letters)}
                 - Instructions supplémentaires :
                 - Adoptez un style accessible au grand public.
