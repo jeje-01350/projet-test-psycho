@@ -2,16 +2,12 @@ const mongoose = require("mongoose");
 
 const CallModjoSchema = new mongoose.Schema(
   {
-      score: {
-          type: Object,
-          required: true,
-      },
-        summary: {
-          type: String,
+      hs_object_id: {
+          type: Number,
           required: true,
         },
-      userAnswers: {
-          type: Object,
+      call_note: {
+          type: String,
           required: true,
       }
   },
