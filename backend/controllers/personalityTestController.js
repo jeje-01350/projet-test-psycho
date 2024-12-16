@@ -6,6 +6,7 @@ const client = new OpenAI({
 });
 
 const axios = require('axios');
+const CallModjo = require('../models/CallModjo');
 
 exports.saveHubspotTest = async (req, res) => {
     try {
@@ -30,10 +31,22 @@ exports.saveHubspotTest = async (req, res) => {
 
 exports.savePersonalityTestResult = async (req, res) => {
     try {
-        const { score, userAnswers } = req.body;
+        const { score, userAnswers, hs_object_id } = req.body;
 
-        if (!score || !userAnswers) {
+        if (!score || !userAnswers || !hs_object_id) {
             return res.status(400).json({ error: 'Veuillez fournir toutes les informations.' });
+        }
+
+        let modjoCallData;
+        try {
+            modjoCallData = await CallModjo.findOne({ hs_object_id });
+
+            if (!modjoCallData) {
+                throw new Error('Aucun appel trouvé avec cet hs_object_id.');
+            }
+        } catch (error) {
+            console.error('Erreur lors de la récupération des données Modjo:', error);
+            return res.status(500).json({ error: 'Erreur lors de la récupération des données Modjo.', details: error.message });
         }
 
         const getLettersDescription = (letter) => {
@@ -153,7 +166,7 @@ exports.savePersonalityTestResult = async (req, res) => {
 
         await newResult.save();
 
-        res.status(201).json({ message: 'Résultat sauvegardé avec succès.', data: newResult, bilanLetter, bilanColor });
+        res.status(201).json({ message: 'Résultat sauvegardé avec succès.', data: newResult, bilanLetter, bilanColor, modjoCallData });
     } catch (err) {
         console.error("Error saving result:", err);
         res.status(500).json({ error: "Error saving result", details: err.message });

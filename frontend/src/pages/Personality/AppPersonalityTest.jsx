@@ -87,6 +87,46 @@ const ProgressContainer = styled(Box)`
   margin-bottom: 1.5rem;
 `;
 
+const StyledRangeInput = styled.input`
+  -webkit-appearance: none;
+  width: 100%;
+  height: 10px;
+  margin-top: 20px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #ffa7a7, #ff8f8f);
+  outline: none;
+  opacity: 0.9;
+  transition: background 0.3s;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ff8f8f;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  &::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ff8f8f;
+    cursor: pointer;
+  }
+`;
+
+const RangeValueDisplay = styled.div`
+  margin-top: 10px;
+  font-size: 16px;
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+  color: #ff8f8f;
+  text-align: center;
+`;
+
 const NavigationButtons = styled.div`
   display: flex;
   justify-content: space-between;
@@ -125,12 +165,17 @@ const AppPersonalityTest = () => {
     const [motivationScores, setMotivationScores] = useState({});
     const [loading, setLoading] = useState(false);
     const [questions, setQuestions] = useState([]);
+    const [changeImpact, setChangeImpact] = useState(5);
+
     const { userId, token, projectTaskId, recordID, name, firstname, email } = useUserContext();
     const navigate = useNavigate();
 
     useEffect(() => {
         const shuffledQuestions = [...originalQuestions].sort(() => Math.random() - 0.5);
-        setQuestions(shuffledQuestions);
+        setQuestions([...shuffledQuestions, {
+            question: "À quel point voulez-vous faire bouger les choses ?",
+            type: "scale",
+        }]);
     }, []);
 
     const totalQuestions = questions.length;
@@ -186,14 +231,18 @@ const AppPersonalityTest = () => {
         console.log("Dominant Color: ", dominantColor);
         console.log("Dominant Letter: ", dominantLetter);
 
+        const motivationalItems = Object.entries(motivationScores)
+            .filter(([_, score]) => score === Math.max(...Object.values(motivationScores)))
+            .map(([key]) => key)
+            .join(" / "); // Transformation en chaîne avec ", "
+
         return {
             colors: dominantColor,
             letters: dominantLetter,
-            motivationalItems: Object.entries(motivationScores)
-                .filter(([_, score]) => score === Math.max(...Object.values(motivationScores)))
-                .map(([key]) => key),
+            motivationalItems, // Résultat déjà transformé en chaîne
         };
     };
+
 
     const buildUserAnswers = () => {
         return responses.map((response) => ({
@@ -230,8 +279,8 @@ const AppPersonalityTest = () => {
                         color: results.colors,
                         letters: results.letters,
                     },
-                    motivationalItems: results.motivationalItems,
                     userAnswers,
+                    hs_object_id: recordID
                 }),
             });
 
@@ -240,6 +289,7 @@ const AppPersonalityTest = () => {
                 const summary = data.data.summary;
                 const rapportCouleur = data.bilanLetter;
                 const rapportLettre = data.bilanColor;
+                const modjoCallData = data.modjoCallData;
 
                 const secondApiBody = {
                     results: {
@@ -255,7 +305,8 @@ const AppPersonalityTest = () => {
                             hubspot_id: recordID,
                             hubspot_name: name,
                             hubspot_firstname: firstname,
-                            hubspot_mail: email
+                            hubspot_mail: email,
+                            hubspot_changeImpact : changeImpact
                         }
                     },
                 };
@@ -286,6 +337,8 @@ const AppPersonalityTest = () => {
                         rapport_lettre_situatio: rapportLettre,
                         rapport_commercial_situatio: summary,
                         email : email,
+                        item_de_motivation: results.motivationalItems,
+                        changeImpact: changeImpact,
                     };
 
                     await fetch(`${import.meta.env.VITE_API_URL}/personality-test/hubspot`, {
@@ -297,7 +350,7 @@ const AppPersonalityTest = () => {
                     });
 
                     toast.success("Résultats enregistrés avec succès !");
-                    navigate("/mbti/results", { state: { data: { userAnswers, results, summary } } });
+                    navigate("/mbti/results", { state: { data: { userAnswers, results, summary, modjoCallData } } });
                 } else {
                     toast.error("Erreur lors de l'envoi des résultats au deuxième serveur.");
                 }
@@ -321,28 +374,28 @@ const AppPersonalityTest = () => {
     };
 
     const handleNextQuestion = () => {
-        if (selectedAnswerIndex === null) {
+        if (selectedAnswerIndex === null && currentQuestionIndex < totalQuestions - 1) {
             toast.warn("Veuillez sélectionner une réponse avant de continuer.");
             return;
         }
 
-        const question = questions[currentQuestionIndex];
-        const selectedAnswer = question.answers[selectedAnswerIndex];
+        if (currentQuestionIndex === totalQuestions - 1) {
+            submitResponse();
+        } else {
+            const question = questions[currentQuestionIndex];
+            const selectedAnswer = question.answers[selectedAnswerIndex];
 
-        handleAnswerProcessing(question, selectedAnswer);
+            handleAnswerProcessing(question, selectedAnswer);
 
-        const updatedResponses = [
-            ...responses.filter((response) => response.questionIndex !== currentQuestionIndex),
-            { questionIndex: currentQuestionIndex, answerContent: selectedAnswer.content, answerType: selectedAnswer.type || null },
-        ];
-        setResponses(updatedResponses);
-        console.log(`Responses updated:`, updatedResponses);
+            const updatedResponses = [
+                ...responses.filter((response) => response.questionIndex !== currentQuestionIndex),
+                { questionIndex: currentQuestionIndex, answerContent: selectedAnswer.content, answerType: selectedAnswer.type || null },
+            ];
+            setResponses(updatedResponses);
+            console.log(`Responses updated:`, updatedResponses);
 
-        if (currentQuestionIndex < totalQuestions - 1) {
             setCurrentQuestionIndex(currentQuestionIndex + 1);
             setSelectedAnswerIndex(null);
-        } else {
-            submitResponse();
         }
     };
 
@@ -371,46 +424,65 @@ const AppPersonalityTest = () => {
                 {loading ? (
                     <CircularProgress />
                 ) : (
-                    <>
-                        <QuestionText>
-                            {`Question ${currentQuestionIndex + 1} / ${totalQuestions}: ${
-                                questions[currentQuestionIndex]?.question
-                            }`}
-                            <SenseiImage src={styleSensei} alt="" />
-                        </QuestionText>
-                        <AnswersContainer>
-                            {questions[currentQuestionIndex]?.answers.map((answer, index) => (
-                                index === selectedAnswerIndex ? (
-                                    <SelectedButton
-                                        key={index}
-                                        onClick={() => handleAnswerSelection(index)}
-                                    >
-                                        {answer.content}
-                                    </SelectedButton>
-                                ) : (
-                                    <StyledButton
-                                        key={index}
-                                        variant="outlined"
-                                        onClick={() => handleAnswerSelection(index)}
-                                    >
-                                        {answer.content}
-                                    </StyledButton>
-                                )
-                            ))}
-                        </AnswersContainer>
-                        <NavigationButtons>
-                            <PreviousButton
-                                variant="contained"
-                                onClick={handlePreviousQuestion}
-                                disabled={currentQuestionIndex === 0}
-                            >
-                                Précédent
-                            </PreviousButton>
-                            <NextButton variant="contained" onClick={handleNextQuestion}>
-                                Suivant
+                    currentQuestionIndex === totalQuestions - 1 ? (
+                        <div>
+                            <QuestionText>
+                                Sur une echelle de 0 à 10, où en est votre envi de faire bouger les choses
+                            </QuestionText>
+                            <StyledRangeInput
+                                type="range"
+                                min="0"
+                                max="10"
+                                value={changeImpact}
+                                onChange={(e) => setChangeImpact(Number(e.target.value))}
+                            />
+                            <RangeValueDisplay>{changeImpact}</RangeValueDisplay>
+                            <NextButton variant="contained" onClick={submitResponse}>
+                                Soumettre
                             </NextButton>
-                        </NavigationButtons>
-                    </>
+                        </div>
+                    ) : (
+                        <>
+                            <QuestionText>
+                                {`Question ${currentQuestionIndex + 1} / ${totalQuestions}: ${
+                                    questions[currentQuestionIndex]?.question
+                                }`}
+                                <SenseiImage src={styleSensei} alt="" />
+                            </QuestionText>
+                            <AnswersContainer>
+                                {questions[currentQuestionIndex]?.answers.map((answer, index) => (
+                                    index === selectedAnswerIndex ? (
+                                        <SelectedButton
+                                            key={index}
+                                            onClick={() => handleAnswerSelection(index)}
+                                        >
+                                            {answer.content}
+                                        </SelectedButton>
+                                    ) : (
+                                        <StyledButton
+                                            key={index}
+                                            variant="outlined"
+                                            onClick={() => handleAnswerSelection(index)}
+                                        >
+                                            {answer.content}
+                                        </StyledButton>
+                                    )
+                                ))}
+                            </AnswersContainer>
+                            <NavigationButtons>
+                                <PreviousButton
+                                    variant="contained"
+                                    onClick={handlePreviousQuestion}
+                                    disabled={currentQuestionIndex === 0}
+                                >
+                                    Précédent
+                                </PreviousButton>
+                                <NextButton variant="contained" onClick={handleNextQuestion}>
+                                    Suivant
+                                </NextButton>
+                            </NavigationButtons>
+                        </>
+                    )
                 )}
             </QuizContainer>
         </>

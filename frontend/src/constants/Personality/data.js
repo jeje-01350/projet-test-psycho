@@ -173,7 +173,7 @@ let personalityTestQuestion = [
 //     2ème evaluation pour le test
     {
       question: "Je suis intéressé à l'idée d'explorer de nouvelles perspectives professionnelles.",
-      type: "Vocation / Sens professionnel / Trouver sa voie / Explorer",
+      type: "Vocation, Sens professionnel, Trouver sa voie, Explorer",
       answers: [
         {
           score: 0,
@@ -191,7 +191,7 @@ let personalityTestQuestion = [
     },
     {
       question: "J'ai une idée claire de mes capacités et compétences professionnelles, et de mes aspirations.",
-      type: "Me situer / Savoir où j'en suis",
+      type: "Me situer, Savoir où j'en suis",
       answers: [
         {
           score: 0,
@@ -245,7 +245,7 @@ let personalityTestQuestion = [
     },
     {
       question: "Je me sens confiant(e) quant à la stabilité de ma situation professionnelle actuelle.",
-      type: "Sécuriser, stabiliser, anticiper",
+      type: "Sécuriser, stabiliser et anticiper",
       answers: [
         {
           score: 0,
@@ -263,7 +263,7 @@ let personalityTestQuestion = [
     },
     {
       question: "J'ai des idées ou projets professionnels que j'aimerais concrétiser dans un avenir proche.",
-      type: "Viabiliser / Valider un projet",
+      type: "Viabiliser, Valider un projet",
       answers: [
         {
           score: 0,
