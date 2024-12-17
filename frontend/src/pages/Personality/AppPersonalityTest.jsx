@@ -290,6 +290,8 @@ const AppPersonalityTest = () => {
                 const rapportCouleur = data.bilanLetter;
                 const rapportLettre = data.bilanColor;
                 const modjoCallData = data.modjoCallData;
+                const pdfColorBlob = atob(data.pdfColor);
+                const pdfLetterBlob = atob(data.pdfLetter);
 
                 const secondApiBody = {
                     results: {
@@ -302,6 +304,8 @@ const AppPersonalityTest = () => {
                         rapportCouleur,
                         rapportLettre,
                         changeImpact,
+                        pdfColorBlob,
+                        pdfLetterBlob,
                         user_hubspot: {
                             hubspot_id: recordID,
                             hubspot_name: name,
@@ -350,7 +354,7 @@ const AppPersonalityTest = () => {
                     });
 
                     toast.success("Résultats enregistrés avec succès !");
-                    navigate("/mbti/results", { state: { data: { userAnswers, results, summary, modjoCallData } } });
+                    navigate("/mbti/results", { state: { data: { userAnswers, results, summary, modjoCallData, pdfColorBlob } } });
                 } else {
                     toast.error("Erreur lors de l'envoi des résultats au deuxième serveur.");
                 }

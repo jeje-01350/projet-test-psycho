@@ -2,23 +2,157 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="./style.css">
     <title>Pdf Template</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&family=Nunito:wght@400;700&display=swap');
+
+        /*Style general*/
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            -webkit-print-color-adjust: exact !important;
+        }
+
+        body {
+            background: #fdf6f1;
+            font-family: 'Nunito', sans-serif;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Kanit', sans-serif;
+        }
+
+        /*Style de la page*/
+        .nav {
+            background-color: #000;
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            flex-shrink: 0;
+        }
+
+        .nav img {
+            height: 50px;
+            margin: 0 auto;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 50px 20px;
+        }
+
+        h2 {
+            font-weight: normal;
+            background: #ffffff;
+            width: fit-content;
+            padding: 10px;
+            border-radius: 15px;
+            border: #000 1px solid;
+            box-shadow: 1px 3px 0 0 black;
+            margin-bottom: 20px;
+        }
+
+        .summary {
+            font-size: 16px;
+            position: relative;
+            line-height: 1.6;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+        }
+
+        p, h2 {
+            margin: 0;
+        }
+
+        .summary.Vert p:first-of-type {
+            border-left: 5px solid green;
+            padding-left: 10px;
+        }
+
+        .summary.Bleu p:first-of-type {
+            border-left: 5px solid blue;
+            padding-left: 10px;
+        }
+
+        .summary.Rouge p:first-of-type {
+            border-left: 5px solid red;
+            padding-left: 10px;
+        }
+
+        .summary.Marron p:first-of-type {
+            border-left: 5px solid saddlebrown;
+            padding-left: 10px;
+        }
+
+        .summary p:last-of-type {
+            background-color: white;
+            padding: 30px 10px 10px 10px;
+            border-radius: 15px;
+            border: 1px solid #000;
+            box-shadow: 1px 3px 0 0 black;
+            position: relative;
+        }
+
+        .summary p:last-of-type::before {
+            content: "Conclusion";
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: black;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .summary.Vert p:last-of-type::before {
+            background-color: #daf4e6;
+        }
+
+        .summary.Rouge p:last-of-type::before {
+            background-color: #ffc8c8;
+        }
+
+        .summary.Marron p:last-of-type::before {
+            background-color: #bd9c9c;
+        }
+
+        .summary.Bleu p:last-of-type::before {
+            background-color: #c5c5fa;
+        }
+
+        .footer {
+            background-color: #000;
+            height: 20px;
+            flex-shrink: 0;
+        }
+    </style>
 </head>
 <body>
-<nav>
-    <img src="../../frontend/src/images/logo-sensei.png" alt="logo sensei">
-</nav>
+<div class="nav">
+    <img src="https://sensei-france.fr/wp-content/uploads/2021/05/cropped-LOGO-SENSEI-1-1-1.png" alt="logo sensei">
+</div>
 <div class="container">
-
     <div class="summary {{color}}">
         {{text_rapport}}
     </div>
 </div>
-
-<footer></footer>
+<div class="footer"></div>
 </body>
 </html>

@@ -67,7 +67,7 @@ const ResultsPersonalityTest = () => {
         <GlobalStyle>
             <StyledContainer maxWidth="lg">
                 <Box>
-                    <Title variant="h2" onClick={() => console.log(data?.modjoCallData)}>
+                    <Title variant="h2">
                         Vos Résultats de Personnalité
                     </Title>
                     <Subtitle variant="h6">

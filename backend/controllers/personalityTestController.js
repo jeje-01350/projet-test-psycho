@@ -7,6 +7,9 @@ const client = new OpenAI({
 
 const axios = require('axios');
 const CallModjo = require('../models/CallModjo');
+const {launch} = require("puppeteer");
+const fs = require("fs");
+const path = require('path');
 
 exports.saveHubspotTest = async (req, res) => {
     try {
@@ -26,7 +29,28 @@ exports.saveHubspotTest = async (req, res) => {
     } catch (error) {
         console.error('Erreur lors de l\'envoi à HubSpot:', error);
         res.status(500).json({ error: 'Erreur lors de l\'envoi à HubSpot.', details: error.message });
-    };
+    }
+}
+
+async function generatePDF(templatePath, replacements, pdfName) {
+    const browser = await launch();
+    const page = await browser.newPage();
+
+    // Charger le HTML et remplacer les variables
+    let template = fs.readFileSync(templatePath, 'utf8');
+    for (const key in replacements) {
+        template = template.replace(new RegExp(`{{${key}}}`, 'g'), replacements[key]);
+    }
+
+    // Charger le contenu dans Puppeteer
+    await page.setContent(template, { waitUntil: 'networkidle0' });
+
+    // Générer le PDF
+    const pdfPath = path.join(__dirname, '../pdf', pdfName);
+    await page.pdf({ path: pdfPath, format: 'A4' });
+
+    await browser.close();
+    return pdfPath;
 }
 
 exports.savePersonalityTestResult = async (req, res) => {
@@ -134,28 +158,34 @@ exports.savePersonalityTestResult = async (req, res) => {
                 : "Analyse de la lettre obtenue par le candidat";
 
             text = text
-                .replace(/#+\s/g, '')
-                .replace(/\*\*/g, '')
-                .replace(/\d+\.\s/g, '')
+                .replace(/#+\s/g, '')        // Retirer les titres Markdown
+                .replace(/\*\*/g, '')        // Retirer le gras (**)
+                .replace(/\d+\.\s/g, '')     // Retirer les numéros
                 .trim();
 
-            const sections = text.split('\n\n');
+            const sections = text.split('\n\n');  // Découper les sections
 
             const headers = [
                 headerTitle,
                 "Contexte professionnel propice",
                 analysisType === "color"
                     ? "Lien avec son profil de lettre"
-                    : "Lien avec l'analyse de la couleur",
+                    : "Lien avec l'analyse de la couleur"
             ];
 
             let htmlContent = "";
             let addedSections = new Set();
 
             sections.forEach((section, index) => {
-                if (!addedSections.has(section) && index < headers.length) {
-                    htmlContent += `<h2>${headers[index]}</h2>\n`;
-                    htmlContent += `<p>${section.trim()}</p>\n`;
+                if (!addedSections.has(section)) {
+                    if (index < headers.length) {
+                        htmlContent += `<h2>${headers[index]}</h2>\n`;
+                        const cleanedSection = section.replace(new RegExp(`^${headers[index]}\\s*:\\s*`, 'i'), '').trim();
+                        htmlContent += `<p>${cleanedSection}</p>\n`;
+                    } else {
+                        const cleanedConclusion = section.replace(/^Conclusion\s*:\s*/i, '').trim();
+                        htmlContent += `<p>${cleanedConclusion}</p>\n`;
+                    }
                     addedSections.add(section);
                 }
             });
@@ -223,6 +253,24 @@ exports.savePersonalityTestResult = async (req, res) => {
 
         const bilanColor = responsePhaseFinal.choices[0].message.content;
 
+        const bilanLetterHTML = cleanAndStructureHTML(bilanLetter, 'letter');
+        const bilanColorHTML = cleanAndStructureHTML(bilanColor, 'color');
+
+        const templatePath = path.join(__dirname, '../pdf/pdfTemplate.html');
+
+        // Générer les deux PDF
+        const pdfLetterPath = await generatePDF(templatePath, {
+            color: score.color,
+            text_rapport: bilanLetterHTML,
+            title: "pdf analyse de la lettre du candidat",
+        }, 'rapport_letter.pdf');
+
+        const pdfColorPath = await generatePDF(templatePath, {
+            color: score.color,
+            text_rapport: bilanColorHTML,
+            title: "pdf analyse de la couleur du candidat",
+        }, 'rapport_color.pdf');
+
         const newResult = new ResultsPersonalityTest({
             score,
             userAnswers,
@@ -235,9 +283,9 @@ exports.savePersonalityTestResult = async (req, res) => {
             message: 'Résultat sauvegardé avec succès.',
             data: newResult,
             bilanLetter,
-            htmlLetter : cleanAndStructureHTML(bilanLetter, 'letter'),
             bilanColor,
-            htmlColor : cleanAndStructureHTML(bilanColor, 'color'),
+            pdfColor: fs.readFileSync(pdfColorPath, { encoding: 'base64' }),
+            pdfLetter: fs.readFileSync(pdfLetterPath, { encoding: 'base64' }),
             modjoCallData
         });
     } catch (err) {
