@@ -128,13 +128,63 @@ exports.savePersonalityTestResult = async (req, res) => {
 
         const summary = responsePhaseCommercial.choices[0].message.content;
 
+        function cleanAndStructureHTML(text, analysisType) {
+            const headerTitle = analysisType === "color"
+                ? "Analyse de la couleur obtenue par le candidat"
+                : "Analyse de la lettre obtenue par le candidat";
+
+            text = text
+                .replace(/#+\s/g, '')
+                .replace(/\*\*/g, '')
+                .replace(/\d+\.\s/g, '')
+                .trim();
+
+            const sections = text.split('\n\n');
+
+            const headers = [
+                headerTitle,
+                "Contexte professionnel propice",
+                analysisType === "color"
+                    ? "Lien avec son profil de lettre"
+                    : "Lien avec l'analyse de la couleur",
+            ];
+
+            let htmlContent = "";
+            let addedSections = new Set();
+
+            sections.forEach((section, index) => {
+                if (!addedSections.has(section) && index < headers.length) {
+                    htmlContent += `<h2>${headers[index]}</h2>\n`;
+                    htmlContent += `<p>${section.trim()}</p>\n`;
+                    addedSections.add(section);
+                }
+            });
+
+            return htmlContent;
+        }
+
         const promptPhaseIntegration = `
-            Rédiges un rapport détaillé basé sur l'analyse de la lettre obtenue par le candidat. 
-            Explique dans quel contexte professionnel ce type de personne peut se sentir à l'aise. 
-            Mentionne le fait que pour completer cette analyse il est important la coupler avec l'analyse de la couleur.
-            lettre :  ${JSON.stringify(score.letters)}
-            description de la lettre : ${getLettersDescription(score.letters)}
-            `;
+            Rédige un rapport détaillé basé sur l'analyse de la lettre obtenue par le candidat en respectant **strictement** la structure suivante. 
+            
+            Ne génère pas de numéros (1., 2., 3.), pas de gras (**), ni de symboles markdown (##). Écris uniquement un texte clair et bien segmenté, sans ajouter d'en-têtes ou titres supplémentaires. Respecte exactement la structure ci-dessous :
+            
+            Analyse de la lettre obtenue par le candidat :
+               - Présente une analyse détaillée et précise de la lettre obtenue par le candidat.
+            
+            Contexte professionnel propice :
+               - Décris les types d'environnements professionnels où ce profil de candidat peut s'épanouir, avec des exemples de rôles et situations adaptés.
+            
+            Lien avec l'analyse de la couleur :
+               - Mentionne l'importance de coupler cette analyse avec l'analyse de la couleur pour obtenir une vision complète et équilibrée du profil du candidat.
+            
+            Conclusion :
+               - Résume les points clés de l'analyse en quelques phrases pour offrir un aperçu clair du profil du candidat.
+            
+            Lettre : ${JSON.stringify(score.letters)}
+            Description de la lettre : ${getLettersDescription(score.letters)}
+            Transcription Modjo (pour compléter l'analyse) : ${modjoCallData}
+        `;
+
 
         const responsePhaseIntegration = await client.chat.completions.create({
             model: 'gpt-3.5-turbo',
@@ -144,12 +194,27 @@ exports.savePersonalityTestResult = async (req, res) => {
         const bilanLetter = responsePhaseIntegration.choices[0].message.content;
 
         const promptPhaseFinal = `
-            Rédiges un rapport détaillé basé sur l'analyse de la couleur obtenue par le candidat. 
-            Explique dans quel contexte professionnel ce type de personne peut se sentir à l'aise. 
-            Fait le lien également avec son profil de lettre.
-            Couleur :  ${JSON.stringify(score.color)}
-            description de la couleur : ${getColorsDescription(score.color)}
-            `;
+            Rédige un rapport détaillé basé sur l'analyse de la couleur obtenue par le candidat en respectant **strictement** la structure suivante :
+            
+            1. **Analyse de la couleur obtenue par le candidat** : 
+               - Présente une analyse détaillée et précise de la couleur obtenue par le candidat. N'ajoute aucun titre supplémentaire ni éléments markdown comme ##. Utilise uniquement du texte clair.
+            
+            2. **Contexte professionnel propice** : 
+               - Décris les types d'environnements professionnels où ce profil de candidat peut s'épanouir, avec des exemples concrets de postes adaptés.
+            
+            3. **Lien avec son profil de lettre** : 
+               - Fais uniquement le lien entre les résultats de l'analyse et les éléments que le candidat aurait pu mentionner dans sa lettre (compétences, expériences, ambitions).
+            
+            4. **Conclusion** : 
+               - Résume les points clés de l'analyse en quelques phrases. Aucune redondance n'est autorisée.
+            
+            N'inclut pas de numéros, pas de gras (**), pas de symboles markdown comme ##. Rédige un texte clair, divisé par des paragraphes simples.
+            
+            Couleur : ${JSON.stringify(score.color)}
+            Description de la couleur : ${getColorsDescription(score.color)}
+            Transcription Modjo (à titre d'information) : ${modjoCallData}
+        `;
+
 
         const responsePhaseFinal = await client.chat.completions.create({
             model: 'gpt-3.5-turbo',
@@ -166,7 +231,15 @@ exports.savePersonalityTestResult = async (req, res) => {
 
         await newResult.save();
 
-        res.status(201).json({ message: 'Résultat sauvegardé avec succès.', data: newResult, bilanLetter, bilanColor, modjoCallData });
+        res.status(201).json({
+            message: 'Résultat sauvegardé avec succès.',
+            data: newResult,
+            bilanLetter,
+            htmlLetter : cleanAndStructureHTML(bilanLetter, 'letter'),
+            bilanColor,
+            htmlColor : cleanAndStructureHTML(bilanColor, 'color'),
+            modjoCallData
+        });
     } catch (err) {
         console.error("Error saving result:", err);
         res.status(500).json({ error: "Error saving result", details: err.message });
