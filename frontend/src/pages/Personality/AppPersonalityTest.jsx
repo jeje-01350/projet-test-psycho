@@ -173,7 +173,7 @@ const AppPersonalityTest = () => {
     useEffect(() => {
         const shuffledQuestions = [...originalQuestions].sort(() => Math.random() - 0.5);
         setQuestions([...shuffledQuestions, {
-            question: "À quel point voulez-vous faire bouger les choses ?",
+            question: "Sur une échelle de 1 à 10, où en est votre envi de faire bouger les choses ?",
             type: "scale",
         }]);
     }, []);
@@ -301,12 +301,12 @@ const AppPersonalityTest = () => {
                         summary,
                         rapportCouleur,
                         rapportLettre,
+                        changeImpact,
                         user_hubspot: {
                             hubspot_id: recordID,
                             hubspot_name: name,
                             hubspot_firstname: firstname,
                             hubspot_mail: email,
-                            hubspot_changeImpact : changeImpact
                         }
                     },
                 };
@@ -427,7 +427,7 @@ const AppPersonalityTest = () => {
                     currentQuestionIndex === totalQuestions - 1 ? (
                         <div>
                             <QuestionText>
-                                Sur une echelle de 0 à 10, où en est votre envi de faire bouger les choses
+                                Sur une échelle de 1 à 10, où en est votre envi de faire bouger les choses ?
                             </QuestionText>
                             <StyledRangeInput
                                 type="range"
