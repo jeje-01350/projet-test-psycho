@@ -10,7 +10,6 @@ import styleSensei from '../../images/style-sensei.png';
 import loaderSensei from '../../images/loader-sensei.png';
 
 const GlobalStyle = createGlobalStyle`
-  @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&family=Nunito:wght@400;600&display=swap');
   body {
     background-color: #fdf6f1;
     font-family: "Nunito", sans-serif;
@@ -64,7 +63,7 @@ const AnswersContainer = styled.div`
 const StyledButton = styled(Button)`
   width: 100%;
   padding: 0.8rem;
-  font-size: 14px !important;
+  font-size: 15px !important;
   font-family: "Nunito", sans-serif !important;
   text-transform: none !important;
   border-radius: 12px !important;
@@ -347,8 +346,8 @@ const AppPersonalityTest = () => {
                 const rapportCouleur = data.bilanLetter;
                 const rapportLettre = data.bilanColor;
                 const modjoCallData = data.modjoCallData;
-                const pdfColorBlob = atob(data.pdfColor);
-                const pdfLetterBlob = atob(data.pdfLetter);
+                const pdfColorBase64 = data.pdfColor;
+                const pdfLetterBase64 = data.pdfLetter;
 
                 const secondApiBody = {
                     results: {
@@ -361,8 +360,8 @@ const AppPersonalityTest = () => {
                         rapportCouleur,
                         rapportLettre,
                         changeImpact,
-                        pdfColorBlob,
-                        pdfLetterBlob,
+                        pdfColorBase64,
+                        pdfLetterBase64,
                         user_hubspot: {
                             hubspot_id: recordID,
                             hubspot_name: name,
