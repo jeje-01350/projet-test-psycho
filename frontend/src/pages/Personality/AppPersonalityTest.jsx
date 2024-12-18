@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import styled, { createGlobalStyle } from "styled-components";
-import { CircularProgress, LinearProgress, Button, Box } from "@mui/material";
+import styled, { createGlobalStyle, keyframes } from "styled-components";
+import { LinearProgress, Button, Box } from "@mui/material";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { personalityTestQuestion as originalQuestions } from "../../constants/index";
 import { useUserContext } from "../../context/userContext.jsx";
 import styleSensei from '../../images/style-sensei.png';
+import loaderSensei from '../../images/loader-sensei.png';
 
 const GlobalStyle = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;600&family=Nunito:wght@400;600&display=swap');
@@ -154,6 +155,62 @@ const NextButton = styled(Button)`
   }
 `;
 
+const bounce = keyframes`
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-20px);
+  }
+  60% {
+    transform: translateY(-10px);
+  }
+`;
+
+const shadowBounce = keyframes`
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 0.5;
+  }
+  40% {
+    transform: translateX(-50%) scale(1.3);
+    opacity: 0.3;
+  }
+  60% {
+    transform: translateX(-50%) scale(1.1);
+    opacity: 0.4;
+  }
+`;
+
+const BouncingLoader = styled.div`
+  position: relative;
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    animation: ${bounce} 2s infinite;
+    position: relative;
+    z-index: 2;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    width: 60%;
+    height: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    transform: translateX(-50%);
+    animation: ${shadowBounce} 2s infinite;
+    z-index: 1;
+  }
+`;
+
 const AppPersonalityTest = () => {
     const [responses, setResponses] = useState([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -163,7 +220,7 @@ const AppPersonalityTest = () => {
         Letters: { A: 10, B: 10, C: 10, D: 10 }
     });
     const [motivationScores, setMotivationScores] = useState({});
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [questions, setQuestions] = useState([]);
     const [changeImpact, setChangeImpact] = useState(5);
 
@@ -234,12 +291,12 @@ const AppPersonalityTest = () => {
         const motivationalItems = Object.entries(motivationScores)
             .filter(([_, score]) => score === Math.max(...Object.values(motivationScores)))
             .map(([key]) => key)
-            .join(" / "); // Transformation en chaîne avec ", "
+            .join(" / ");
 
         return {
             colors: dominantColor,
             letters: dominantLetter,
-            motivationalItems, // Résultat déjà transformé en chaîne
+            motivationalItems,
         };
     };
 
@@ -422,11 +479,15 @@ const AppPersonalityTest = () => {
             <GlobalStyle />
             <QuizContainer>
                 <ToastContainer />
-                <ProgressContainer>
-                    <LinearProgress variant="determinate" value={progress} />
-                </ProgressContainer>
+                {!loading && (
+                    <ProgressContainer>
+                        <LinearProgress variant="determinate" value={progress} />
+                    </ProgressContainer>
+                )}
                 {loading ? (
-                    <CircularProgress />
+                    <BouncingLoader>
+                        <img src={loaderSensei} alt="Loader Sensei" />
+                    </BouncingLoader>
                 ) : (
                     currentQuestionIndex === totalQuestions - 1 ? (
                         <div>
