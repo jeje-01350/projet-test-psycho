@@ -220,7 +220,7 @@ const AppPersonalityTest = () => {
         Letters: { A: 10, B: 10, C: 10, D: 10 }
     });
     const [motivationScores, setMotivationScores] = useState({});
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [questions, setQuestions] = useState([]);
     const [changeImpact, setChangeImpact] = useState(5);
 
