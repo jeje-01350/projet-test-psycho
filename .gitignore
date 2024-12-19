@@ -1,2 +1,4 @@
 /.idea/
 /node_modules/
+backend/pdf/rapport_color.pdf
+backend/pdf/rapport_letter.pdf
