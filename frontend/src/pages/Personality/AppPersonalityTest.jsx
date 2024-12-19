@@ -405,7 +405,7 @@ const AppPersonalityTest = () => {
                     });
 
                     toast.success("Résultats enregistrés avec succès !");
-                    navigate("/mbti/results", { state: { data: { userAnswers, results, summary, modjoCallData, pdfColorBlob } } });
+                    navigate("/mbti/results", { state: { data: { userAnswers, results, summary, modjoCallData } } });
                 } else {
                     toast.error("Erreur lors de l'envoi des résultats au deuxième serveur.");
                 }
