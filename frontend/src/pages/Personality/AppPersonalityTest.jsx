@@ -265,7 +265,6 @@ const AppPersonalityTest = () => {
         });
 
         setAnswersCount(updatedAnswersCount);
-        console.log("Updated Counts: ", updatedAnswersCount);
     };
 
     const updateMotivationScores = (question, score) => {
@@ -277,15 +276,11 @@ const AppPersonalityTest = () => {
             updatedScores[question.type] += score;
         }
         setMotivationScores(updatedScores);
-        console.log("Updated Motivation Scores: ", updatedScores);
     };
 
     const calculateResults = () => {
         const dominantColor = Object.entries(answersCount.Colors).reduce((a, b) => (b[1] > a[1] ? b : a))[0];
         const dominantLetter = Object.entries(answersCount.Letters).reduce((a, b) => (b[1] > a[1] ? b : a))[0];
-
-        console.log("Dominant Color: ", dominantColor);
-        console.log("Dominant Letter: ", dominantLetter);
 
         const motivationalItems = Object.entries(motivationScores)
             .filter(([_, score]) => score === Math.max(...Object.values(motivationScores)))
@@ -427,10 +422,6 @@ const AppPersonalityTest = () => {
 
     const handleAnswerSelection = (index) => {
         setSelectedAnswerIndex(index);
-        console.log(
-            `Answer selected for question ${currentQuestionIndex + 1}:`,
-            questions[currentQuestionIndex].answers[index].content
-        );
     };
 
     const handleNextQuestion = () => {
@@ -452,7 +443,6 @@ const AppPersonalityTest = () => {
                 { questionIndex: currentQuestionIndex, answerContent: selectedAnswer.content, answerType: selectedAnswer.type || null },
             ];
             setResponses(updatedResponses);
-            console.log(`Responses updated:`, updatedResponses);
 
             setCurrentQuestionIndex(currentQuestionIndex + 1);
             setSelectedAnswerIndex(null);
