@@ -36,16 +36,13 @@ async function generatePDF(templatePath, replacements, pdfName) {
     const browser = await launch();
     const page = await browser.newPage();
 
-    // Charger le HTML et remplacer les variables
     let template = fs.readFileSync(templatePath, 'utf8');
     for (const key in replacements) {
         template = template.replace(new RegExp(`{{${key}}}`, 'g'), replacements[key]);
     }
 
-    // Charger le contenu dans Puppeteer
     await page.setContent(template, { waitUntil: 'networkidle0' });
 
-    // Générer le PDF
     const pdfPath = path.join(__dirname, '../pdf', pdfName);
     await page.pdf({ path: pdfPath, format: 'A4' });
 
@@ -158,12 +155,12 @@ exports.savePersonalityTestResult = async (req, res) => {
                 : "Analyse de la lettre obtenue par le candidat";
 
             text = text
-                .replace(/#+\s/g, '')        // Retirer les titres Markdown
-                .replace(/\*\*/g, '')        // Retirer le gras (**)
-                .replace(/\d+\.\s/g, '')     // Retirer les numéros
+                .replace(/#+\s/g, '')
+                .replace(/\*\*/g, '')
+                .replace(/\d+\.\s/g, '')
                 .trim();
 
-            const sections = text.split('\n\n');  // Découper les sections
+            const sections = text.split('\n\n');
 
             const headers = [
                 headerTitle,
@@ -218,7 +215,8 @@ exports.savePersonalityTestResult = async (req, res) => {
 
         const responsePhaseIntegration = await client.chat.completions.create({
             model: 'gpt-3.5-turbo',
-            messages: [{ role: 'user', content: promptPhaseIntegration }]
+            messages: [{ role: 'user', content: promptPhaseIntegration }],
+            // temperature: 0.75
         });
 
         const bilanLetter = responsePhaseIntegration.choices[0].message.content;
@@ -248,7 +246,8 @@ exports.savePersonalityTestResult = async (req, res) => {
 
         const responsePhaseFinal = await client.chat.completions.create({
             model: 'gpt-3.5-turbo',
-            messages: [{ role: 'user', content: promptPhaseFinal }]
+            messages: [{ role: 'user', content: promptPhaseFinal }],
+            // temperature: 0.75
         });
 
         const bilanColor = responsePhaseFinal.choices[0].message.content;

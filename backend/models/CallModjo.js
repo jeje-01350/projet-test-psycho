@@ -8,7 +8,11 @@ const CallModjoSchema = new mongoose.Schema(
         },
       call_note: {
           type: String,
-          required: true,
+          required: false,
+      },
+      call_note_visio: {
+          type: String,
+          required: false,
       }
   },
   { timestamps: true }
