@@ -4,8 +4,8 @@ exports.saveModjoCall = async (req, res) => {
     try {
         const { hs_object_id, call_note, call_note_visio } = req.body;
 
-        if (!hs_object_id || !call_note || !call_note_visio) {
-            return res.status(400).json({ error: 'Veuillez fournir hs_object_id et call_note.' });
+        if (!hs_object_id ) {
+            return res.status(400).json({ error: 'Veuillez fournir hs_object_id' });
         }
 
         const newCall = new CallModjo({
