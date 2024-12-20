@@ -351,6 +351,7 @@ const AppPersonalityTest = () => {
                             letters: results.letters,
                         },
                         userAnswers,
+                        nomTest: "mbti",
                         summary,
                         rapportCouleur,
                         rapportLettre,

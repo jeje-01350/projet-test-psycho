@@ -196,19 +196,19 @@ exports.savePersonalityTestResult = async (req, res) => {
         const promptPhaseIntegration = `
             Rédige un rapport détaillé basé sur l'analyse de la lettre obtenue par le candidat en respectant **strictement** la structure suivante. 
             
-            Ne génère pas de numéros (1., 2., 3.), pas de gras (**), ni de symboles markdown (##). Écris uniquement un texte clair et bien segmenté, sans ajouter d'en-têtes ou titres supplémentaires. Respecte exactement la structure ci-dessous :
-            
-            Analyse de la lettre obtenue par le candidat :
+            1. **Analyse de la lettre obtenue par le candidat** :
                - Présente une analyse détaillée et précise de la lettre obtenue par le candidat.
             
-            Contexte professionnel propice :
+             2. **Contexte professionnel propice** : 
                - Décris les types d'environnements professionnels où ce profil de candidat peut s'épanouir, avec des exemples de rôles et situations adaptés.
             
-            Lien avec l'analyse de la couleur :
+           3. **Lien avec son analyse de couleur** : 
                - Mentionne l'importance de coupler cette analyse avec l'analyse de la couleur pour obtenir une vision complète et équilibrée du profil du candidat.
             
-            Conclusion :
+            4. **Conclusion** : 
                - Résume les points clés de l'analyse en quelques phrases pour offrir un aperçu clair du profil du candidat.
+            
+             N'inclut pas de numéros, pas de gras (**), pas de symboles markdown comme ##. Rédige un texte clair, divisé par des paragraphes simples.
             
             Lettre : ${JSON.stringify(score.letters)}
             Description de la lettre : ${getLettersDescription(score.letters)}
