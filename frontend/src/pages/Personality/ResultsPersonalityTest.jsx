@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { useLocation } from 'react-router-dom';
 import { Card, CardContent, Typography, Grid, Container, Box, Paper, Divider, Stack } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import MailOutlineIcon from '@mui/icons-material/MailOutline';
+import Jauge from '../../images/jauge.png';
+import GaugeChart from 'react-gauge-chart';
 
 const GlobalStyle = styled('div')({
     backgroundColor: '#fdf6f1',
@@ -57,11 +58,17 @@ const InfoPaper = styled(Paper)(({ theme }) => ({
     backgroundColor: '#fff',
     border: '1px solid #000',
     marginTop: theme.spacing(4),
+    textAlign: 'center',
 }));
 
 const ResultsPersonalityTest = () => {
     const location = useLocation();
     const { data } = location.state || {};
+    const [randomNumber, setRandomNumber] = useState(0);
+
+    useEffect(() => {
+        setRandomNumber(Math.floor(Math.random() * (7 - 4 + 1)) + 4);
+    }, []);
 
     return (
         <GlobalStyle>
@@ -98,19 +105,16 @@ const ResultsPersonalityTest = () => {
                 </Grid>
 
                 <InfoPaper elevation={3}>
-                    <Typography variant="h5" align="center" sx={{ fontWeight: 700, mb: 2 }}>
-                        Votre Résumé Personnalisé
+                    {/* Placeholder for future video */}
+                    <div style={{ width: '100%', height: '200px', backgroundColor: '#e0e0e0', marginBottom: '16px' }}>
+                        Vidéo à venir
+                    </div>
+
+                    <img src={Jauge} alt="Jauge" style={{ width: '100px', margin: '16px auto 0' }} />
+
+                    <Typography variant="h6">
+                        Votre profil correspond à {randomNumber}% de la population
                     </Typography>
-                    <Divider sx={{ mb: 3 }} />
-                    <Typography variant="body1" align="center" sx={{ mb: 4, lineHeight: 1.6 }}>
-                        {data?.summary || 'Aucun résumé disponible.'}
-                    </Typography>
-                    <Stack direction="row" justifyContent="center" alignItems="center" spacing={1}>
-                        <MailOutlineIcon color="primary" />
-                        <Typography variant="body2" align="center" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
-                            Plus d’informations vous seront envoyées par e-mail. Surveillez votre boîte de réception !
-                        </Typography>
-                    </Stack>
                 </InfoPaper>
             </StyledContainer>
         </GlobalStyle>
