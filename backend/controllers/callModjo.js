@@ -25,19 +25,30 @@ exports.saveModjoCall = async (req, res) => {
                 } else {
                     existingCall.call_note_visio = call_note_visio;
                 }
+
+                // Ajouter ou mettre à jour le rapport_v2 en tant que chaîne simple
+                existingCall.rapport_v2 = 'test rapport';
             }
 
             await existingCall.save();
-            return res.status(200).json({ message: 'Appel mis à jour avec succès.', data: existingCall });
+            return res.status(200).json({
+                message: 'Appel mis à jour avec succès.',
+                data: existingCall
+            });
         } else {
             const newCall = new CallModjo({
                 hs_object_id,
                 call_note,
-                call_note_visio
+                call_note_visio,
+                rapport_v2: call_note_visio ? 'test rapport' : undefined
             });
 
             await newCall.save();
-            return res.status(201).json({ message: 'Nouvel appel enregistré avec succès.', data: newCall });
+
+            return res.status(201).json({
+                message: 'Nouvel appel enregistré avec succès.',
+                data: newCall
+            });
         }
     } catch (error) {
         console.error('Erreur lors de la sauvegarde de l\'appel:', error);

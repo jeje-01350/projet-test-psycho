@@ -222,6 +222,7 @@ const AppPersonalityTest = () => {
     const [loading, setLoading] = useState(false);
     const [questions, setQuestions] = useState([]);
     const [changeImpact, setChangeImpact] = useState(5);
+    const [randomNumber, setRandomNumber] = useState(0);
 
     const { userId, token, projectTaskId, recordID, name, firstname, email } = useUserContext();
     const navigate = useNavigate();
@@ -232,6 +233,8 @@ const AppPersonalityTest = () => {
             question: "Sur une échelle de 1 à 10, où en est votre envi de faire bouger les choses ?",
             type: "scale",
         }]);
+
+        setRandomNumber(Math.floor(Math.random() * (7 - 4 + 1)) + 4);
     }, []);
 
     const totalQuestions = questions.length;
@@ -331,13 +334,14 @@ const AppPersonalityTest = () => {
                         letters: results.letters,
                     },
                     userAnswers,
-                    hs_object_id: recordID
+                    hs_object_id: recordID,
+                    name,
+                    firstname
                 }),
             });
 
             if (res.status === 201) {
                 const data = await res.json();
-                const summary = data.data.summary;
                 const rapportCouleur = data.bilanLetter;
                 const rapportLettre = data.bilanColor;
                 const modjoCallData = data.modjoCallData;
@@ -353,7 +357,6 @@ const AppPersonalityTest = () => {
                         userAnswers,
                         codeTest: "mbti",
                         nomTest: "Test de personalité",
-                        summary,
                         rapportCouleur,
                         rapportLettre,
                         changeImpact,
@@ -392,7 +395,6 @@ const AppPersonalityTest = () => {
                         rapport_couleur_situatio: rapportCouleur,
                         lettre_situatio: results.letters,
                         rapport_lettre_situatio: rapportLettre,
-                        rapport_commercial_situatio: summary,
                         email : email,
                         item_de_motivation: results.motivationalItems,
                         changeImpact: changeImpact,
@@ -407,7 +409,7 @@ const AppPersonalityTest = () => {
                     });
 
                     toast.success("Résultats enregistrés avec succès !");
-                    navigate("/mbti/results", { state: { data: { userAnswers, results, summary, modjoCallData } } });
+                    navigate("/mbti/results", { state: { data: { userAnswers, results, randomNumber } } });
                 } else {
                     toast.error("Erreur lors de l'envoi des résultats au deuxième serveur.");
                 }

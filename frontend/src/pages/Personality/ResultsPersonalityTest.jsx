@@ -64,11 +64,6 @@ const InfoPaper = styled(Paper)(({ theme }) => ({
 const ResultsPersonalityTest = () => {
     const location = useLocation();
     const { data } = location.state || {};
-    const [randomNumber, setRandomNumber] = useState(0);
-
-    useEffect(() => {
-        setRandomNumber(Math.floor(Math.random() * (7 - 4 + 1)) + 4);
-    }, []);
 
     return (
         <GlobalStyle>
@@ -105,15 +100,28 @@ const ResultsPersonalityTest = () => {
                 </Grid>
 
                 <InfoPaper elevation={3}>
-                    {/* Placeholder for future video */}
-                    <div style={{ width: '100%', height: '200px', backgroundColor: '#e0e0e0', marginBottom: '16px' }}>
+                    <Typography variant="h5" align="center" sx={{ fontWeight: 700, mb: 2 }}>
+                        Votre Résumé Personnalisé
+                    </Typography>
+
+                    <Divider sx={{ mb: 3 }} />
+
+                    <Typography variant="p" style={{ marginBottom: '16px' }}>
+                        Ce premier aperçu n’est qu’une étape. Lors de votre rendez-vous avec notre consultant,
+                        vous bénéficierez d’un éclairage professionnel sur vos résultats.
+                        Ensemble, nous explorerons comment aligner vos forces sur vos objectifs,
+                        dessiner un plan d’action personnalisé, et transformer vos atouts en véritables
+                        leviers pour atteindre vos ambitions.
+                    </Typography>
+
+                    <div style={{ width: '100%', height: '200px', backgroundColor: '#e0e0e0', marginBottom: '16px', marginTop: "30px"}}>
                         Vidéo à venir
                     </div>
 
                     <img src={Jauge} alt="Jauge" style={{ width: '100px', margin: '16px auto 0' }} />
 
                     <Typography variant="h6">
-                        Votre profil correspond à {randomNumber}% de la population
+                        Votre profil correspond à {data.randomNumber}% de la population
                     </Typography>
                 </InfoPaper>
             </StyledContainer>

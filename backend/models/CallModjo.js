@@ -13,6 +13,10 @@ const CallModjoSchema = new mongoose.Schema(
       call_note_visio: {
           type: String,
           required: false,
+      },
+      rapport_v2: {
+          type: String,
+          required: false,
       }
   },
   { timestamps: true }
