@@ -3,7 +3,6 @@ import { useLocation } from 'react-router-dom';
 import { Card, CardContent, Typography, Grid, Container, Box, Paper, Divider, Stack } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Jauge from '../../images/jauge.png';
-import GaugeChart from 'react-gauge-chart';
 
 const GlobalStyle = styled('div')({
     backgroundColor: '#fdf6f1',
