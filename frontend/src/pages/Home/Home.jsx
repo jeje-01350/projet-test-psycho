@@ -34,6 +34,8 @@ const UserImage = styled.img`
   max-width: 100%;
   height: 400px;
 
+  display: none;
+
   @media (max-width: 779px) {
     display: none;
   }
