@@ -342,9 +342,8 @@ const AppPersonalityTest = () => {
 
             if (res.status === 201) {
                 const data = await res.json();
-                const rapportCouleur = data.bilanLetter;
-                const rapportLettre = data.bilanColor;
-                const modjoCallData = data.modjoCallData;
+                const rapportCouleur = data.bilanColor;
+                const rapportLettre = data.bilanLetter;
                 const pdfColorBase64 = data.pdfColor;
                 const pdfLetterBase64 = data.pdfLetter;
 
