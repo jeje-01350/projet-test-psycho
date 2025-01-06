@@ -61,10 +61,6 @@ exports.savePersonalityTestResult = async (req, res) => {
         let modjoCallData;
         try {
             modjoCallData = await CallModjo.findOne({ hs_object_id });
-
-            if (!modjoCallData) {
-                throw new Error('Aucun appel trouvé avec cet hs_object_id.');
-            }
         } catch (error) {
             console.error('Erreur lors de la récupération des données Modjo:', error);
             return res.status(500).json({ error: 'Erreur lors de la récupération des données Modjo.', details: error.message });

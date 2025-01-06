@@ -1,7 +1,43 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 import userImage from '../../images/homepageImage.png';
 import senseiStyle from '../../images/style-sensei.png';
+
+const SenseiImage = styled.img`
+  position: absolute;
+  right: 100px;
+  top: 30px;
+  width: 100px;
+  height: auto;
+
+  @media (max-width: 779px) {
+    display: none;
+  }
+`;
+
+const StyledTitle = styled.h1`
+  color: #333;
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+
+  @media (max-width: 779px) {
+    font-size: 2rem;
+  }
+`;
+
+const UserImage = styled.img`
+  position: absolute;
+  right: 50px;
+  bottom: 110px;
+  transform: rotate(15deg);
+  max-width: 100%;
+  height: 400px;
+
+  @media (max-width: 779px) {
+    display: none;
+  }
+`;
 
 const Home = () => {
     const navigate = useNavigate();
@@ -31,26 +67,6 @@ const Home = () => {
         width: '90%',
     };
 
-    const rightSectionStyle = {
-        position: 'absolute',
-        transform:'rotate(15deg)',
-        right: "50px",
-        bottom: "110px"
-    };
-
-    const ImageSensei = {
-        position: 'absolute',
-        transform:'rotate(15deg)',
-        right:'100px',
-        top: "30px"
-    };
-
-    const titleStyle = {
-        color: '#333',
-        fontSize: '2.5rem',
-        marginBottom: '20px',
-    };
-
     const descriptionStyle = {
         fontSize: '1.2rem',
         marginBottom: '30px',
@@ -77,11 +93,6 @@ const Home = () => {
         transform: 'scale(0.95)',
     };
 
-    const imageStyle = {
-        maxWidth: '100%',
-        height: '400px',
-    };
-
     const footerBarStyle = {
         backgroundColor: 'black',
         height: '30px',
@@ -95,7 +106,7 @@ const Home = () => {
         <div style={pageStyle}>
             <div style={containerStyle}>
                 <div style={leftSectionStyle}>
-                    <h1 style={titleStyle}>Test de personnalité</h1>
+                    <StyledTitle>Test de personnalité</StyledTitle>
                     <p style={descriptionStyle}>
                         Ce test a pour vocation de faire le point sur les éléments clés de votre personnalité, nous permettant d'adapter au plus près nos accompagnements.
                         <br/><br/>
@@ -116,19 +127,8 @@ const Home = () => {
                         Commencer le test
                     </button>
                 </div>
-                <div style={rightSectionStyle}>
-                    <img
-                        src={userImage}
-                        alt="Illustration"
-                        style={imageStyle}
-                    />
-                </div>
-                <div style={ImageSensei}>
-                    <img
-                        src={senseiStyle}
-                        alt="Illustration"
-                    />
-                </div>
+                <UserImage src={userImage} alt="Illustration" />
+                <SenseiImage src={senseiStyle} alt="Illustration" />
             </div>
 
             <div style={footerBarStyle}></div>
