@@ -485,7 +485,7 @@ const AppPersonalityTest = () => {
                     currentQuestionIndex === totalQuestions - 1 ? (
                         <div>
                             <QuestionText>
-                                Sur une échelle de 1 à 10, où en est votre envi de faire bouger les choses ?
+                                Sur une échelle de 1 à 10, où en est votre envie de faire bouger les choses ?
                             </QuestionText>
                             <StyledRangeInput
                                 type="range"
