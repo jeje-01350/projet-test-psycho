@@ -145,64 +145,6 @@ exports.savePersonalityTestResult = async (req, res) => {
             return htmlContent;
         }
 
-
-        const promptPhaseIntegration = `
-            Objectif : Renforcer l’envie du candidat en liant les résultats de la lettre avec l’analyse de la couleur pour donner une vision globale de son potentiel et des actions possibles.
-
-            Vous êtes une IA générant un rapport psychométrique personnalisé basé sur le test MBTI. Ce rapport est destiné à un candidat dans le cadre d’un processus commercial. Il vise à valoriser ses résultats de lettre en les liant subtilement à son analyse de couleur, tout en renforçant son intérêt pour un bilan de compétences. Respectez strictement les consignes suivantes :  
-            
-            1. **Page de Titre :**  
-               - Titre principal : "Analyse de votre profil - Résultat Lettre".  
-               - Sous-titre : "Comprenez votre potentiel et projetez-vous dans l’avenir".  
-               - N’incluez aucun autre contenu sur cette page.
-            
-            2. **Introduction :**  
-               - Présentez la lettre comme un complément essentiel à l’analyse de la couleur.  
-               - Exemple :  
-                 *"Ce rapport explore votre résultat de lettre, un élément clé pour comprendre votre manière d’interagir avec les environnements professionnels. Associée à votre analyse couleur, elle permet d’obtenir une vision globale et équilibrée de votre profil."*
-            
-            3. **Analyse de la Lettre :**  
-               - Présentez la lettre obtenue et deux adjectifs clés issus de sa description.  
-                 Exemple : "Votre lettre, A, reflète une personnalité confiante et pragmatique."  
-               - **Forces principales :** Détaillez 2-3 forces clés issues de la description.  
-                 Exemple : *"Vous êtes reconnu(e) pour votre aptitude à [force 1], et votre capacité à [force 2] est un véritable atout dans des environnements exigeants."*  
-               - **Faiblesses potentielles :** Mentionnez 1-2 faiblesses de manière constructive, en proposant l’accompagnement comme une solution.  
-            
-            4. **Contexte Professionnel Propice :**  
-               - Décrivez des environnements où ce profil peut exceller, en lien avec la lettre.  
-               - Donnez des exemples concrets de rôles professionnels.  
-                 Exemple : *"Ce profil est souvent valorisé dans des rôles comme [rôle 1] ou [rôle 2], qui nécessitent [compétence clé]."*  
-            
-            5. **Lien avec l’Analyse de la Couleur :**  
-               - Expliquez comment la lettre et la couleur se complètent pour offrir une vision globale.  
-                 Exemple :  
-                 *"Associée à votre couleur (${score.color}), votre lettre (${score.letters}) met en lumière une combinaison unique de qualités qui vous positionne idéalement pour des opportunités professionnelles alignées avec vos ambitions."*
-            
-            6. **Synthèse et Appel à l’Action :**  
-               - Résumez les points clés et concluez avec un appel à l’action engageant :  
-                 Exemple :  
-                 *"Ce rapport met en avant vos atouts et ouvre des perspectives passionnantes. Un bilan de compétences approfondi vous permettrait d’aligner vos qualités sur des objectifs professionnels concrets et réalisables."*  
-               - Ajoutez un disclaimer neutre :  
-                 *"Ces résultats constituent une base pour une réflexion approfondie et peuvent être utilisés dans un cadre personnalisé."*
-            
-            **Variables à intégrer :**
-            - Lettre : ${JSON.stringify(score.letters)}  
-            - Description de la lettre : ${getLettersDescription(score.letters)}  
-            - Description de la couleur : ${getColorsDescription(score.color)}  
-            - Transcriptions (informations à utiliser subtilement) : ${modjoCallData}
-            
-            **Instructions supplémentaires :**
-            - Rédigez des paragraphes fluides et engageants.  
-            - Excluez toute mention explicite des transcriptions ou d’intelligence artificielle.
-        `;
-
-        const responsePhaseIntegration = await client.chat.completions.create({
-            model: 'gpt-3.5-turbo',
-            messages: [{ role: 'user', content: promptPhaseIntegration }],
-        });
-
-        const bilanLetter = responsePhaseIntegration.choices[0].message.content;
-
         const promptPhaseFinal = `
             Objectif : Susciter l’intérêt du candidat en valorisant subtilement ses forces tout en le projetant dans un contexte professionnel motivant.
 
@@ -255,6 +197,63 @@ exports.savePersonalityTestResult = async (req, res) => {
 
         const bilanColor = responsePhaseFinal.choices[0].message.content;
 
+        const promptPhaseIntegration = `
+            Objectif : Renforcer l’envie du candidat en liant les résultats de la lettre avec l’analyse de la couleur pour donner une vision globale de son potentiel et des actions possibles.
+
+            Vous êtes une IA générant un rapport psychométrique personnalisé basé sur le test MBTI. Ce rapport est destiné à un candidat dans le cadre d’un processus commercial. Il vise à valoriser ses résultats de lettre en les liant subtilement à son analyse de couleur, tout en renforçant son intérêt pour un bilan de compétences. Respectez strictement les consignes suivantes :  
+            
+            1. **Page de Titre :**  
+               - Titre principal : "Analyse de votre profil - Résultat Lettre".  
+               - Sous-titre : "Comprenez votre potentiel et projetez-vous dans l’avenir".  
+               - N’incluez aucun autre contenu sur cette page.
+            
+            2. **Introduction :**  
+               - Présentez la lettre comme un complément essentiel à l’analyse de la couleur.  
+               - Exemple :  
+                 *"Ce rapport explore votre résultat de lettre, un élément clé pour comprendre votre manière d’interagir avec les environnements professionnels. Associée à votre analyse couleur, elle permet d’obtenir une vision globale et équilibrée de votre profil."*
+            
+            3. **Analyse de la Lettre :**  
+               - Présentez la lettre obtenue et deux adjectifs clés issus de sa description.  
+                 Exemple : "Votre lettre, A, reflète une personnalité confiante et pragmatique."  
+               - **Forces principales :** Détaillez 2-3 forces clés issues de la description.  
+                 Exemple : *"Vous êtes reconnu(e) pour votre aptitude à [force 1], et votre capacité à [force 2] est un véritable atout dans des environnements exigeants."*  
+               - **Faiblesses potentielles :** Mentionnez 1-2 faiblesses de manière constructive, en proposant l’accompagnement comme une solution.  
+            
+            4. **Contexte Professionnel Propice :**  
+               - Décrivez des environnements où ce profil peut exceller, en lien avec la lettre.  
+               - Donnez des exemples concrets de rôles professionnels.  
+                 Exemple : *"Ce profil est souvent valorisé dans des rôles comme [rôle 1] ou [rôle 2], qui nécessitent [compétence clé]."*  
+            
+            5. **Lien avec l’Analyse de la Couleur :**  
+               - Expliquez comment la lettre et la couleur se complètent pour offrir une vision globale, en se servant de l'analyse ${bilanColor}  
+                 Exemple :  
+                 *"Associée à votre couleur (${score.color}), votre lettre (${score.letters}) met en lumière une combinaison unique de qualités qui vous positionne idéalement pour des opportunités professionnelles alignées avec vos ambitions."*
+            
+            6. **Synthèse et Appel à l’Action :**  
+               - Résumez les points clés et concluez avec un appel à l’action engageant :  
+                 Exemple :  
+                 *"Ce rapport met en avant vos atouts et ouvre des perspectives passionnantes. Un bilan de compétences approfondi vous permettrait d’aligner vos qualités sur des objectifs professionnels concrets et réalisables."*  
+               - Ajoutez un disclaimer neutre :  
+                 *"Ces résultats constituent une base pour une réflexion approfondie et peuvent être utilisés dans un cadre personnalisé."*
+            
+            **Variables à intégrer :**
+            - Lettre : ${JSON.stringify(score.letters)}  
+            - Description de la lettre : ${getLettersDescription(score.letters)}  
+            - Description de la couleur : ${getColorsDescription(score.color)}  
+            - Transcriptions (informations à utiliser subtilement) : ${modjoCallData}
+            
+            **Instructions supplémentaires :**
+            - Rédigez des paragraphes fluides et engageants.  
+            - Excluez toute mention explicite des transcriptions ou d’intelligence artificielle.
+        `;
+
+        const responsePhaseIntegration = await client.chat.completions.create({
+            model: 'gpt-3.5-turbo',
+            messages: [{ role: 'user', content: promptPhaseIntegration }],
+        });
+
+        const bilanLetter = responsePhaseIntegration.choices[0].message.content;
+
         const bilanLetterHTML = cleanAndStructureHTML(bilanLetter, 'letter', firstname, name);
         const bilanColorHTML = cleanAndStructureHTML(bilanColor, 'color', firstname, name);
 
@@ -273,9 +272,12 @@ exports.savePersonalityTestResult = async (req, res) => {
         }, 'rapport_color.pdf');
 
         const newResult = new ResultsPersonalityTest({
-            score,
-            userAnswers,
+            hs_object_id,
+            letter : score.letters,
+            color : score.color
         });
+
+        await newResult.save();
 
         res.status(201).json({
             message: 'Résultat sauvegardé avec succès.',
@@ -289,5 +291,35 @@ exports.savePersonalityTestResult = async (req, res) => {
     } catch (err) {
         console.error("Error saving result:", err);
         res.status(500).json({ error: "Error saving result", details: err.message });
+    }
+};
+
+exports.checkHsObjectId = async (req, res) => {
+    try {
+        const { hs_object_id } = req.params;
+
+        if (!hs_object_id) {
+            return res.status(400).json({ error: 'hs_object_id manquant.' });
+        }
+
+        // Convert hs_object_id to integer if it's not already
+        const recordID = parseInt(hs_object_id, 10);
+        if (isNaN(recordID)) {
+            return res.status(400).json({ error: 'hs_object_id doit être un entier.' });
+        }
+
+        const result = await ResultsPersonalityTest.findOne({ hs_object_id: recordID });
+
+        if (result) {
+            res.status(200).json({
+                exists: true,
+                data: result,
+            });
+        } else {
+            res.status(201).json({ exists: false, message: 'hs_object_id non trouvé.' });
+        }
+    } catch (err) {
+        console.error("Error checking hs_object_id:", err);
+        res.status(500).json({ error: "Error checking hs_object_id", details: err.message });
     }
 };

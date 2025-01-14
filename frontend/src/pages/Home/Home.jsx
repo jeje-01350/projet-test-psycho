@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import userImage from '../../images/homepageImage.png';
 import senseiStyle from '../../images/style-sensei.png';
+import { useUserContext } from "../../context/userContext.jsx";
 
 const SenseiImage = styled.img`
   position: absolute;
@@ -41,6 +42,42 @@ const UserImage = styled.img`
 
 const Home = () => {
     const navigate = useNavigate();
+    const { recordID, email, name, firstname } = useUserContext();
+
+    const [errorMessage, setErrorMessage] = useState("");
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+
+    useEffect(() => {
+        if (!recordID || !email || !name || !firstname) {
+            setErrorMessage("Vous n'avez pas toutes les informations requises pour commencer le test, veuillez vous rapprocher de votre consultant");
+            setIsButtonDisabled(true);
+        } else {
+            const checkHsObjectId = async (hsObjectId) => {
+                try {
+                    const res = await fetch(`${import.meta.env.VITE_API_URL}/personality-test/checkHsObjectId/${hsObjectId}`);
+                    const data = await res.json();
+                    return data.exists;
+                } catch (err) {
+                    console.error('Erreur lors de la vérification de hs_object_id:', err);
+                    return null; // Indique une erreur
+                }
+            };
+
+            checkHsObjectId(recordID).then(exists => {
+                if (exists === true) {
+                    setErrorMessage("Impossible de faire le test deux fois pour le même utilsateur");
+                    setIsButtonDisabled(true);
+                } else if (exists === false) {
+                    setErrorMessage("");
+                    setIsButtonDisabled(false);
+                } else {
+                    setErrorMessage("Une erreur est survenue lors de la vérification des informations. Veuillez réessayer.");
+                    setIsButtonDisabled(true);
+                }
+            });
+        }
+    }, [recordID, email, name, firstname]);
+
 
     const pageStyle = {
         backgroundColor: '#fdf6f1',
@@ -80,9 +117,10 @@ const Home = () => {
         padding: '15px 30px',
         fontSize: '1.2rem',
         borderRadius: '5px',
-        cursor: 'pointer',
+        cursor: isButtonDisabled ? 'not-allowed' : 'pointer',
         transition: 'background-color 0.3s ease, box-shadow 0.3s ease',
         boxShadow: '1px 1px 3px rgba(0, 0, 0, 0.5)',
+        opacity: isButtonDisabled ? 0.5 : 1,
     };
 
     const buttonHoverStyle = {
@@ -102,6 +140,14 @@ const Home = () => {
         left: '0',
     };
 
+    const handleClick = () => {
+        if (isButtonDisabled) {
+            return;
+        } else {
+            navigate('/mbti');
+        }
+    };
+
     return (
         <div style={pageStyle}>
             <div style={containerStyle}>
@@ -116,13 +162,23 @@ const Home = () => {
                         <br/><br/>
                         Résultats : À la fin du test, une typologie de Briggs vous sera attribuée sous la forme de Lettre + Couleur.
                     </p>
+                    {errorMessage && (<p style={{ width: '85%', color: 'red', fontWeight: 'bold', marginBottom: '30px', fontSize: '1.2rem' }}>{errorMessage}</p>)}
                     <button
                         style={buttonStyle}
-                        onMouseOver={(e) => e.target.style.backgroundColor = buttonHoverStyle.backgroundColor}
+                        onMouseOver={(e) => {
+                            if (!isButtonDisabled) {
+                                e.target.style.backgroundColor = buttonHoverStyle.backgroundColor;
+                            }
+                        }}
                         onMouseOut={(e) => e.target.style.backgroundColor = buttonStyle.backgroundColor}
-                        onMouseDown={(e) => e.target.style.transform = buttonActiveStyle.transform}
+                        onMouseDown={(e) => {
+                            if (!isButtonDisabled) {
+                                e.target.style.transform = buttonActiveStyle.transform;
+                            }
+                        }}
                         onMouseUp={(e) => e.target.style.transform = 'scale(1)'}
-                        onClick={() => navigate('/mbti')}
+                        onClick={handleClick}
+                        disabled={isButtonDisabled}
                     >
                         Commencer le test
                     </button>

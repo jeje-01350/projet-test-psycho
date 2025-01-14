@@ -228,6 +228,11 @@ const AppPersonalityTest = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        if (!recordID || !email || !name || !firstname) {
+            navigate('/');
+        } else {
+            checkHsObjectId(recordID).then(r => console.log(r));
+        }
         const shuffledQuestions = [...originalQuestions].sort(() => Math.random() - 0.5);
         setQuestions([...shuffledQuestions, {
             question: "Sur une échelle de 1 à 10, où en est votre envi de faire bouger les choses ?",
@@ -236,6 +241,18 @@ const AppPersonalityTest = () => {
 
         setRandomNumber(Math.floor(Math.random() * (7 - 4 + 1)) + 4);
     }, []);
+
+    const checkHsObjectId = async (hsObjectId) => {
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/checkHsObjectId/${hsObjectId}`);
+            const data = await res.json();
+            if (data.exists) {
+                navigate('/');
+            }
+        } catch (err) {
+            console.error('Erreur lors de la vérification de hs_object_id:', err);
+        }
+    };
 
     const totalQuestions = questions.length;
     const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
@@ -395,6 +412,7 @@ const AppPersonalityTest = () => {
                         lettre_situatio: results.letters,
                         rapport_lettre_situatio: rapportLettre,
                         email : email,
+                        hs_object_id : recordID,
                         item_de_motivation: results.motivationalItems,
                         changeImpact: changeImpact,
                     };
@@ -410,13 +428,13 @@ const AppPersonalityTest = () => {
                     toast.success("Résultats enregistrés avec succès !");
                     navigate("/mbti/results", { state: { data: { userAnswers, results, randomNumber } } });
                 } else {
-                    toast.error("Erreur lors de l'envoi des résultats au deuxième serveur.");
+                    toast.error(`Erreur lors de l'envoi des résultats au deuxième serveur : ${secondRes.status} - ${secondRes.statusText}`);
                 }
             } else {
-                toast.error("Erreur lors de l'envoi des résultats au premier serveur.");
+                toast.error(`Erreur lors de l'envoi des résultats au premier serveur : ${res.status} - ${res.statusText}`);
             }
         } catch (error) {
-            toast.error("Une erreur s'est produite lors de la soumission.");
+            toast.error(`Une erreur s'est produite lors de la soumission : ${error.message}`);
             console.error("An error occurred while submitting the response:", error);
         } finally {
             setLoading(false);

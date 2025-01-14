@@ -14,7 +14,11 @@ const CallModjoSchema = new mongoose.Schema(
           type: String,
           required: false,
       },
-      rapport_v2: {
+      bilanColorV2: {
+          type: String,
+          required: false,
+      },
+      bilanLetterV2: {
           type: String,
           required: false,
       }
