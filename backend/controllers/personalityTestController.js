@@ -19,13 +19,12 @@ exports.saveHubspotTest = async (req, res) => {
             return res.status(400).json({ error: 'Aucun corps de requête fourni.' });
         }
 
-        const response = await axios.post('https://hooks.zapier.com/hooks/catch/11072818/2saof9s/', body, {
+        return await axios.post('https://hooks.zapier.com/hooks/catch/11072818/2saof9s/', body, {
             headers: {
                 'Content-Type': 'application/json',
             }
         });
 
-        res.status(200).json({ message: 'Données envoyées avec succès à HubSpot.', data: response.data });
     } catch (error) {
         console.error('Erreur lors de l\'envoi à HubSpot:', error);
         res.status(500).json({ error: 'Erreur lors de l\'envoi à HubSpot.', details: error.message });
@@ -303,7 +302,6 @@ exports.checkHsObjectId = async (req, res) => {
             return res.status(400).json({ error: 'hs_object_id manquant.' });
         }
 
-        // Convert hs_object_id to integer if it's not already
         const recordID = parseInt(hs_object_id, 10);
         if (isNaN(recordID)) {
             return res.status(400).json({ error: 'hs_object_id doit être un entier.' });

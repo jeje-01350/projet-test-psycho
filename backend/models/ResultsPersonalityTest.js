@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const ResultsPersonalityTestSchema = new mongoose.Schema(
   {
       hs_object_id: {
-          type: String,
+          type: Number,
           required: true,
       },color: {
           type: String,

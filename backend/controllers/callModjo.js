@@ -81,8 +81,8 @@ exports.saveModjoCall = async (req, res) => {
                 existingCall.call_note_visio = call_note_visio;
 
                 const result = await ResultsPersonalityTest.findOne({ hs_object_id });
-                if (!result) {
-                    return res.status(404).json({ error: 'Aucun résultat trouvé pour cet hs_object_id' });
+                if (!result || !result.email) {
+                    return res.status(404).json({ error: 'Aucun résultat trouvé ou email manquant pour cet hs_object_id' });
                 }
 
                 const { color, letter, email } = result;
@@ -198,7 +198,15 @@ exports.saveModjoCall = async (req, res) => {
                 existingCall.bilanLetterV2 = bilanLetterV2;
                 existingCall.bilanColorV2 = bilanColorV2;
 
-                await saveHubspotTest({ body: { hs_object_id, rapport_couleur_situatio : bilanColorV2, rapport_lettre_situatio : bilanLetterV2, email } });
+                try {
+                    const hubspotResponse = await saveHubspotTest({ body: { hs_object_id, rapport_couleur_situatio: bilanColorV2, rapport_lettre_situatio: bilanLetterV2, email } });
+                    if (!hubspotResponse || !hubspotResponse.status) {
+                        throw new Error('HubSpot response is invalid or missing status property');
+                    }
+                } catch (error) {
+                    console.error('Erreur lors de l\'appel à saveHubspotTest:', error);
+                    return res.status(500).json({ error: 'Erreur lors de l\'enregistrement des données sur HubSpot.', details: error.message });
+                }
             }
 
             await existingCall.save();
@@ -340,8 +348,15 @@ exports.saveModjoCall = async (req, res) => {
 
             await newCall.save();
 
-            // Sending data to HubSpot endpoint
-            await saveHubspotTest({ body: { hs_object_id, rapport_couleur_situatio : bilanColorV2, rapport_lettre_situatio : bilanLetterV2, email } });
+            try {
+                const hubspotResponse = await saveHubspotTest({ body: { hs_object_id, rapport_couleur_situatio: bilanColorV2, rapport_lettre_situatio: bilanLetterV2, email } });
+                if (!hubspotResponse || !hubspotResponse.status) {
+                    throw new Error('HubSpot response is invalid or missing status property');
+                }
+            } catch (error) {
+                console.error('Erreur lors de l\'appel à saveHubspotTest:', error);
+                return res.status(500).json({ error: 'Erreur lors de l\'enregistrement des données sur HubSpot.', details: error.message });
+            }
 
             return res.status(201).json({
                 message: 'Nouvel appel enregistré avec succès.',
@@ -353,4 +368,3 @@ exports.saveModjoCall = async (req, res) => {
         res.status(500).json({ error: 'Erreur lors de la sauvegarde de l\'appel.', details: error.message });
     }
 };
-
