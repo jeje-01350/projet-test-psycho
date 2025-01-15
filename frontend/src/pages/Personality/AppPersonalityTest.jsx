@@ -353,6 +353,7 @@ const AppPersonalityTest = () => {
                     userAnswers,
                     hs_object_id: recordID,
                     name,
+                    email,
                     firstname
                 }),
             });

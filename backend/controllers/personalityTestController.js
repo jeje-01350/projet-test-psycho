@@ -52,7 +52,7 @@ async function generatePDF(templatePath, replacements, pdfName) {
 
 exports.savePersonalityTestResult = async (req, res) => {
     try {
-        const { score, userAnswers, hs_object_id, name, firstname } = req.body;
+        const { score, userAnswers, hs_object_id, name, firstname, email } = req.body;
 
         if (!score || !userAnswers || !hs_object_id) {
             return res.status(400).json({ error: 'Veuillez fournir toutes les informations.' });
@@ -274,6 +274,7 @@ exports.savePersonalityTestResult = async (req, res) => {
         const newResult = new ResultsPersonalityTest({
             hs_object_id,
             letter : score.letters,
+            email,
             color : score.color
         });
 

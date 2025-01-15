@@ -85,7 +85,7 @@ exports.saveModjoCall = async (req, res) => {
                     return res.status(404).json({ error: 'Aucun résultat trouvé pour cet hs_object_id' });
                 }
 
-                const { color, letter } = result;
+                const { color, letter, email } = result;
 
                 const promptBilanLetter = `
                 Objectif : Renforcer l’envie du candidat en liant les résultats de la lettre avec l’analyse de la couleur pour donner une vision globale de son potentiel et des actions possibles.
@@ -197,9 +197,12 @@ exports.saveModjoCall = async (req, res) => {
 
                 existingCall.bilanLetterV2 = bilanLetterV2;
                 existingCall.bilanColorV2 = bilanColorV2;
+
+                await saveHubspotTest({ body: { hs_object_id, rapport_couleur_situatio : bilanColorV2, rapport_lettre_situatio : bilanLetterV2, email } });
             }
 
             await existingCall.save();
+
             return res.status(200).json({
                 message: 'Appel mis à jour avec succès.',
                 data: {
@@ -218,7 +221,7 @@ exports.saveModjoCall = async (req, res) => {
                 return res.status(404).json({ error: 'Aucun résultat trouvé pour cet hs_object_id' });
             }
 
-            const { color, letter } = result;
+            const { color, letter, email } = result;
 
             const promptBilanColor = `
                 Objectif : Susciter l’intérêt du candidat en valorisant subtilement ses forces tout en le projetant dans un contexte professionnel motivant.
@@ -338,7 +341,7 @@ exports.saveModjoCall = async (req, res) => {
             await newCall.save();
 
             // Sending data to HubSpot endpoint
-            await saveHubspotTest({ body: { hs_object_id, rapport_couleur_situatio : bilanColorV2, rapport_lettre_situatio : bilanLetterV2 } });
+            await saveHubspotTest({ body: { hs_object_id, rapport_couleur_situatio : bilanColorV2, rapport_lettre_situatio : bilanLetterV2, email } });
 
             return res.status(201).json({
                 message: 'Nouvel appel enregistré avec succès.',

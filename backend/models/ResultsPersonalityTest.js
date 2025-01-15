@@ -11,6 +11,9 @@ const ResultsPersonalityTestSchema = new mongoose.Schema(
       },letter: {
           type: String,
           required: true,
+      },email: {
+          type: String,
+          required: true,
       },
   },
 );
