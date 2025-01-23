@@ -397,7 +397,7 @@ const AppPersonalityTest = () => {
                     secondApiBody.project_task_id = projectTaskId;
                 }
 
-                const secondRes = await fetch("https://formation.devstriker.com/psycho_tests/new_results", {
+                const secondRes = await fetch("https://app.sensei-france.fr/psycho_tests/new_results", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
