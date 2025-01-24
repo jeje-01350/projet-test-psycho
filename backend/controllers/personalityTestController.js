@@ -25,7 +25,7 @@ exports.saveHubspotTest = async (req, res) => {
                 'Content-Type': 'application/json',
             }
         })
-        .then(() => {
+        .then((data) => {
             res.status(200).json({status : 'success'})
         })
         .catch((error) => {
