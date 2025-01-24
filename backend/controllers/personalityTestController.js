@@ -25,12 +25,15 @@ exports.saveHubspotTest = async (req, res) => {
                 'Content-Type': 'application/json',
             }
         })
+        .then(() => {
+            res.status(200).json({status : 'success'})
+        })
         .catch((error) => {
             console.error('Erreur lors de l\'envoi à HubSpot:', error);
             res.status(500).json({ error: 'Erreur lors de l\'envoi à HubSpot.', details: error.message });
         })
 
-        res.status(200).json({status : 'success'})
+
 
     } catch (error) {
         console.error('Erreur lors de l\'envoi à HubSpot:', error);
