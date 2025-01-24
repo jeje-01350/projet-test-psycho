@@ -122,12 +122,12 @@ exports.savePersonalityTestResult = async (req, res) => {
 
             const subTitle = analysisType === "color"
                 ? `<h2>Découvrez vos atouts et pistes professionnelles</h2>`
-                : `<h2>Comprenez votre potentiel et projetez-vous dans l’avenir</h2>`;
+                : `<h2>Comprenez votre potentiel et projetez-vous dans l'avenir</h2>`;
 
             // Remove existing titles and subtitles from text to avoid duplication
             text = text
                 .replace(/# Analyse de votre profil - Résultat (Couleur|Lettre)/g, '')
-                .replace(/## (Découvrez vos atouts et pistes professionnelles|Comprenez votre potentiel et projetez-vous dans l’avenir)/g, '')
+                .replace(/## (Découvrez vos atouts et pistes professionnelles|Comprenez votre potentiel et projetez-vous dans l'avenir)/g, '')
                 .replace(/\*\*/g, '') // Remove markdown bold
                 .replace(/\d+\.\s/g, '') // Remove numbered lists
                 .trim();
@@ -145,17 +145,17 @@ exports.savePersonalityTestResult = async (req, res) => {
         }
 
         const promptPhaseFinal = `
-            Objectif : Susciter l’intérêt du candidat en valorisant subtilement ses forces tout en le projetant dans un contexte professionnel motivant.
+            Objectif : Susciter l'intérêt du candidat en valorisant subtilement ses forces tout en le projetant dans un contexte professionnel motivant.
 
-            Vous êtes une IA générant un rapport psychométrique personnalisé basé sur le test MBTI. Ce rapport est destiné à un candidat dans le cadre d’un processus commercial. Il vise à valoriser ses résultats de couleur et à renforcer son intérêt pour un accompagnement professionnel (bilan de compétences). Respectez strictement les consignes suivantes :  
+            Vous êtes une IA générant un rapport psychométrique personnalisé basé sur le test MBTI. Ce rapport est destiné à un candidat dans le cadre d'un processus commercial. Il vise à valoriser ses résultats de couleur et à renforcer son intérêt pour un accompagnement professionnel (bilan de compétences). Respectez strictement les consignes suivantes :  
             
             1. **Page de Titre :**  
                - Titre principal : "Analyse de votre profil - Résultat Couleur".  
                - Sous-titre : "Découvrez vos atouts et pistes professionnelles".  
-               - N’incluez aucun autre contenu sur cette page.
+               - N'incluez aucun autre contenu sur cette page.
             
             2. **Introduction :**  
-               - Expliquez brièvement l’objectif du rapport sans jugement ni superlatifs.  
+               - Expliquez brièvement l'objectif du rapport sans jugement ni superlatifs.  
                - Exemple :  
                  *"Ce rapport présente une analyse de votre profil à travers la couleur obtenue lors du test. Il met en lumière vos forces et propose des pistes pour explorer votre potentiel dans un contexte professionnel adapté."*
             
@@ -164,7 +164,7 @@ exports.savePersonalityTestResult = async (req, res) => {
                  Exemple : "Votre couleur, bleu, reflète une personnalité empathique et ouverte."  
                - **Forces principales :** Mettez en avant 2-3 forces clés liées à cette couleur.  
                  Exemple : *"Vous excellez dans [force 1] et votre aptitude à [force 2] est particulièrement précieuse dans des environnements exigeants."*  
-               - **Faiblesses potentielles :** Mentionnez 1-2 faiblesses potentielles de manière constructive, tout en les positionnant comme des opportunités d’amélioration grâce à un accompagnement.  
+               - **Faiblesses potentielles :** Mentionnez 1-2 faiblesses potentielles de manière constructive, tout en les positionnant comme des opportunités d'amélioration grâce à un accompagnement.  
                  Exemple : *"Ces aspects pourraient être des axes à développer pour renforcer votre impact professionnel."*
             
             4. **Contexte Professionnel Propice :**  
@@ -172,8 +172,8 @@ exports.savePersonalityTestResult = async (req, res) => {
                - Donnez des exemples concrets de rôles professionnels.  
                  Exemple : *"Vous pourriez vous épanouir dans des rôles nécessitant [compétence clé], comme [rôle 1] ou [rôle 2]."*
             
-            5. **Synthèse et Appel à l’Action :**  
-               - Résumez les points clés et concluez avec un appel à l’action engageant :  
+            5. **Synthèse et Appel à l'Action :**  
+               - Résumez les points clés et concluez avec un appel à l'action engageant :  
                  Exemple :  
                  *"Votre profil met en avant un potentiel riche et prometteur. Un bilan de compétences approfondi vous permettrait de transformer ces qualités en opportunités concrètes pour atteindre vos objectifs professionnels."*  
                - Ajoutez un disclaimer neutre :  
@@ -186,7 +186,7 @@ exports.savePersonalityTestResult = async (req, res) => {
             
             **Instructions supplémentaires :**
             - Rédigez des paragraphes fluides et engageants.  
-            - Excluez toute mention explicite des transcriptions ou d’intelligence artificielle.
+            - Excluez toute mention explicite des transcriptions ou d'intelligence artificielle.
         `;
 
         const responsePhaseFinal = await client.chat.completions.create({
@@ -197,41 +197,41 @@ exports.savePersonalityTestResult = async (req, res) => {
         const bilanColor = responsePhaseFinal.choices[0].message.content;
 
         const promptPhaseIntegration = `
-            Objectif : Renforcer l’envie du candidat en liant les résultats de la lettre avec l’analyse de la couleur pour donner une vision globale de son potentiel et des actions possibles.
+            Objectif : Renforcer l'envie du candidat en liant les résultats de la lettre avec l'analyse de la couleur pour donner une vision globale de son potentiel et des actions possibles.
 
-            Vous êtes une IA générant un rapport psychométrique personnalisé basé sur le test MBTI. Ce rapport est destiné à un candidat dans le cadre d’un processus commercial. Il vise à valoriser ses résultats de lettre en les liant subtilement à son analyse de couleur, tout en renforçant son intérêt pour un bilan de compétences. Respectez strictement les consignes suivantes :  
+            Vous êtes une IA générant un rapport psychométrique personnalisé basé sur le test MBTI. Ce rapport est destiné à un candidat dans le cadre d'un processus commercial. Il vise à valoriser ses résultats de lettre en les liant subtilement à son analyse de couleur, tout en renforçant son intérêt pour un bilan de compétences. Respectez strictement les consignes suivantes :  
             
             1. **Page de Titre :**  
                - Titre principal : "Analyse de votre profil - Résultat Lettre".  
-               - Sous-titre : "Comprenez votre potentiel et projetez-vous dans l’avenir".  
-               - N’incluez aucun autre contenu sur cette page.
+               - Sous-titre : "Comprenez votre potentiel et projetez-vous dans l'avenir".  
+               - N'incluez aucun autre contenu sur cette page.
             
             2. **Introduction :**  
-               - Présentez la lettre comme un complément essentiel à l’analyse de la couleur.  
+               - Présentez la lettre comme un complément essentiel à l'analyse de la couleur.  
                - Exemple :  
-                 *"Ce rapport explore votre résultat de lettre, un élément clé pour comprendre votre manière d’interagir avec les environnements professionnels. Associée à votre analyse couleur, elle permet d’obtenir une vision globale et équilibrée de votre profil."*
+                 *"Ce rapport explore votre résultat de lettre, un élément clé pour comprendre votre manière d'interagir avec les environnements professionnels. Associée à votre analyse couleur, elle permet d'obtenir une vision globale et équilibrée de votre profil."*
             
             3. **Analyse de la Lettre :**  
                - Présentez la lettre obtenue et deux adjectifs clés issus de sa description.  
                  Exemple : "Votre lettre, A, reflète une personnalité confiante et pragmatique."  
                - **Forces principales :** Détaillez 2-3 forces clés issues de la description.  
                  Exemple : *"Vous êtes reconnu(e) pour votre aptitude à [force 1], et votre capacité à [force 2] est un véritable atout dans des environnements exigeants."*  
-               - **Faiblesses potentielles :** Mentionnez 1-2 faiblesses de manière constructive, en proposant l’accompagnement comme une solution.  
+               - **Faiblesses potentielles :** Mentionnez 1-2 faiblesses de manière constructive, en proposant l'accompagnement comme une solution.  
             
             4. **Contexte Professionnel Propice :**  
                - Décrivez des environnements où ce profil peut exceller, en lien avec la lettre.  
                - Donnez des exemples concrets de rôles professionnels.  
                  Exemple : *"Ce profil est souvent valorisé dans des rôles comme [rôle 1] ou [rôle 2], qui nécessitent [compétence clé]."*  
             
-            5. **Lien avec l’Analyse de la Couleur :**  
+            5. **Lien avec l'Analyse de la Couleur :**  
                - Expliquez comment la lettre et la couleur se complètent pour offrir une vision globale, en se servant de l'analyse ${bilanColor}  
                  Exemple :  
                  *"Associée à votre couleur (${score.color}), votre lettre (${score.letters}) met en lumière une combinaison unique de qualités qui vous positionne idéalement pour des opportunités professionnelles alignées avec vos ambitions."*
             
-            6. **Synthèse et Appel à l’Action :**  
-               - Résumez les points clés et concluez avec un appel à l’action engageant :  
+            6. **Synthèse et Appel à l'Action :**  
+               - Résumez les points clés et concluez avec un appel à l'action engageant :  
                  Exemple :  
-                 *"Ce rapport met en avant vos atouts et ouvre des perspectives passionnantes. Un bilan de compétences approfondi vous permettrait d’aligner vos qualités sur des objectifs professionnels concrets et réalisables."*  
+                 *"Ce rapport met en avant vos atouts et ouvre des perspectives passionnantes. Un bilan de compétences approfondi vous permettrait d'aligner vos qualités sur des objectifs professionnels concrets et réalisables."*  
                - Ajoutez un disclaimer neutre :  
                  *"Ces résultats constituent une base pour une réflexion approfondie et peuvent être utilisés dans un cadre personnalisé."*
             
@@ -243,7 +243,7 @@ exports.savePersonalityTestResult = async (req, res) => {
             
             **Instructions supplémentaires :**
             - Rédigez des paragraphes fluides et engageants.  
-            - Excluez toute mention explicite des transcriptions ou d’intelligence artificielle.
+            - Excluez toute mention explicite des transcriptions ou d'intelligence artificielle.
         `;
 
         const responsePhaseIntegration = await client.chat.completions.create({
@@ -309,16 +309,17 @@ exports.checkHsObjectId = async (req, res) => {
 
         const result = await ResultsPersonalityTest.findOne({ hs_object_id: recordID });
 
-        if (result) {
-            res.status(200).json({
-                exists: true,
-                data: result,
-            });
-        } else {
-            res.status(201).json({ exists: false, message: 'hs_object_id non trouvé.' });
-        }
+        return res.status(200).json({
+            exists: result ? true : false,
+            data: result || null,
+            message: result ? undefined : 'hs_object_id non trouvé.'
+        });
+
     } catch (err) {
         console.error("Error checking hs_object_id:", err);
-        res.status(500).json({ error: "Error checking hs_object_id", details: err.message });
+        return res.status(500).json({ 
+            error: "Erreur lors de la vérification du hs_object_id", 
+            details: err.message 
+        });
     }
 };

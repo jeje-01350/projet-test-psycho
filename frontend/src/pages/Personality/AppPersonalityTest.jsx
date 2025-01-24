@@ -231,7 +231,7 @@ const AppPersonalityTest = () => {
         if (!recordID || !email || !name || !firstname) {
             navigate('/');
         } else {
-            checkHsObjectId(recordID).then(r => console.log(r));
+            checkHsObjectId(recordID);
         }
         const shuffledQuestions = [...originalQuestions].sort(() => Math.random() - 0.5);
         setQuestions([...shuffledQuestions, {
@@ -244,8 +244,20 @@ const AppPersonalityTest = () => {
 
     const checkHsObjectId = async (hsObjectId) => {
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/checkHsObjectId/${hsObjectId}`);
-            const data = await res.json();
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/personality-test/checkHsObjectId/${hsObjectId}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
             if (data.exists) {
                 navigate('/');
             }
