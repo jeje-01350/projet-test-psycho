@@ -130,7 +130,7 @@ exports.saveModjoCall = async (req, res) => {
                 - Lettre : ${JSON.stringify(letter)}  
                 - Description de la lettre : ${getLettersDescription(letter)}  
                 - Description de la couleur : ${getColorsDescription(color)}  
-                - Transcriptions (informations à utiliser subtilement) : ${call_note_visio} et ${existingCall.call_note}
+                - Transcriptions (informations à utiliser subtilement) : ${call_note_visio} et ${existingCall?.call_note || 'Aucune note disponible'}
                 
                 **Instructions supplémentaires :**
                 - Rédigez des paragraphes fluides et engageants.  
@@ -175,7 +175,7 @@ exports.saveModjoCall = async (req, res) => {
                 **Variables à intégrer :**
                 - Couleur : ${JSON.stringify(color)}  
                 - Description de la couleur : ${getColorsDescription(color)}  
-                - Transcriptions (informations à utiliser subtilement) : ${call_note_visio} et ${existingCall.call_note}
+                - Transcriptions (informations à utiliser subtilement) : ${call_note_visio} et ${existingCall?.call_note || 'Aucune note disponible'}
                 
                 **Instructions supplémentaires :**
                 - Rédigez des paragraphes fluides et engageants.  
@@ -285,7 +285,7 @@ exports.saveModjoCall = async (req, res) => {
                 **Variables à intégrer :**
                 - Couleur : ${JSON.stringify(color)}  
                 - Description de la couleur : ${getColorsDescription(color)}  
-                - Transcriptions (informations à utiliser subtilement) : ${call_note_visio} et ${existingCall.call_note}
+                - Transcriptions (informations à utiliser subtilement) : ${call_note_visio} et ${existingCall?.call_note || 'Aucune note disponible'}
                 
                 **Instructions supplémentaires :**
                 - Rédigez des paragraphes fluides et engageants.  
@@ -341,7 +341,7 @@ exports.saveModjoCall = async (req, res) => {
                 - Lettre : ${JSON.stringify(letter)}  
                 - Description de la lettre : ${getLettersDescription(letter)}
                 - Description de la couleur : ${getColorsDescription(color)}
-                - Transcriptions (informations à utiliser subtilement) : ${call_note_visio} et ${existingCall.call_note}
+                - Transcriptions (informations à utiliser subtilement) : ${call_note_visio} et ${existingCall?.call_note || 'Aucune note disponible'}
                 
                 **Instructions supplémentaires :**
                 - Rédigez des paragraphes fluides et engageants.  
