@@ -15,15 +15,22 @@ exports.saveHubspotTest = async (req, res) => {
     try {
         const { body } = req;
 
+        console.log('body recu');
         if (!body) {
             return res.status(400).json({ error: 'Aucun corps de requête fourni.' });
         }
 
-        return await axios.post('https://hooks.zapier.com/hooks/catch/11072818/2saof9s/', body, {
+        const response = await axios.post('https://hooks.zapier.com/hooks/catch/11072818/2saof9s/', body, {
             headers: {
                 'Content-Type': 'application/json',
             }
-        });
+        })
+        .catch((error) => {
+            console.error('Erreur lors de l\'envoi à HubSpot:', error);
+            res.status(500).json({ error: 'Erreur lors de l\'envoi à HubSpot.', details: error.message });
+        })
+
+        res.status(200).json({status : 'success'})
 
     } catch (error) {
         console.error('Erreur lors de l\'envoi à HubSpot:', error);
