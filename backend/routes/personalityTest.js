@@ -5,5 +5,6 @@ const personalityTestController = require('../controllers/personalityTestControl
 router.post('/save', personalityTestController.savePersonalityTestResult);
 router.get('/checkHsObjectId/:hs_object_id', personalityTestController.checkHsObjectId);
 router.post('/hubspot', personalityTestController.saveHubspotTest);
+router.post('/generate-next-question', personalityTestController.generateNextQuestion);
 
 module.exports = router;

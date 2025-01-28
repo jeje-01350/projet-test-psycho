@@ -212,15 +212,22 @@ const BouncingLoader = styled.div`
 
 const AppPersonalityTest = () => {
     const [responses, setResponses] = useState([]);
-    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [selectedAnswerIndex, setSelectedAnswerIndex] = useState(null);
+    const [currentQuestion, setCurrentQuestion] = useState({
+        question: "Quelle phrase vous correspond le mieux ?",
+        answers: [
+            { content: "J'aime prendre les choses en main et diriger", type: "Marron,A" },
+            { content: "J'aime échanger et créer des liens avec les autres", type: "Bleu,B" },
+            { content: "J'aime analyser et comprendre en profondeur", type: "Vert,C" },
+            { content: "J'aime suivre un cadre stable et sécurisant", type: "Marron,D" }
+        ]
+    });
     const [answersCount, setAnswersCount] = useState({
         Colors: { Vert: 10, Marron: 10, Bleu: 10, Rouge: 10 },
         Letters: { A: 10, B: 10, C: 10, D: 10 }
     });
-    const [motivationScores, setMotivationScores] = useState({});
     const [loading, setLoading] = useState(false);
-    const [questions, setQuestions] = useState([]);
+    const [selectedAnswerIndex, setSelectedAnswerIndex] = useState(null);
+    const [questionCount, setQuestionCount] = useState(1);
     const [changeImpact, setChangeImpact] = useState(5);
     const [randomNumber, setRandomNumber] = useState(0);
 
@@ -233,12 +240,6 @@ const AppPersonalityTest = () => {
         } else {
             checkHsObjectId(recordID);
         }
-        const shuffledQuestions = [...originalQuestions].sort(() => Math.random() - 0.5);
-        setQuestions([...shuffledQuestions, {
-            question: "Sur une échelle de 1 à 10, où en est votre envi de faire bouger les choses ?",
-            type: "scale",
-        }]);
-
         setRandomNumber(Math.floor(Math.random() * (7 - 4 + 1)) + 4);
     }, []);
 
@@ -266,8 +267,40 @@ const AppPersonalityTest = () => {
         }
     };
 
-    const totalQuestions = questions.length;
-    const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+    const getCurrentDominantProfile = () => {
+        const dominantColor = Object.entries(answersCount.Colors).reduce((a, b) => (b[1] > a[1] ? b : a))[0];
+        const dominantLetter = Object.entries(answersCount.Letters).reduce((a, b) => (b[1] > a[1] ? b : a))[0];
+        return { color: dominantColor, letter: dominantLetter };
+    };
+
+    const generateNextQuestion = async (currentQuestionText, selectedAnswer) => {
+        try {
+            const currentProfile = getCurrentDominantProfile();
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/personality-test/generate-next-question`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    question: currentQuestionText,
+                    answer: selectedAnswer,
+                    currentColor: currentProfile.color,
+                    currentLetter: currentProfile.letter
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            setCurrentQuestion(data);
+            setQuestionCount(prev => prev + 1);
+        } catch (error) {
+            console.error('Erreur lors de la génération de la question:', error);
+            toast.error('Erreur lors de la génération de la prochaine question');
+        }
+    };
 
     const updateAnswerCount = (answerType, increment) => {
         if (!answerType) return;
@@ -299,41 +332,6 @@ const AppPersonalityTest = () => {
         setAnswersCount(updatedAnswersCount);
     };
 
-    const updateMotivationScores = (question, score) => {
-        const updatedScores = { ...motivationScores };
-        if (question.type) {
-            if (!updatedScores[question.type]) {
-                updatedScores[question.type] = 0;
-            }
-            updatedScores[question.type] += score;
-        }
-        setMotivationScores(updatedScores);
-    };
-
-    const calculateResults = () => {
-        const dominantColor = Object.entries(answersCount.Colors).reduce((a, b) => (b[1] > a[1] ? b : a))[0];
-        const dominantLetter = Object.entries(answersCount.Letters).reduce((a, b) => (b[1] > a[1] ? b : a))[0];
-
-        const motivationalItems = Object.entries(motivationScores)
-            .filter(([_, score]) => score === Math.max(...Object.values(motivationScores)))
-            .map(([key]) => key)
-            .join(" / ");
-
-        return {
-            colors: dominantColor,
-            letters: dominantLetter,
-            motivationalItems,
-        };
-    };
-
-
-    const buildUserAnswers = () => {
-        return responses.map((response) => ({
-            question: questions[response.questionIndex]?.question || "",
-            answer: response.answerContent,
-        }));
-    };
-
     const handleAnswerProcessing = (question, selectedAnswer) => {
         if (question.type) {
             updateMotivationScores(question, selectedAnswer.score);
@@ -341,9 +339,9 @@ const AppPersonalityTest = () => {
             const existingResponse = responses.find((res) => res.questionIndex === currentQuestionIndex);
             if (existingResponse) {
                 updateAnswerCount(existingResponse.answerType, -1);
-            }
+                }
             updateAnswerCount(selectedAnswer.type, 1);
-        }
+            }
     };
 
     const submitResponse = async () => {
@@ -458,28 +456,33 @@ const AppPersonalityTest = () => {
         setSelectedAnswerIndex(index);
     };
 
-    const handleNextQuestion = () => {
-        if (selectedAnswerIndex === null && currentQuestionIndex < totalQuestions - 1) {
+    const handleNextQuestion = async () => {
+        if (selectedAnswerIndex === null) {
             toast.warn("Veuillez sélectionner une réponse avant de continuer.");
             return;
         }
 
-        if (currentQuestionIndex === totalQuestions - 1) {
+        const selectedAnswer = currentQuestion.answers[selectedAnswerIndex];
+        handleAnswerProcessing(currentQuestion, selectedAnswer);
+
+        const updatedResponses = [
+            ...responses,
+            { 
+                questionIndex: questionCount - 1, 
+                answerContent: selectedAnswer.content, 
+                answerType: selectedAnswer.type || null,
+                question: currentQuestion.question
+            }
+        ];
+        setResponses(updatedResponses);
+
+        if (questionCount >= 10) {
             submitResponse();
         } else {
-            const question = questions[currentQuestionIndex];
-            const selectedAnswer = question.answers[selectedAnswerIndex];
-
-            handleAnswerProcessing(question, selectedAnswer);
-
-            const updatedResponses = [
-                ...responses.filter((response) => response.questionIndex !== currentQuestionIndex),
-                { questionIndex: currentQuestionIndex, answerContent: selectedAnswer.content, answerType: selectedAnswer.type || null },
-            ];
-            setResponses(updatedResponses);
-
-            setCurrentQuestionIndex(currentQuestionIndex + 1);
+            setLoading(true);
+            await generateNextQuestion(currentQuestion.question, selectedAnswer.content);
             setSelectedAnswerIndex(null);
+            setLoading(false);
         }
     };
 
@@ -504,7 +507,7 @@ const AppPersonalityTest = () => {
                 <ToastContainer />
                 {!loading && (
                     <ProgressContainer>
-                        <LinearProgress variant="determinate" value={progress} />
+                        <LinearProgress variant="determinate" value={(questionCount / 10) * 100} />
                     </ProgressContainer>
                 )}
                 {loading ? (
@@ -512,7 +515,7 @@ const AppPersonalityTest = () => {
                         <img src={loaderSensei} alt="Loader Sensei" />
                     </BouncingLoader>
                 ) : (
-                    currentQuestionIndex === totalQuestions - 1 ? (
+                    questionCount === 10 ? (
                         <div>
                             <QuestionText>
                                 Sur une échelle de 1 à 10, où en est votre envie de faire bouger les choses ?
@@ -532,13 +535,11 @@ const AppPersonalityTest = () => {
                     ) : (
                         <>
                             <QuestionText>
-                                {`Question ${currentQuestionIndex + 1} / ${totalQuestions}: ${
-                                    questions[currentQuestionIndex]?.question
-                                }`}
+                                {`Question ${questionCount} / 10: ${currentQuestion.question}`}
                                 <SenseiImage src={styleSensei} alt="" />
                             </QuestionText>
                             <AnswersContainer>
-                                {questions[currentQuestionIndex]?.answers.map((answer, index) => (
+                                {currentQuestion.answers.map((answer, index) => (
                                     index === selectedAnswerIndex ? (
                                         <SelectedButton
                                             key={index}
@@ -558,13 +559,6 @@ const AppPersonalityTest = () => {
                                 ))}
                             </AnswersContainer>
                             <NavigationButtons>
-                                <PreviousButton
-                                    variant="contained"
-                                    onClick={handlePreviousQuestion}
-                                    disabled={currentQuestionIndex === 0}
-                                >
-                                    Précédent
-                                </PreviousButton>
                                 <NextButton variant="contained" onClick={handleNextQuestion}>
                                     Suivant
                                 </NextButton>

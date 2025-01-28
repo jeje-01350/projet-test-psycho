@@ -6,7 +6,6 @@ const client = new OpenAI({
 });
 
 const axios = require('axios');
-const CallModjo = require('../models/CallModjo');
 const {launch} = require("puppeteer");
 const fs = require("fs");
 const path = require('path');
@@ -65,14 +64,6 @@ exports.savePersonalityTestResult = async (req, res) => {
 
         if (!score || !userAnswers || !hs_object_id) {
             return res.status(400).json({ error: 'Veuillez fournir toutes les informations.' });
-        }
-
-        let modjoCallData;
-        try {
-            modjoCallData = await CallModjo.findOne({ hs_object_id });
-        } catch (error) {
-            console.error('Erreur lors de la récupération des données Modjo:', error);
-            return res.status(500).json({ error: 'Erreur lors de la récupération des données Modjo.', details: error.message });
         }
 
         const getLettersDescription = (letter) => {
@@ -192,7 +183,6 @@ exports.savePersonalityTestResult = async (req, res) => {
             **Variables à intégrer :**
             - Couleur : ${JSON.stringify(score.color)}  
             - Description de la couleur : ${getColorsDescription(score.color)}  
-            - Transcriptions (informations à utiliser subtilement) : ${modjoCallData}
             
             **Instructions supplémentaires :**
             - Rédigez des paragraphes fluides et engageants.  
@@ -249,7 +239,6 @@ exports.savePersonalityTestResult = async (req, res) => {
             - Lettre : ${JSON.stringify(score.letters)}  
             - Description de la lettre : ${getLettersDescription(score.letters)}  
             - Description de la couleur : ${getColorsDescription(score.color)}  
-            - Transcriptions (informations à utiliser subtilement) : ${modjoCallData}
             
             **Instructions supplémentaires :**
             - Rédigez des paragraphes fluides et engageants.  
@@ -296,7 +285,6 @@ exports.savePersonalityTestResult = async (req, res) => {
             bilanColor,
             pdfColor: fs.readFileSync(pdfColorPath, { encoding: 'base64' }),
             pdfLetter: fs.readFileSync(pdfLetterPath, { encoding: 'base64' }),
-            modjoCallData
         });
     } catch (err) {
         console.error("Error saving result:", err);
@@ -330,6 +318,67 @@ exports.checkHsObjectId = async (req, res) => {
         return res.status(500).json({ 
             error: "Erreur lors de la vérification du hs_object_id", 
             details: err.message 
+        });
+    }
+};
+
+exports.generateNextQuestion = async (req, res) => {
+    try {
+        const { question, answer, currentColor, currentLetter } = req.body;
+
+        const promptNextQuestion = `
+            En tant qu'expert en psychologie et en test de personnalité, analysez la réponse suivante et générez une nouvelle question pertinente.
+            
+            Question précédente: "${question}"
+            Réponse donnée: "${answer}"
+            Tendance couleur actuelle: ${currentColor || 'Non définie'}
+            Tendance lettre actuelle: ${currentLetter || 'Non définie'}
+
+            Descriptions des couleurs:
+            - Bleu (Relateur): Empathique, relationnel, ouvert aux autres
+            - Rouge (Aventurier): Action, spontanéité, adaptabilité
+            - Vert (Planificateur): Réflexion, innovation, attention aux détails
+            - Marron (Constructeur): Leadership, pragmatisme, traditionnel
+
+            Descriptions des lettres:
+            - A: Gestion, contrôle, ténacité, confiance
+            - B: Empathie, enthousiasme, sociabilité
+            - C: Rationalité, objectivité, réflexion
+            - D: Organisation, compassion, sécurité
+
+            Générez une nouvelle question qui permettra de mieux cerner le profil de la personne.
+            La réponse doit contenir:
+            1. Une nouvelle question pertinente
+            2. 4 choix de réponses possibles
+            3. Pour chaque réponse, indiquez les tendances (couleur et lettre) qu'elle révèle
+
+            Format de réponse attendu en JSON:
+            {
+                "question": "La question générée",
+                "answers": [
+                    {
+                        "content": "Réponse 1",
+                        "type": "Couleur,Lettre"
+                    },
+                    // ... autres réponses
+                ]
+            }
+        `;
+
+        const response = await client.chat.completions.create({
+            model: 'gpt-3.5-turbo',
+            messages: [{ role: 'user', content: promptNextQuestion }],
+            temperature: 0.7,
+        });
+
+        const generatedQuestion = JSON.parse(response.choices[0].message.content);
+
+        res.status(200).json(generatedQuestion);
+    } catch (error) {
+        console.error("Erreur lors de la génération de la question:", error);
+        res.status(500).json({ 
+            error: "Erreur lors de la génération de la question", 
+            details: error.message 
         });
     }
 };
