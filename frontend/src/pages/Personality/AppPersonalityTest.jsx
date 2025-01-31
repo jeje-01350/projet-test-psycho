@@ -329,6 +329,56 @@ const TimerContainer = styled.div`
   }
 `;
 
+const StyledRangeInput = styled.input`
+  -webkit-appearance: none;
+  width: 100%;
+  height: 10px;
+  margin: 20px 0;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #ffa7a7, #ff8f8f);
+  outline: none;
+  opacity: 0.9;
+  transition: all 0.3s ease;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ff8f8f;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  &::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ff8f8f;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  &::-webkit-slider-thumb:hover,
+  &::-moz-range-thumb:hover {
+    transform: scale(1.2);
+  }
+`;
+
+const RangeValueDisplay = styled.div`
+  margin-top: 10px;
+  font-size: 18px;
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+  color: #ff8f8f;
+  text-align: center;
+  animation: ${pulse} 0.3s ease-in-out;
+`;
+
 /**
  * @typedef {import('../../types/personality').Question} Question
  * @typedef {import('../../types/personality').UserResponse} UserResponse
@@ -536,9 +586,7 @@ const AppPersonalityTest = () => {
     };
 
     const submitResponse = async () => {
-        // Afficher le temps total dans une alerte
-        alert(`Temps total du test : ${formatTime(timer)}`);
-        console.log(`Temps total du test en secondes : ${timer}`);
+        console.log(`Temps total du test en secondes : ${formatTime(timer)}`);
 
         setLoading(true);
         const results = calculateResults();
@@ -709,13 +757,13 @@ const AppPersonalityTest = () => {
                         <ProgressContainer>
                             <StyledLinearProgress
                                 variant="determinate"
-                                value={(currentQuestionIndex / originalQuestions.length) * 100}
+                                value={(currentQuestionIndex / questions.length) * 100}
                             />
                             <ProgressText>
-                                Question {currentQuestionIndex + 1} sur {originalQuestions.length}
+                                Question {currentQuestionIndex + 1} sur {questions.length}
                             </ProgressText>
                             <ProgressIndicator>
-                                {Array.from({ length: Math.min(5, originalQuestions.length) }).map((_, index) => (
+                                {Array.from({ length: Math.min(5, questions.length) }).map((_, index) => (
                                     <ProgressDot
                                         key={index}
                                         active={index === currentQuestionIndex % 5}
