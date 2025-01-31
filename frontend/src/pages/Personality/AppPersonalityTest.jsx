@@ -210,18 +210,53 @@ const BouncingLoader = styled.div`
   }
 `;
 
+/**
+ * @typedef {import('../../types/personality').Question} Question
+ * @typedef {import('../../types/personality').UserResponse} UserResponse
+ * @typedef {import('../../types/personality').MotivationScores} MotivationScores
+ * @typedef {import('../../types/personality').AnswersCount} AnswersCount
+ */
+
+/**
+ * Composant principal du test de personnalité.
+ * Gère l'affichage et la logique du questionnaire de personnalité,
+ * incluant la progression, les réponses de l'utilisateur et la soumission des résultats.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <AppPersonalityTest />
+ * )
+ */
 const AppPersonalityTest = () => {
+    /** @type {[UserResponse[], Function]} */
     const [responses, setResponses] = useState([]);
+    
+    /** @type {[number, Function]} */
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+    
+    /** @type {[number|null, Function]} */
     const [selectedAnswerIndex, setSelectedAnswerIndex] = useState(null);
+    
+    /** @type {[AnswersCount, Function]} */
     const [answersCount, setAnswersCount] = useState({
         Colors: { Vert: 10, Marron: 10, Bleu: 10, Rouge: 10 },
         Letters: { A: 10, B: 10, C: 10, D: 10 }
     });
+    
+    /** @type {[MotivationScores, Function]} */
     const [motivationScores, setMotivationScores] = useState({});
+    
+    /** @type {[boolean, Function]} */
     const [loading, setLoading] = useState(false);
+    
+    /** @type {[Question[], Function]} */
     const [questions, setQuestions] = useState([]);
+    
+    /** @type {[number, Function]} */
     const [changeImpact, setChangeImpact] = useState(5);
+    
+    /** @type {[number, Function]} */
     const [randomNumber, setRandomNumber] = useState(0);
 
     const { userId, token, projectTaskId, recordID, name, firstname, email } = useUserContext();
@@ -269,6 +304,11 @@ const AppPersonalityTest = () => {
     const totalQuestions = questions.length;
     const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
 
+    /**
+     * Met à jour le compteur de réponses pour un type donné
+     * @param {string} answerType - Le type de réponse à mettre à jour
+     * @param {number} increment - La valeur d'incrémentation
+     */
     const updateAnswerCount = (answerType, increment) => {
         if (!answerType) return;
         const updatedAnswersCount = { ...answersCount };
@@ -299,6 +339,11 @@ const AppPersonalityTest = () => {
         setAnswersCount(updatedAnswersCount);
     };
 
+    /**
+     * Met à jour les scores de motivation
+     * @param {Question} question - La question actuelle
+     * @param {number} score - Le score à ajouter
+     */
     const updateMotivationScores = (question, score) => {
         const updatedScores = { ...motivationScores };
         if (question.type) {
@@ -310,6 +355,10 @@ const AppPersonalityTest = () => {
         setMotivationScores(updatedScores);
     };
 
+    /**
+     * Calcule les résultats finaux du test
+     * @returns {Object} Les résultats calculés
+     */
     const calculateResults = () => {
         const dominantColor = Object.entries(answersCount.Colors).reduce((a, b) => (b[1] > a[1] ? b : a))[0];
         const dominantLetter = Object.entries(answersCount.Letters).reduce((a, b) => (b[1] > a[1] ? b : a))[0];
@@ -326,7 +375,10 @@ const AppPersonalityTest = () => {
         };
     };
 
-
+    /**
+     * Construit l'objet des réponses de l'utilisateur
+     * @returns {UserResponse[]} Les réponses formatées
+     */
     const buildUserAnswers = () => {
         return responses.map((response) => ({
             question: questions[response.questionIndex]?.question || "",
