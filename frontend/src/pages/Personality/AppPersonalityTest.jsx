@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import styled, { createGlobalStyle, keyframes } from "styled-components";
+import styled, { createGlobalStyle, keyframes, css } from "styled-components";
 import { LinearProgress, Button, Box } from "@mui/material";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -9,12 +9,36 @@ import { useUserContext } from "../../context/userContext.jsx";
 import styleSensei from '../../images/style-sensei.png';
 import loaderSensei from '../../images/loader-sensei.png';
 
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+const pulse = keyframes`
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+`;
+
 const GlobalStyle = createGlobalStyle`
   body {
-    background-color: #fdf6f1;
+    background: linear-gradient(135deg, #fdf6f1 0%, #fff5f5 100%);
     font-family: "Nunito", sans-serif;
     margin: 0;
     padding: 0;
+    min-height: 100vh;
   }
 `;
 
@@ -26,18 +50,43 @@ const QuizContainer = styled.div`
   padding: 2rem;
   width: 100%;
   max-width: 600px;
-  margin: 100px auto auto;
-  border-radius: 12px;
+  margin: 70px auto 50px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  animation: ${fadeIn} 0.6s ease-out;
+  transition: transform 0.3s ease;
+  position: relative;
+
+  &:hover {
+    transform: translateY(-5px);
+  }
 `;
 
 const QuestionText = styled.div`
-  font-size: 22px !important;
+  font-size: 24px !important;
   font-family: "Kanit", sans-serif !important;
   font-weight: 600;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   text-align: center;
-  color: #333;
+  color: #2d3436;
   position: relative;
+  animation: ${fadeIn} 0.4s ease-out;
+  line-height: 1.4;
+  padding: 0 1rem;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(90deg, #ffa7a7, #ff8f8f);
+    border-radius: 3px;
+  }
 `;
 
 const SenseiImage = styled.img`
@@ -57,74 +106,61 @@ const AnswersContainer = styled.div`
   flex-direction: column;
   gap: 1rem;
   width: 100%;
-  margin-top: 50px;
+  margin-top: 30px;
+  animation: ${fadeIn} 0.6s ease-out;
 `;
 
 const StyledButton = styled(Button)`
   width: 100%;
-  padding: 0.8rem;
-  font-size: 15px !important;
+  padding: 1rem !important;
+  font-size: 16px !important;
   font-family: "Nunito", sans-serif !important;
   text-transform: none !important;
-  border-radius: 12px !important;
-  background-color: #ffffff !important;
-  border: 1px solid #000 !important;
-  color: #000 !important;
+  border-radius: 15px !important;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+  border: 2px solid #e9ecef !important;
+  color: #2d3436 !important;
+  transition: all 0.3s ease !important;
+  position: relative;
+  overflow: hidden;
 
   &:hover {
-    background-color: #919191 !important;
-    color: #000 !important;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  &:active {
+    transform: translateY(1px);
   }
 `;
 
 const SelectedButton = styled(StyledButton)`
-  background-color: #919191 !important;
-  color: #000 !important;
+  background: linear-gradient(135deg, #ffa7a7 0%, #ff8f8f 100%) !important;
+  color: white !important;
+  border: none !important;
+  animation: ${pulse} 0.3s ease-in-out;
+
+  &:hover {
+    background: linear-gradient(135deg, #ff8f8f 0%, #ff7676 100%) !important;
+  }
 `;
 
 const ProgressContainer = styled(Box)`
   width: 100%;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
+  padding: 0 1rem;
 `;
 
-const StyledRangeInput = styled.input`
-  -webkit-appearance: none;
-  width: 100%;
-  height: 10px;
-  margin-top: 20px;
-  border-radius: 5px;
-  background: linear-gradient(90deg, #ffa7a7, #ff8f8f);
-  outline: none;
-  opacity: 0.9;
-  transition: background 0.3s;
+const StyledLinearProgress = styled(LinearProgress)`
+  height: 10px !important;
+  border-radius: 5px !important;
+  background-color: #e9ecef !important;
 
-  &::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: #ff8f8f;
-    cursor: pointer;
-    transition: background 0.3s;
+  .MuiLinearProgress-bar {
+    background: linear-gradient(90deg, #ffa7a7, #ff8f8f) !important;
+    border-radius: 5px;
   }
-
-  &::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: #ff8f8f;
-    cursor: pointer;
-  }
-`;
-
-const RangeValueDisplay = styled.div`
-  margin-top: 10px;
-  font-size: 16px;
-  font-family: "Nunito", sans-serif;
-  font-weight: bold;
-  color: #ff8f8f;
-  text-align: center;
 `;
 
 const NavigationButtons = styled.div`
@@ -132,25 +168,34 @@ const NavigationButtons = styled.div`
   justify-content: space-between;
   margin-top: 2rem;
   width: 100%;
+  gap: 1rem;
 `;
 
 const PreviousButton = styled(Button)`
-  background-color: #808080 !important;
-  color: #fff !important;
+  background: linear-gradient(135deg, #a8a8a8 0%, #808080 100%) !important;
+  color: white !important;
   text-transform: none !important;
   border-radius: 12px !important;
+  padding: 0.8rem 1.5rem !important;
+  transition: all 0.3s ease !important;
+
   &:hover {
-    background-color: #6c6c6c;
+    background: linear-gradient(135deg, #808080 0%, #666666 100%) !important;
+    transform: translateX(-2px);
   }
 `;
 
 const NextButton = styled(Button)`
-  background-color: #ffa7a7 !important;
-  color: #fff !important;
+  background: linear-gradient(135deg, #ffa7a7 0%, #ff8f8f 100%) !important;
+  color: white !important;
   text-transform: none !important;
   border-radius: 12px !important;
+  padding: 0.8rem 1.5rem !important;
+  transition: all 0.3s ease !important;
+
   &:hover {
-    background-color: #ff8f8f;
+    background: linear-gradient(135deg, #ff8f8f 0%, #ff7676 100%) !important;
+    transform: translateX(2px);
   }
 `;
 
@@ -210,22 +255,186 @@ const BouncingLoader = styled.div`
   }
 `;
 
+const ProgressText = styled.div`
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+  margin-top: 8px;
+  font-weight: 500;
+`;
+
+const ProgressIndicator = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 10px;
+`;
+
+const ProgressDot = styled.div`
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: ${props => props.active ? 'linear-gradient(135deg, #ffa7a7, #ff8f8f)' : '#e9ecef'};
+  transition: all 0.3s ease;
+  transform: ${props => props.active ? 'scale(1.2)' : 'scale(1)'};
+`;
+
+const FeedbackBubble = styled.div`
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: white;
+  padding: 15px 25px;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  animation: ${fadeIn} 0.3s ease-out;
+  z-index: 1000;
+  font-size: 14px;
+  color: #2d3436;
+  max-width: 300px;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    right: 20px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid white;
+  }
+`;
+
+const TimerContainer = styled.div`
+  position: absolute;
+  top: -40px;
+  right: 0;
+  background: linear-gradient(135deg, #ffa7a7 0%, #ff8f8f 100%);
+  padding: 8px 16px;
+  border-radius: 12px;
+  color: white;
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+
+  &::before {
+    content: '⏱️';
+    font-size: 14px;
+  }
+`;
+
+const StyledRangeInput = styled.input`
+  -webkit-appearance: none;
+  width: 100%;
+  height: 10px;
+  margin: 20px 0;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #ffa7a7, #ff8f8f);
+  outline: none;
+  opacity: 0.9;
+  transition: all 0.3s ease;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ff8f8f;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  &::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ff8f8f;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  &::-webkit-slider-thumb:hover,
+  &::-moz-range-thumb:hover {
+    transform: scale(1.2);
+  }
+`;
+
+const RangeValueDisplay = styled.div`
+  margin-top: 10px;
+  font-size: 18px;
+  font-family: "Nunito", sans-serif;
+  font-weight: bold;
+  color: #ff8f8f;
+  text-align: center;
+  animation: ${pulse} 0.3s ease-in-out;
+`;
+
+/**
+ * @typedef {import('../../types/personality').Question} Question
+ * @typedef {import('../../types/personality').UserResponse} UserResponse
+ * @typedef {import('../../types/personality').MotivationScores} MotivationScores
+ * @typedef {import('../../types/personality').AnswersCount} AnswersCount
+ */
+
+/**
+ * Composant principal du test de personnalité.
+ * Gère l'affichage et la logique du questionnaire de personnalité,
+ * incluant la progression, les réponses de l'utilisateur et la soumission des résultats.
+ * 
+ * @component
+ * @example
+ * return (
+ *   <AppPersonalityTest />
+ * )
+ */
 const AppPersonalityTest = () => {
+    /** @type {[UserResponse[], Function]} */
     const [responses, setResponses] = useState([]);
+    
+    /** @type {[number, Function]} */
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+    
+    /** @type {[number|null, Function]} */
     const [selectedAnswerIndex, setSelectedAnswerIndex] = useState(null);
+    
+    /** @type {[number, Function]} */
+    const [timer, setTimer] = useState(0);
+    
+    /** @type {[AnswersCount, Function]} */
     const [answersCount, setAnswersCount] = useState({
         Colors: { Vert: 10, Marron: 10, Bleu: 10, Rouge: 10 },
         Letters: { A: 10, B: 10, C: 10, D: 10 }
     });
+    
+    /** @type {[MotivationScores, Function]} */
     const [motivationScores, setMotivationScores] = useState({});
+    
+    /** @type {[boolean, Function]} */
     const [loading, setLoading] = useState(false);
+    
+    /** @type {[Question[], Function]} */
     const [questions, setQuestions] = useState([]);
+    
+    /** @type {[number, Function]} */
     const [changeImpact, setChangeImpact] = useState(5);
+    
+    /** @type {[number, Function]} */
     const [randomNumber, setRandomNumber] = useState(0);
 
     const { userId, token, projectTaskId, recordID, name, firstname, email } = useUserContext();
     const navigate = useNavigate();
+    const [showFeedback, setShowFeedback] = useState(false);
+    const [feedbackMessage, setFeedbackMessage] = useState('');
 
     useEffect(() => {
         if (!recordID || !email || !name || !firstname) {
@@ -240,6 +449,13 @@ const AppPersonalityTest = () => {
         }]);
 
         setRandomNumber(Math.floor(Math.random() * (7 - 4 + 1)) + 4);
+
+        // Démarrer le timer
+        const interval = setInterval(() => {
+            setTimer(prevTimer => prevTimer + 1);
+        }, 1000);
+
+        return () => clearInterval(interval);
     }, []);
 
     const checkHsObjectId = async (hsObjectId) => {
@@ -269,6 +485,17 @@ const AppPersonalityTest = () => {
     const totalQuestions = questions.length;
     const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
 
+    const formatTime = (timeInSeconds) => {
+        const minutes = Math.floor(timeInSeconds / 60);
+        const seconds = timeInSeconds % 60;
+        return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    };
+
+    /**
+     * Met à jour le compteur de réponses pour un type donné
+     * @param {string} answerType - Le type de réponse à mettre à jour
+     * @param {number} increment - La valeur d'incrémentation
+     */
     const updateAnswerCount = (answerType, increment) => {
         if (!answerType) return;
         const updatedAnswersCount = { ...answersCount };
@@ -299,6 +526,11 @@ const AppPersonalityTest = () => {
         setAnswersCount(updatedAnswersCount);
     };
 
+    /**
+     * Met à jour les scores de motivation
+     * @param {Question} question - La question actuelle
+     * @param {number} score - Le score à ajouter
+     */
     const updateMotivationScores = (question, score) => {
         const updatedScores = { ...motivationScores };
         if (question.type) {
@@ -310,6 +542,10 @@ const AppPersonalityTest = () => {
         setMotivationScores(updatedScores);
     };
 
+    /**
+     * Calcule les résultats finaux du test
+     * @returns {Object} Les résultats calculés
+     */
     const calculateResults = () => {
         const dominantColor = Object.entries(answersCount.Colors).reduce((a, b) => (b[1] > a[1] ? b : a))[0];
         const dominantLetter = Object.entries(answersCount.Letters).reduce((a, b) => (b[1] > a[1] ? b : a))[0];
@@ -326,7 +562,10 @@ const AppPersonalityTest = () => {
         };
     };
 
-
+    /**
+     * Construit l'objet des réponses de l'utilisateur
+     * @returns {UserResponse[]} Les réponses formatées
+     */
     const buildUserAnswers = () => {
         return responses.map((response) => ({
             question: questions[response.questionIndex]?.question || "",
@@ -347,6 +586,8 @@ const AppPersonalityTest = () => {
     };
 
     const submitResponse = async () => {
+        console.log(`Temps total du test en secondes : ${formatTime(timer)}`);
+
         setLoading(true);
         const results = calculateResults();
         const userAnswers = buildUserAnswers();
@@ -454,6 +695,12 @@ const AppPersonalityTest = () => {
         }
     };
 
+    const showFeedbackMessage = (message) => {
+        setFeedbackMessage(message);
+        setShowFeedback(true);
+        setTimeout(() => setShowFeedback(false), 3000);
+    };
+
     const handleAnswerSelection = (index) => {
         setSelectedAnswerIndex(index);
     };
@@ -503,9 +750,28 @@ const AppPersonalityTest = () => {
             <QuizContainer>
                 <ToastContainer />
                 {!loading && (
-                    <ProgressContainer>
-                        <LinearProgress variant="determinate" value={progress} />
-                    </ProgressContainer>
+                    <>
+                        <TimerContainer>
+                            {formatTime(timer)}
+                        </TimerContainer>
+                        <ProgressContainer>
+                            <StyledLinearProgress
+                                variant="determinate"
+                                value={(currentQuestionIndex / questions.length) * 100}
+                            />
+                            <ProgressText>
+                                Question {currentQuestionIndex + 1} sur {questions.length}
+                            </ProgressText>
+                            <ProgressIndicator>
+                                {Array.from({ length: Math.min(5, questions.length) }).map((_, index) => (
+                                    <ProgressDot
+                                        key={index}
+                                        active={index === currentQuestionIndex % 5}
+                                    />
+                                ))}
+                            </ProgressIndicator>
+                        </ProgressContainer>
+                    </>
                 )}
                 {loading ? (
                     <BouncingLoader>
@@ -571,6 +837,11 @@ const AppPersonalityTest = () => {
                             </NavigationButtons>
                         </>
                     )
+                )}
+                {showFeedback && (
+                    <FeedbackBubble>
+                        {feedbackMessage}
+                    </FeedbackBubble>
                 )}
             </QuizContainer>
         </>
