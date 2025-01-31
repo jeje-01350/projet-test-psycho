@@ -238,6 +238,9 @@ const AppPersonalityTest = () => {
     /** @type {[number|null, Function]} */
     const [selectedAnswerIndex, setSelectedAnswerIndex] = useState(null);
     
+    /** @type {[number, Function]} */
+    const [timer, setTimer] = useState(0);
+    
     /** @type {[AnswersCount, Function]} */
     const [answersCount, setAnswersCount] = useState({
         Colors: { Vert: 10, Marron: 10, Bleu: 10, Rouge: 10 },
@@ -275,6 +278,13 @@ const AppPersonalityTest = () => {
         }]);
 
         setRandomNumber(Math.floor(Math.random() * (7 - 4 + 1)) + 4);
+
+        // Démarrer le timer
+        const interval = setInterval(() => {
+            setTimer(prevTimer => prevTimer + 1);
+        }, 1000);
+
+        return () => clearInterval(interval);
     }, []);
 
     const checkHsObjectId = async (hsObjectId) => {
@@ -303,6 +313,12 @@ const AppPersonalityTest = () => {
 
     const totalQuestions = questions.length;
     const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+
+    const formatTime = (timeInSeconds) => {
+        const minutes = Math.floor(timeInSeconds / 60);
+        const seconds = timeInSeconds % 60;
+        return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    };
 
     /**
      * Met à jour le compteur de réponses pour un type donné
@@ -399,6 +415,10 @@ const AppPersonalityTest = () => {
     };
 
     const submitResponse = async () => {
+        // Afficher le temps total dans une alerte
+        alert(`Temps total du test : ${formatTime(timer)}`);
+        console.log(`Temps total du test en secondes : ${timer}`);
+
         setLoading(true);
         const results = calculateResults();
         const userAnswers = buildUserAnswers();
@@ -555,9 +575,25 @@ const AppPersonalityTest = () => {
             <QuizContainer>
                 <ToastContainer />
                 {!loading && (
-                    <ProgressContainer>
-                        <LinearProgress variant="determinate" value={progress} />
-                    </ProgressContainer>
+                    <>
+                        <ProgressContainer>
+                            <LinearProgress variant="determinate" value={progress} />
+                        </ProgressContainer>
+                        <div style={{ 
+                            position: 'fixed', 
+                            top: '20px', 
+                            right: '20px', 
+                            backgroundColor: '#ffa7a7',
+                            padding: '10px 20px',
+                            borderRadius: '8px',
+                            color: 'white',
+                            fontFamily: '"Nunito", sans-serif',
+                            fontWeight: 'bold',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                        }}>
+                            Timer: {formatTime(timer)}
+                        </div>
+                    </>
                 )}
                 {loading ? (
                     <BouncingLoader>
