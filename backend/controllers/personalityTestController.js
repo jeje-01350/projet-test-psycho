@@ -1,15 +1,15 @@
 const ResultsPersonalityTest = require('../models/ResultsPersonalityTest');
 const OpenAI = require('openai');
-
-const client = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
-
 const axios = require('axios');
 const CallModjo = require('../models/CallModjo');
 const {launch} = require("puppeteer");
 const fs = require("fs");
 const path = require('path');
+const personalityDescriptionService = require('../services/personalityDescriptionService');
+
+const client = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+});
 
 exports.saveHubspotTest = async (req, res) => {
     try {
@@ -75,85 +75,6 @@ exports.savePersonalityTestResult = async (req, res) => {
             return res.status(500).json({ error: 'Erreur lors de la récupération des données Modjo.', details: error.message });
         }
 
-        const getLettersDescription = (letter) => {
-            switch (letter) {
-                case 'A':
-                    return `Vous avez une personnalité de type A. Vous semblez prédisposé à avoir les capacité de gestion et de contrôle.
-        Vos forces sont votre ténacité, votre confiance et votre pragmatisme.
-        Vos faiblesses peuvent être l'écoute, un manque de discipline et d'attention aux détails.`;
-                case 'B':
-                    return `Vous avez une personnalité de type B. Vous aimez être entouré de gens.
-        Vos forces sont votre empathie, votre enthousiasme et votre spontanéité.
-        Vos faiblesses peuvent être manque de patience, d'attention et de confiance.`;
-                case 'C':
-                    return `Vous avez une personnalité de type C. Vous aimez réfléchir avant d'agir.
-        Vos forces sont votre rationalité, votre objectivité et votre originalité.
-        Vos faiblesses peuvent être manque de spontanéité, de pragmatisme et d'empathie.`;
-                case 'D':
-                    return `Vous avez une personnalité de type D. Vous aimez vous sentir en sécurité dans la vie.
-        Vos forces sont votre organisation, votre compassion et votre patience.
-        Vos faiblesses potentielles sont un manque d'ambition, d'adaptabilité et d'affirmation.`;
-                default:
-                    return 'Description non disponible.';
-            }
-        };
-
-        const getColorsDescription = (color) => {
-            switch (color) {
-                case 'Bleu':
-                    return `Vous êtes un Relateur. Vous aimez discuter, les relations humaines et passer du temps avec les autres.
-        Vous êtes une personne empathique qui a tendance à placer les besoins des autres au-dessus des siens.
-        Vos forces sont votre sympathie, votre ouverture et votre conscience de vos propres émotions.
-        Vos faiblesses peuvent votre subjectivité, votre souplesse et votre susceptibilité à être manipulé.`;
-                case 'Rouge':
-                    return `Vous êtes un Aventurier. Vous aimez l'action, l'excitation et le drame.
-        Vous acceptez facilement le changement et êtes spontané.
-        Vos forces sont votre ténacité, votre audace et votre adaptabilité.
-        Vos faiblesses peuvent être votre insouciance et votre manque de concentration.`;
-                case 'Vert':
-                    return `Vous êtes un Planificateur. Vous aimez rêver, planifier et innover.
-        Vous avez tendance à passer beaucoup de temps à penser.
-        Vos forces sont votre vision, votre objectivité et votre attention aux détails.
-        Vos faiblesses peuvent être une difficulté à vous immerger dans le moment présent.`;
-                case 'Marron':
-                    return `Vous êtes un Constructeur. Vous aimez diriger, créer et travailler dur.
-        Vous êtes une personne traditionnelle avec du respect pour l'autorité.
-        Vos forces sont votre diligence, votre franchise et votre pragmatisme.
-        Vos faiblesses peuvent être un manque de tact, de patience et de facilité avec les abstractions.`;
-                default:
-                    return 'Description non disponible.';
-            }
-        };
-
-        function cleanAndStructureHTML(text, analysisType, firstname, name) {
-            const headerTitle = analysisType === "color"
-                ? `<h1>Analyse de votre profil - Résultat Couleur<br>${firstname} ${name}</h1>`
-                : `<h1>Analyse de votre profil - Résultat Lettre<br>${firstname} ${name}</h1>`;
-
-            const subTitle = analysisType === "color"
-                ? `<h2>Découvrez vos atouts et pistes professionnelles</h2>`
-                : `<h2>Comprenez votre potentiel et projetez-vous dans l'avenir</h2>`;
-
-            // Remove existing titles and subtitles from text to avoid duplication
-            text = text
-                .replace(/# Analyse de votre profil - Résultat (Couleur|Lettre)/g, '')
-                .replace(/## (Découvrez vos atouts et pistes professionnelles|Comprenez votre potentiel et projetez-vous dans l'avenir)/g, '')
-                .replace(/\*\*/g, '') // Remove markdown bold
-                .replace(/\d+\.\s/g, '') // Remove numbered lists
-                .trim();
-
-            const sections = text.split('\n\n');
-
-            let htmlContent = `${headerTitle}
-            ${subTitle}`;
-
-            sections.forEach((section) => {
-                htmlContent += `<p>${section.trim()}</p>`;
-            });
-
-            return htmlContent;
-        }
-
         const promptPhaseFinal = `
             Objectif : Susciter l'intérêt du candidat en valorisant subtilement ses forces tout en le projetant dans un contexte professionnel motivant.
 
@@ -183,20 +104,13 @@ exports.savePersonalityTestResult = async (req, res) => {
                  Exemple : *"Vous pourriez vous épanouir dans des rôles nécessitant [compétence clé], comme [rôle 1] ou [rôle 2]."*
             
             5. **Synthèse et Appel à l'Action :**  
-               - Résumez les points clés et concluez avec un appel à l'action engageant :  
-                 Exemple :  
-                 *"Votre profil met en avant un potentiel riche et prometteur. Un bilan de compétences approfondi vous permettrait de transformer ces qualités en opportunités concrètes pour atteindre vos objectifs professionnels."*  
-               - Ajoutez un disclaimer neutre :  
-                 *"Ces résultats peuvent être utilisés pour une analyse approfondie dans un cadre personnalisé."*
+               - Résumez les points clés et concluez avec un appel à l'action engageant.  
+               - Ajoutez un disclaimer neutre.
             
             **Variables à intégrer :**
             - Couleur : ${JSON.stringify(score.color)}  
-            - Description de la couleur : ${getColorsDescription(score.color)}  
+            - Description de la couleur : ${personalityDescriptionService.getPromptData(score, 'color')}  
             - Transcriptions (informations à utiliser subtilement) : ${modjoCallData}
-            
-            **Instructions supplémentaires :**
-            - Rédigez des paragraphes fluides et engageants.  
-            - Excluez toute mention explicite des transcriptions ou d'intelligence artificielle.
         `;
 
         const responsePhaseFinal = await client.chat.completions.create({
@@ -234,26 +148,17 @@ exports.savePersonalityTestResult = async (req, res) => {
                  Exemple : *"Ce profil est souvent valorisé dans des rôles comme [rôle 1] ou [rôle 2], qui nécessitent [compétence clé]."*  
             
             5. **Lien avec l'Analyse de la Couleur :**  
-               - Expliquez comment la lettre et la couleur se complètent pour offrir une vision globale, en se servant de l'analyse ${bilanColor}  
-                 Exemple :  
-                 *"Associée à votre couleur (${score.color}), votre lettre (${score.letters}) met en lumière une combinaison unique de qualités qui vous positionne idéalement pour des opportunités professionnelles alignées avec vos ambitions."*
+               - Expliquez comment la lettre et la couleur se complètent pour offrir une vision globale.  
             
             6. **Synthèse et Appel à l'Action :**  
-               - Résumez les points clés et concluez avec un appel à l'action engageant :  
-                 Exemple :  
-                 *"Ce rapport met en avant vos atouts et ouvre des perspectives passionnantes. Un bilan de compétences approfondi vous permettrait d'aligner vos qualités sur des objectifs professionnels concrets et réalisables."*  
-               - Ajoutez un disclaimer neutre :  
-                 *"Ces résultats constituent une base pour une réflexion approfondie et peuvent être utilisés dans un cadre personnalisé."*
+               - Résumez les points clés et concluez avec un appel à l'action engageant.  
+               - Ajoutez un disclaimer neutre.
             
             **Variables à intégrer :**
             - Lettre : ${JSON.stringify(score.letters)}  
-            - Description de la lettre : ${getLettersDescription(score.letters)}  
-            - Description de la couleur : ${getColorsDescription(score.color)}  
+            - Description de la lettre : ${personalityDescriptionService.getPromptData(score, 'letter')}  
+            - Description de la couleur : ${personalityDescriptionService.getPromptData(score, 'color')}  
             - Transcriptions (informations à utiliser subtilement) : ${modjoCallData}
-            
-            **Instructions supplémentaires :**
-            - Rédigez des paragraphes fluides et engageants.  
-            - Excluez toute mention explicite des transcriptions ou d'intelligence artificielle.
         `;
 
         const responsePhaseIntegration = await client.chat.completions.create({
@@ -263,8 +168,8 @@ exports.savePersonalityTestResult = async (req, res) => {
 
         const bilanLetter = responsePhaseIntegration.choices[0].message.content;
 
-        const bilanLetterHTML = cleanAndStructureHTML(bilanLetter, 'letter', firstname, name);
-        const bilanColorHTML = cleanAndStructureHTML(bilanColor, 'color', firstname, name);
+        const bilanLetterHTML = personalityDescriptionService.formatHTMLReport(bilanLetter, 'letter', firstname, name);
+        const bilanColorHTML = personalityDescriptionService.formatHTMLReport(bilanColor, 'color', firstname, name);
 
         const templatePath = path.join(__dirname, '../pdf/pdfTemplate.html');
 
@@ -282,9 +187,9 @@ exports.savePersonalityTestResult = async (req, res) => {
 
         const newResult = new ResultsPersonalityTest({
             hs_object_id,
-            letter : score.letters,
+            letter: score.letters,
             email,
-            color : score.color
+            color: score.color
         });
 
         await newResult.save();

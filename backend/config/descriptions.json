@@ -1,0 +1,54 @@
+{
+  "letters": {
+    "A": {
+      "title": "Personnalité de type A",
+      "description": "Vous semblez prédisposé à avoir les capacité de gestion et de contrôle.",
+      "forces": ["ténacité", "confiance", "pragmatisme"],
+      "faiblesses": ["écoute", "manque de discipline", "attention aux détails"]
+    },
+    "B": {
+      "title": "Personnalité de type B",
+      "description": "Vous aimez être entouré de gens.",
+      "forces": ["empathie", "enthousiasme", "spontanéité"],
+      "faiblesses": ["manque de patience", "attention", "confiance"]
+    },
+    "C": {
+      "title": "Personnalité de type C",
+      "description": "Vous aimez réfléchir avant d'agir.",
+      "forces": ["rationalité", "objectivité", "originalité"],
+      "faiblesses": ["manque de spontanéité", "pragmatisme", "empathie"]
+    },
+    "D": {
+      "title": "Personnalité de type D",
+      "description": "Vous aimez vous sentir en sécurité dans la vie.",
+      "forces": ["organisation", "compassion", "patience"],
+      "faiblesses": ["manque d'ambition", "adaptabilité", "affirmation"]
+    }
+  },
+  "colors": {
+    "Bleu": {
+      "title": "Relateur",
+      "description": "Vous aimez discuter, les relations humaines et passer du temps avec les autres. Vous êtes une personne empathique qui a tendance à placer les besoins des autres au-dessus des siens.",
+      "forces": ["sympathie", "ouverture", "conscience émotionnelle"],
+      "faiblesses": ["subjectivité", "souplesse", "susceptibilité à la manipulation"]
+    },
+    "Rouge": {
+      "title": "Aventurier",
+      "description": "Vous aimez l'action, l'excitation et le drame. Vous acceptez facilement le changement et êtes spontané.",
+      "forces": ["ténacité", "audace", "adaptabilité"],
+      "faiblesses": ["insouciance", "manque de concentration"]
+    },
+    "Vert": {
+      "title": "Planificateur",
+      "description": "Vous aimez rêver, planifier et innover. Vous avez tendance à passer beaucoup de temps à penser.",
+      "forces": ["vision", "objectivité", "attention aux détails"],
+      "faiblesses": ["difficulté avec le moment présent"]
+    },
+    "Marron": {
+      "title": "Constructeur",
+      "description": "Vous aimez diriger, créer et travailler dur. Vous êtes une personne traditionnelle avec du respect pour l'autorité.",
+      "forces": ["diligence", "franchise", "pragmatisme"],
+      "faiblesses": ["manque de tact", "patience", "facilité avec les abstractions"]
+    }
+  }
+} 
