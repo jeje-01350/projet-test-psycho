@@ -26,7 +26,6 @@ import AppAncreSchein from "./pages/AncreSchein/AppAncreSchein.jsx";
 import ResultsAncreSchein from "./pages/AncreSchein/ResultsAncreSchein.jsx";
 import ResultsKapable from "./pages/Kapable/ResultsKapable.jsx";
 import AppKapable from "./pages/Kapable/AppKapable.jsx";
-import AllTests from "./pages/Home/allTest.jsx";
 
 const App = () => {
 
@@ -37,9 +36,6 @@ const App = () => {
 
             {/*  HOMEPAGE  */}
             <Route path="/" exact element={<Home />} />
-
-            {/*  PAGE TOUT LES TESTS  */}
-            <Route path="/tous-les-tests" exact element={<AllTests />} />
 
             {/*  PAGES ANCRE DE TEST SCHEIN  */}
             <Route path="/schein" exact element={<AppAncreSchein />} />
