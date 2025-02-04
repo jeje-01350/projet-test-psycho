@@ -50,6 +50,16 @@ const availableTests = [
     accentColor: '#4298B4',
     path: '/personality'
   },
+  {
+    id: 'bigfive',
+    title: 'Test de Personnalité Big Five',
+    description: 'Évaluez vos traits de personnalité selon le modèle des Big Five (OCEAN) : Ouverture, Conscience, Extraversion, Agréabilité et Névrosisme.',
+    duration: '5-10 minutes',
+    questionCount: 10,
+    icon: TestIcons.personality,
+    accentColor: '#FF8F8F',
+    path: '/bigfive'
+  },
   // Préparé pour d'autres tests
   /*
   {
