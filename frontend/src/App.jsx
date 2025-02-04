@@ -1,28 +1,17 @@
-import React from "react";
-import { Routes, Route } from "react-router-dom";
-
-import { Home } from "./pages/index";
-
-import AppPersonalityTest from "./pages/Personality/AppPersonalityTest.jsx";
-import ResultsPersonalityTest from "./pages/Personality/ResultsPersonalityTest.jsx";
-
-import { Navbar } from "./components/index";
+import React from 'react';
+import { ThemeProvider } from 'styled-components';
+import GlobalStyles from './styles/GlobalStyles';
+import { theme } from './styles/theme';
+import AppRoutes from './routes/index';
+import Navbar from './components/Navbar/Navbar';
 
 const App = () => {
-
   return (
-    <div>
-        <Navbar />
-        <Routes>
-
-            {/*  HOMEPAGE  */}
-            <Route path="/" exact element={<Home />} />
-
-            {/*  PAGES TEST PERSONALITE MBTI  */}
-            <Route path="/mbti" exact element={<AppPersonalityTest />} />
-            <Route path="/mbti/results" exact element={<ResultsPersonalityTest />} />
-        </Routes>
-    </div>
+    <ThemeProvider theme={theme}>
+      <GlobalStyles />
+      <Navbar />
+      <AppRoutes />
+    </ThemeProvider>
   );
 };
 

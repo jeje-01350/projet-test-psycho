@@ -1,14 +1,27 @@
 export const theme = {
   colors: {
-    primary: '#1976d2',
-    secondary: '#dc004e',
-    background: '#ffffff',
-    text: '#000000',
-    grey: {
-      light: '#f5f5f5',
-      main: '#9e9e9e',
-      dark: '#616161',
-    },
+    primary: '#4298B4',
+    primaryDark: '#357A8E',
+    secondary: '#fabc1c',
+    secondaryDark: '#e6a71a',
+    background: '#fdf6f1',
+    white: '#FFFFFF',
+    text: '#333333',
+    textLight: '#666666',
+    error: '#e74c3c',
+    success: '#2ecc71',
+    border: '#E5E5E5',
+  },
+  shadows: {
+    small: '0 2px 4px rgba(0, 0, 0, 0.1)',
+    medium: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    large: '0 8px 16px rgba(0, 0, 0, 0.1)',
+  },
+  borderRadius: {
+    small: '5px',
+    medium: '10px',
+    large: '20px',
+    round: '50%',
   },
   spacing: {
     xs: '0.25rem',
@@ -16,27 +29,39 @@ export const theme = {
     md: '1rem',
     lg: '1.5rem',
     xl: '2rem',
+    xxl: '3rem',
   },
   breakpoints: {
-    xs: '320px',
-    sm: '600px',
-    md: '960px',
-    lg: '1280px',
-    xl: '1920px',
+    mobile: '480px',
+    tablet: '768px',
+    desktop: '1024px',
+    wide: '1200px',
   },
   typography: {
-    fontFamily: '"Roboto", sans-serif',
-    h1: {
-      fontSize: '2.5rem',
-      fontWeight: 500,
+    fontFamily: {
+      primary: "'Inter', sans-serif",
+      secondary: "'Roboto', sans-serif",
     },
-    h2: {
-      fontSize: '2rem',
-      fontWeight: 500,
+    fontSize: {
+      xs: '0.75rem',
+      sm: '0.875rem',
+      md: '1rem',
+      lg: '1.25rem',
+      xl: '1.5rem',
+      xxl: '2rem',
+      xxxl: '2.5rem',
     },
-    body1: {
-      fontSize: '1rem',
-      fontWeight: 400,
+    fontWeight: {
+      light: 300,
+      regular: 400,
+      medium: 500,
+      semiBold: 600,
+      bold: 700,
     },
+  },
+  transitions: {
+    fast: '0.2s ease',
+    medium: '0.3s ease',
+    slow: '0.5s ease',
   },
 }; 

@@ -275,9 +275,37 @@ const ProgressDot = styled.div`
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: ${props => props.active ? 'linear-gradient(135deg, #ffa7a7, #ff8f8f)' : '#e9ecef'};
+  background: ${props => props.$active ? 'linear-gradient(135deg, #ffa7a7, #ff8f8f)' : '#e9ecef'};
   transition: all 0.3s ease;
-  transform: ${props => props.active ? 'scale(1.2)' : 'scale(1)'};
+  transform: ${props => props.$active ? 'scale(1.2)' : 'scale(1)'};
+`;
+
+const AnswerButton = styled.button`
+  width: 100%;
+  padding: 1rem;
+  margin: 0.5rem 0;
+  border: 2px solid ${props => props.$active ? '#ff8f8f' : '#e0e0e0'};
+  border-radius: 10px;
+  background: ${props => props.$active 
+    ? 'linear-gradient(135deg, #ffa7a7 0%, #ff8f8f 100%)'
+    : 'white'};
+  color: ${props => props.$active ? 'white' : '#666'};
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: "Nunito", sans-serif;
+
+  &:hover {
+    background: ${props => props.$active 
+      ? 'linear-gradient(135deg, #ff8f8f 0%, #ff7676 100%)'
+      : '#f8f9fa'};
+    border-color: ${props => props.$active ? '#ff7676' : '#ced4da'};
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
 `;
 
 const FeedbackBubble = styled.div`
@@ -377,6 +405,26 @@ const RangeValueDisplay = styled.div`
   color: #ff8f8f;
   text-align: center;
   animation: ${pulse} 0.3s ease-in-out;
+`;
+
+const ProgressStep = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: ${props => props.$active ? '#fabc1c' : '#e0e0e0'};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${props => props.$active ? 'white' : '#666'};
+  font-weight: bold;
+  transition: all 0.3s ease;
+`;
+
+const ProgressLine = styled.div`
+  flex: 1;
+  height: 3px;
+  background-color: ${props => props.$active ? '#fabc1c' : '#e0e0e0'};
+  transition: all 0.3s ease;
 `;
 
 /**
@@ -763,10 +811,10 @@ const AppPersonalityTest = () => {
                                 Question {currentQuestionIndex + 1} sur {questions.length}
                             </ProgressText>
                             <ProgressIndicator>
-                                {Array.from({ length: Math.min(5, questions.length) }).map((_, index) => (
+                                {[0, 1, 2, 3, 4].map((index) => (
                                     <ProgressDot
                                         key={index}
-                                        active={index === currentQuestionIndex % 5}
+                                        $active={index === currentQuestionIndex % 5}
                                     />
                                 ))}
                             </ProgressIndicator>
@@ -805,22 +853,13 @@ const AppPersonalityTest = () => {
                             </QuestionText>
                             <AnswersContainer>
                                 {questions[currentQuestionIndex]?.answers.map((answer, index) => (
-                                    index === selectedAnswerIndex ? (
-                                        <SelectedButton
-                                            key={index}
-                                            onClick={() => handleAnswerSelection(index)}
-                                        >
-                                            {answer.content}
-                                        </SelectedButton>
-                                    ) : (
-                                        <StyledButton
-                                            key={index}
-                                            variant="outlined"
-                                            onClick={() => handleAnswerSelection(index)}
-                                        >
-                                            {answer.content}
-                                        </StyledButton>
-                                    )
+                                    <AnswerButton
+                                        key={index}
+                                        onClick={() => handleAnswerSelection(index)}
+                                        $active={selectedAnswerIndex === index}
+                                    >
+                                        {answer.content}
+                                    </AnswerButton>
                                 ))}
                             </AnswersContainer>
                             <NavigationButtons>
