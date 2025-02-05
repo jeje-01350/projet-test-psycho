@@ -79,7 +79,17 @@ const availableTests = [
     icon: TestIcons.emotional,
     accentColor: '#6B8E23',
     path: '/emotional-intelligence'
-  }
+  },
+  {
+    id: 'disc',
+    title: 'Test de Personnalité DISC',
+    description: 'Découvrez votre style comportemental à travers les dimensions de Dominance, Influence, Stabilité et Conformité.',
+    duration: '10-15 minutes',
+    questionCount: 10,
+    icon: TestIcons.personality,
+    accentColor: '#e74c3c',
+    path: '/disc'
+  },
 ];
 
 const Home = () => {

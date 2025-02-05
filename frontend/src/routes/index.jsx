@@ -15,6 +15,9 @@ import ResilienceResults from '../pages/Resilience/ResilienceResults';
 import IntroEmotionalIntelligence from '../pages/EmotionalIntelligence/IntroEmotionalIntelligence';
 import AppEmotionalIntelligenceTest from '../pages/EmotionalIntelligence/AppEmotionalIntelligenceTest';
 import EmotionalIntelligenceResults from '../pages/EmotionalIntelligence/EmotionalIntelligenceResults';
+import IntroDisc from '../pages/DISC/IntroDisc';
+import AppDiscTest from '../pages/DISC/AppDiscTest';
+import DiscResults from '../pages/DISC/DiscResults';
 
 const AppRoutes = () => {
   return (
@@ -41,6 +44,11 @@ const AppRoutes = () => {
       <Route path="/emotional-intelligence" element={<IntroEmotionalIntelligence />} />
       <Route path="/emotional-intelligence/test" element={<AppEmotionalIntelligenceTest />} />
       <Route path="/emotional-intelligence/results" element={<EmotionalIntelligenceResults />} />
+
+      {/* Routes pour le test DISC */}
+      <Route path="/disc" element={<IntroDisc />} />
+      <Route path="/disc/test" element={<AppDiscTest />} />
+      <Route path="/disc/results" element={<DiscResults />} />
     </Routes>
   );
 };
