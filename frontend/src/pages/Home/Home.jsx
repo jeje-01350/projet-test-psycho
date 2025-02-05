@@ -70,19 +70,16 @@ const availableTests = [
     accentColor: '#33A474',
     path: '/resilience'
   },
-  // Préparé pour d'autres tests
-  /*
   {
     id: 'emotional-intelligence',
-    title: 'Intelligence Émotionnelle',
-    description: 'Évaluez votre capacité à comprendre et gérer vos émotions ainsi que celles des autres.',
-    duration: '20 minutes',
-    questionCount: 20,
+    title: 'Test d\'Intelligence Émotionnelle',
+    description: 'Évaluez votre intelligence émotionnelle à travers cinq dimensions : Conscience de soi, Gestion des émotions, Conscience sociale, Gestion des relations et Prise de décision.',
+    duration: '10-15 minutes',
+    questionCount: 10,
     icon: TestIcons.emotional,
-    accentColor: '#33A474',
-    path: '/emotional-intelligence/intro'
-  },
-  */
+    accentColor: '#6B8E23',
+    path: '/emotional-intelligence'
+  }
 ];
 
 const Home = () => {
