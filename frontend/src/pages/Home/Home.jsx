@@ -60,6 +60,16 @@ const availableTests = [
     accentColor: '#FF8F8F',
     path: '/bigfive'
   },
+  {
+    id: 'resilience',
+    title: 'Test de Résilience Psychologique',
+    description: 'Évaluez votre capacité de résilience à travers cinq dimensions clés : Adaptabilité, Résolution de problèmes, Gestion émotionnelle, Support social et Confiance en soi.',
+    duration: '5-10 minutes',
+    questionCount: 10,
+    icon: TestIcons.emotional,
+    accentColor: '#33A474',
+    path: '/resilience'
+  },
   // Préparé pour d'autres tests
   /*
   {
