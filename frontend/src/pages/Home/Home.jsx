@@ -90,6 +90,16 @@ const availableTests = [
     accentColor: '#e74c3c',
     path: '/disc'
   },
+  {
+    id: 'hexaco',
+    title: 'Test de Personnalité HEXACO',
+    description: 'Explorez votre personnalité à travers six dimensions : Honnêteté-Humilité, Émotionnalité, eXtraversion, Agréabilité, Conscience et Ouverture à l\'expérience.',
+    duration: '5-10 minutes',
+    questionCount: 10,
+    icon: TestIcons.personality,
+    accentColor: '#9b59b6',
+    path: '/hexaco'
+  }
 ];
 
 const Home = () => {

@@ -18,6 +18,9 @@ import EmotionalIntelligenceResults from '../pages/EmotionalIntelligence/Emotion
 import IntroDisc from '../pages/DISC/IntroDisc';
 import AppDiscTest from '../pages/DISC/AppDiscTest';
 import DiscResults from '../pages/DISC/DiscResults';
+import IntroHexaco from '../pages/Hexaco/IntroHexaco';
+import AppHexacoTest from '../pages/Hexaco/AppHexacoTest';
+import HexacoResults from '../pages/Hexaco/HexacoResults';
 
 const AppRoutes = () => {
   return (
@@ -49,6 +52,11 @@ const AppRoutes = () => {
       <Route path="/disc" element={<IntroDisc />} />
       <Route path="/disc/test" element={<AppDiscTest />} />
       <Route path="/disc/results" element={<DiscResults />} />
+
+      {/* Routes pour le test HEXACO */}
+      <Route path="/hexaco" element={<IntroHexaco />} />
+      <Route path="/hexaco/test" element={<AppHexacoTest />} />
+      <Route path="/hexaco/results" element={<HexacoResults />} />
     </Routes>
   );
 };

@@ -4,6 +4,7 @@ const bigFiveRoutes = require('./bigFive');
 const resilienceRoutes = require('./resilience');
 const emotionalIntelligenceRoutes = require('./emotionalIntelligence');
 const discRoutes = require('./discRoutes');
+const hexacoRoutes = require('./hexacoRoutes');
 const router = express.Router();
 
 
@@ -12,6 +13,7 @@ router.use("/bigfive", bigFiveRoutes);
 router.use("/resilience", resilienceRoutes);
 router.use("/emotional-intelligence", emotionalIntelligenceRoutes);
 router.use("/disc", discRoutes);
+router.use("/hexaco", hexacoRoutes);
 router.use("/call-modjo", require("./callModjo"));
 
 
