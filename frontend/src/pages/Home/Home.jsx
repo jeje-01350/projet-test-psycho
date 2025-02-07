@@ -99,6 +99,16 @@ const availableTests = [
     icon: TestIcons.personality,
     accentColor: '#9b59b6',
     path: '/hexaco'
+  },
+  {
+    id: 'ambi',
+    title: 'Test de Personnalité AMBI',
+    description: 'Évaluez votre personnalité selon cinq dimensions fondamentales : Extraversion, Agréabilité, Conscience, Stabilité Émotionnelle et Ouverture à l\'expérience.',
+    duration: '30-40 minutes',
+    questionCount: 181,
+    icon: TestIcons.personality,
+    accentColor: '#4caf50',
+    path: '/ambi'
   }
 ];
 

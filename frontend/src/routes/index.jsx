@@ -21,6 +21,9 @@ import DiscResults from '../pages/DISC/DiscResults';
 import IntroHexaco from '../pages/Hexaco/IntroHexaco';
 import AppHexacoTest from '../pages/Hexaco/AppHexacoTest';
 import HexacoResults from '../pages/Hexaco/HexacoResults';
+import IntroAmbi from '../pages/Ambi/IntroAmbi';
+import AppAmbiTest from '../pages/Ambi/AppAmbiTest';
+import AmbiResults from '../pages/Ambi/AmbiResults';
 
 const AppRoutes = () => {
   return (
@@ -57,6 +60,11 @@ const AppRoutes = () => {
       <Route path="/hexaco" element={<IntroHexaco />} />
       <Route path="/hexaco/test" element={<AppHexacoTest />} />
       <Route path="/hexaco/results" element={<HexacoResults />} />
+
+      {/* Routes pour le test AMBI */}
+      <Route path="/ambi" element={<IntroAmbi />} />
+      <Route path="/ambi/test" element={<AppAmbiTest />} />
+      <Route path="/ambi/results" element={<AmbiResults />} />
     </Routes>
   );
 };
