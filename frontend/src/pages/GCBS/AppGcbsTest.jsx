@@ -12,6 +12,7 @@ import {
   vocabularyList
 } from '../../constants/GCBS/data';
 import styleSensei from '../../images/style-sensei.png';
+import { useUserContext } from '../../context/userContext';
 
 const fadeIn = keyframes`
   from {
@@ -483,6 +484,7 @@ const OptionText = styled.div`
 
 const AppGcbsTest = () => {
   const navigate = useNavigate();
+  const { userId, token, projectTaskId } = useUserContext();
   const [currentSection, setCurrentSection] = useState('gcbs');
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [gcbsAnswers, setGcbsAnswers] = useState([]);
@@ -643,6 +645,7 @@ const AppGcbsTest = () => {
 
   const submitResults = async (results) => {
     try {
+      // Envoi à l'API locale
       const response = await fetch(`${import.meta.env.VITE_API_URL}/gcbs/save`, {
         method: 'POST',
         headers: {
@@ -653,6 +656,45 @@ const AppGcbsTest = () => {
 
       if (!response.ok) {
         throw new Error('Erreur lors de la sauvegarde des résultats');
+      }
+
+      // Envoi à l'endpoint externe
+      const externalResponse = await fetch('https://dev.app.sensei-france.fr/psycho_tests/new_results', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          results: {
+            score: {
+              ...results.gcbsScores,
+              ...results.tipiScores
+            },
+            userAnswers: {
+              ...Object.fromEntries(results.gcbsAnswers.map(answer => [
+                gcbsQuestions.find(q => q.id === answer.questionId).optionA,
+                answer.answer
+              ])),
+              ...Object.fromEntries(results.tipiAnswers.map(answer => [
+                tipiQuestions.find(q => q.id === answer.questionId).question,
+                answer.answer
+              ])),
+              ...Object.fromEntries(results.vocabularyAnswers.map(answer => [
+                vocabularyList.find(w => w.id === answer.wordId).word,
+                answer.checked ? 1 : 0
+              ]))
+            }
+          },
+          nomTest: "Test de Croyances GCBS",
+          user_id: userId,
+          token,
+          project_task_id: projectTaskId,
+          idTest: "gcbs"
+        })
+      });
+
+      if (!externalResponse.ok) {
+        throw new Error('Erreur lors de l\'envoi des résultats à l\'endpoint externe');
       }
 
       const data = await response.json();
