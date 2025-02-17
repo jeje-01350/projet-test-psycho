@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled, { createGlobalStyle, keyframes } from 'styled-components';
-import { LinearProgress } from '@mui/material';
+import { LinearProgress, Slider, Box, Typography } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {
@@ -276,6 +276,73 @@ const Select = styled.select`
   }
 `;
 
+const SliderContainer = styled(Box)`
+  width: 100%;
+  padding: 2rem 3.5rem;
+  margin-top: 1rem;
+  animation: ${fadeIn} 0.6s ease-out;
+`;
+
+const SliderLabel = styled(Typography)`
+  color: #666;
+  font-family: "Nunito", sans-serif;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+`;
+
+const CustomSlider = styled(Slider)(({ theme }) => ({
+  color: '#2196f3',
+  height: 8,
+  padding: '15px 0',
+  '& .MuiSlider-thumb': {
+    height: 28,
+    width: 28,
+    backgroundColor: '#fff',
+    border: '2px solid currentColor',
+    '&:hover': {
+      boxShadow: '0 0 0 8px rgba(33, 150, 243, 0.16)',
+    },
+  },
+  '& .MuiSlider-track': {
+    height: 8,
+    background: 'linear-gradient(90deg, #2196f3, #1976d2)',
+  },
+  '& .MuiSlider-rail': {
+    height: 8,
+    backgroundColor: '#e0e0e0',
+    opacity: 1,
+  },
+  '& .MuiSlider-mark': {
+    backgroundColor: '#bfbfbf',
+    height: 12,
+    width: 2,
+    '&.MuiSlider-markActive': {
+      opacity: 1,
+      backgroundColor: 'currentColor',
+    },
+  },
+  '& .MuiSlider-markLabel': {
+    fontSize: '0.875rem',
+    fontFamily: '"Nunito", sans-serif',
+    color: '#666',
+  },
+}));
+
+const OptionContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 1rem;
+`;
+
+const OptionText = styled.div`
+  width: 45%;
+  text-align: ${props => props.$align};
+  color: #2d3436;
+  font-size: 1rem;
+  font-weight: ${props => props.$selected ? '600' : '400'};
+`;
+
 const AppGcbsTest = () => {
   const navigate = useNavigate();
   const [currentSection, setCurrentSection] = useState('gcbs');
@@ -288,11 +355,20 @@ const AppGcbsTest = () => {
   const [testStartTime] = useState(Date.now());
   const [sectionStartTime, setSectionStartTime] = useState(Date.now());
   const [questionStartTimes, setQuestionStartTimes] = useState([Date.now()]);
+  const [currentTime, setCurrentTime] = useState(Date.now());
 
   useEffect(() => {
     setQuestionStartTimes(prev => [...prev, Date.now()]);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentQuestion, currentSection]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(Date.now());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const getTotalQuestions = () => {
     switch (currentSection) {
@@ -495,98 +571,138 @@ const AppGcbsTest = () => {
   };
 
   const formatTime = (ms) => {
-    const seconds = Math.floor((Date.now() - ms) / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    const elapsedSeconds = Math.floor((currentTime - ms) / 1000);
+    const elapsedMinutes = Math.floor(elapsedSeconds / 60);
+    const remainingSeconds = elapsedSeconds % 60;
+    return `${elapsedMinutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
+  const getSliderMarks = (isABQuestion) => {
+    if (isABQuestion) {
+      return [
+        { value: 0, label: 'Forte préf. A' },
+        { value: 25, label: 'Préf. A' },
+        { value: 50, label: 'Neutre' },
+        { value: 75, label: 'Préf. B' },
+        { value: 100, label: 'Forte préf. B' }
+      ];
+    }
+    return [
+      { value: 0, label: 'Pas du tout d\'accord' },
+      { value: 25, label: '' },
+      { value: 50, label: 'Neutre' },
+      { value: 75, label: '' },
+      { value: 100, label: 'Tout à fait d\'accord' }
+    ];
+  };
+
+  const handleSliderChange = (event, value) => {
+    handleAnswer(value);
   };
 
   const renderCurrentSection = () => {
+    if (currentSection === 'gcbs') {
+      return (
+        <>
+          <QuestionText>
+            {getCurrentQuestion().text || 'Choisissez entre les deux options :'}
+          </QuestionText>
+          {renderQuestion()}
+        </>
+      );
+    } else if (currentSection === 'tipi') {
+      return (
+        <>
+          <QuestionText>{getCurrentQuestion().text}</QuestionText>
+          {renderQuestion()}
+        </>
+      );
+    }
+    return null;
+  };
+
+  const renderQuestion = () => {
     switch (currentSection) {
       case 'gcbs':
+        const currentGcbsQuestion = gcbsQuestions[currentQuestion];
         return (
-          <>
-            <QuestionText>
-              Choisissez l'option qui vous correspond le mieux :
-            </QuestionText>
-            <OptionsContainer>
-              <OptionButton
-                $active={gcbsAnswers[currentQuestion]?.answer === 1 || gcbsAnswers[currentQuestion]?.answer === 2}
-                onClick={() => handleAnswer(gcbsAnswers[currentQuestion]?.answer === 1 ? 2 : 1)}
+          <div>
+            <OptionContainer>
+              <OptionText 
+                $align="left" 
+                $selected={gcbsAnswers[currentQuestion]?.answer < 50}
               >
-                {gcbsQuestions[currentQuestion].optionA}
-              </OptionButton>
-              <OptionButton
-                $active={gcbsAnswers[currentQuestion]?.answer === 4 || gcbsAnswers[currentQuestion]?.answer === 5}
-                onClick={() => handleAnswer(gcbsAnswers[currentQuestion]?.answer === 4 ? 5 : 4)}
+                {currentGcbsQuestion.optionA}
+              </OptionText>
+              <OptionText 
+                $align="right" 
+                $selected={gcbsAnswers[currentQuestion]?.answer > 50}
               >
-                {gcbsQuestions[currentQuestion].optionB}
-              </OptionButton>
-              {gcbsAnswers[currentQuestion] && (
-                <OptionsContainer style={{ marginTop: '20px' }}>
-                  <div style={{ textAlign: 'center', marginBottom: '10px', color: '#666' }}>
-                    Précisez votre préférence :
-                  </div>
-                  {gcbsScale.map((scale) => (
-                    <OptionButton
-                      key={scale.value}
-                      $active={gcbsAnswers[currentQuestion]?.answer === scale.value}
-                      onClick={() => handleAnswer(scale.value)}
-                    >
-                      {scale.label}
-                    </OptionButton>
-                  ))}
-                </OptionsContainer>
-              )}
-            </OptionsContainer>
-          </>
+                {currentGcbsQuestion.optionB}
+              </OptionText>
+            </OptionContainer>
+            <SliderContainer>
+              <CustomSlider
+                value={gcbsAnswers[currentQuestion]?.answer || 50}
+                onChange={handleSliderChange}
+                step={25}
+                marks={getSliderMarks(true)}
+                valueLabelDisplay="off"
+              />
+            </SliderContainer>
+          </div>
         );
 
       case 'tipi':
+        const currentTipiQuestion = tipiQuestions[currentQuestion];
         return (
-          <>
-            <QuestionText>
-              {tipiQuestions[currentQuestion].question}
-            </QuestionText>
-            <OptionsContainer>
-              {tipiScale.map((scale) => (
-                <OptionButton
-                  key={scale.value}
-                  $active={tipiAnswers[currentQuestion]?.answer === scale.value}
-                  onClick={() => handleAnswer(scale.value)}
-                >
-                  {scale.label}
-                </OptionButton>
-              ))}
-            </OptionsContainer>
-          </>
+          <div>
+            <QuestionText>{currentTipiQuestion.question}</QuestionText>
+            <SliderContainer>
+              <CustomSlider
+                value={tipiAnswers[currentQuestion]?.answer || 50}
+                onChange={handleSliderChange}
+                step={25}
+                marks={getSliderMarks(false)}
+                valueLabelDisplay="off"
+              />
+            </SliderContainer>
+          </div>
         );
 
       case 'vocabulary':
         return (
-          <>
-            <QuestionText>
-              Cochez les mots dont vous connaissez la définition :
-            </QuestionText>
-            <VocabularyGrid>
-              {vocabularyList.map((word) => (
-                <VocabularyItem
-                  key={word.id}
-                  $checked={vocabularyAnswers.find(a => a.wordId === word.id)?.checked}
-                  onClick={() => handleVocabularyToggle(word.id)}
-                >
-                  <input
-                    type="checkbox"
-                    checked={vocabularyAnswers.find(a => a.wordId === word.id)?.checked}
-                    onChange={() => {}}
-                  />
-                  {word.word}
-                </VocabularyItem>
-              ))}
-            </VocabularyGrid>
-          </>
+          <VocabularyGrid>
+            {vocabularyList.map((word) => (
+              <VocabularyItem
+                key={word.id}
+                $checked={vocabularyAnswers.find(a => a.wordId === word.id)?.checked}
+                onClick={() => handleVocabularyToggle(word.id)}
+              >
+                <input
+                  type="checkbox"
+                  checked={vocabularyAnswers.find(a => a.wordId === word.id)?.checked}
+                  onChange={() => {}}
+                />
+                {word.word}
+              </VocabularyItem>
+            ))}
+          </VocabularyGrid>
         );
 
+      default:
+        return null;
+    }
+  };
+
+  const getCurrentQuestion = () => {
+    switch (currentSection) {
+      case 'gcbs':
+        return gcbsQuestions[currentQuestion];
+      case 'tipi':
+        return tipiQuestions[currentQuestion];
+      case 'vocabulary':
+        return vocabularyList[0];
       default:
         return null;
     }
