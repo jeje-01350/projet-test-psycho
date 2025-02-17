@@ -41,66 +41,6 @@ const TestsGrid = styled.div`
 
 const availableTests = [
   {
-    id: 'personality',
-    title: 'Test de Personnalité MBTI',
-    description: 'Découvrez votre type de personnalité selon le modèle Myers-Briggs (MBTI) et obtenez des insights précieux sur vos préférences naturelles.',
-    duration: '10-15 minutes',
-    questionCount: 16,
-    icon: TestIcons.personality,
-    accentColor: '#4298B4',
-    path: '/personality'
-  },
-  {
-    id: 'bigfive',
-    title: 'Test de Personnalité Big Five',
-    description: 'Évaluez vos traits de personnalité selon le modèle des Big Five (OCEAN) : Ouverture, Conscience, Extraversion, Agréabilité et Névrosisme.',
-    duration: '5-10 minutes',
-    questionCount: 10,
-    icon: TestIcons.personality,
-    accentColor: '#FF8F8F',
-    path: '/bigfive'
-  },
-  {
-    id: 'resilience',
-    title: 'Test de Résilience Psychologique',
-    description: 'Évaluez votre capacité de résilience à travers cinq dimensions clés : Adaptabilité, Résolution de problèmes, Gestion émotionnelle, Support social et Confiance en soi.',
-    duration: '5-10 minutes',
-    questionCount: 10,
-    icon: TestIcons.emotional,
-    accentColor: '#33A474',
-    path: '/resilience'
-  },
-  {
-    id: 'emotional-intelligence',
-    title: 'Test d\'Intelligence Émotionnelle',
-    description: 'Évaluez votre intelligence émotionnelle à travers cinq dimensions : Conscience de soi, Gestion des émotions, Conscience sociale, Gestion des relations et Prise de décision.',
-    duration: '10-15 minutes',
-    questionCount: 10,
-    icon: TestIcons.emotional,
-    accentColor: '#6B8E23',
-    path: '/emotional-intelligence'
-  },
-  {
-    id: 'disc',
-    title: 'Test de Personnalité DISC',
-    description: 'Découvrez votre style comportemental à travers les dimensions de Dominance, Influence, Stabilité et Conformité.',
-    duration: '10-15 minutes',
-    questionCount: 10,
-    icon: TestIcons.personality,
-    accentColor: '#e74c3c',
-    path: '/disc'
-  },
-  {
-    id: 'hexaco',
-    title: 'Test de Personnalité HEXACO',
-    description: 'Explorez votre personnalité à travers six dimensions : Honnêteté-Humilité, Émotionnalité, eXtraversion, Agréabilité, Conscience et Ouverture à l\'expérience.',
-    duration: '5-10 minutes',
-    questionCount: 10,
-    icon: TestIcons.personality,
-    accentColor: '#9b59b6',
-    path: '/hexaco'
-  },
-  {
     id: 'ambi',
     title: 'Test de Personnalité AMBI',
     description: 'Évaluez votre personnalité selon cinq dimensions fondamentales : Extraversion, Agréabilité, Conscience, Stabilité Émotionnelle et Ouverture à l\'expérience.',
