@@ -24,10 +24,29 @@ const Container = styled.div`
   border-radius: 50px;
   width: 90%;
   margin: 30px auto;
+  position: relative;
+
+  @media (max-width: 1024px) {
+    padding: 30px;
+    width: 95%;
+  }
+
+  @media (max-width: 768px) {
+    padding: 25px;
+    border-radius: 30px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 20px;
+    border-radius: 20px;
+    margin: 15px auto;
+  }
 `;
 
 const LeftSection = styled.div`
-  width: 90%;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
 `;
 
 const StyledTitle = styled.h1`
@@ -35,8 +54,17 @@ const StyledTitle = styled.h1`
   font-size: 2.5rem;
   margin-bottom: 20px;
 
-  @media (max-width: 779px) {
+  @media (max-width: 1024px) {
+    font-size: 2.2rem;
+  }
+
+  @media (max-width: 768px) {
     font-size: 2rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
   }
 `;
 
@@ -44,6 +72,16 @@ const Description = styled.p`
   font-size: 1.2rem;
   margin-bottom: 30px;
   color: #555;
+
+  @media (max-width: 768px) {
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+    margin-bottom: 20px;
+  }
 `;
 
 const StartButton = styled.button`
@@ -56,6 +94,19 @@ const StartButton = styled.button`
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  width: auto;
+  display: inline-block;
+
+  @media (max-width: 768px) {
+    padding: 12px 25px;
+    font-size: 1.1rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 10px 20px;
+    font-size: 1rem;
+    width: 100%;
+  }
 
   &:hover {
     background: linear-gradient(135deg, #388e3c 0%, #2e7d32 100%);
@@ -72,11 +123,23 @@ const UserImage = styled.img`
   right: 50px;
   bottom: 110px;
   transform: rotate(15deg);
-  max-width: 100%;
-  height: 400px;
-  display: none;
+  max-width: 300px;
+  height: auto;
+  z-index: 1;
 
-  @media (max-width: 779px) {
+  @media (max-width: 1200px) {
+    max-width: 250px;
+    right: 30px;
+    bottom: 90px;
+  }
+
+  @media (max-width: 1024px) {
+    max-width: 200px;
+    right: 20px;
+    bottom: 70px;
+  }
+
+  @media (max-width: 768px) {
     display: none;
   }
 `;
@@ -87,9 +150,23 @@ const SenseiImage = styled.img`
   top: 30px;
   width: 100px;
   height: auto;
+  z-index: 1;
 
-  @media (max-width: 779px) {
-    display: none;
+  @media (max-width: 1024px) {
+    width: 80px;
+    right: 70px;
+  }
+
+  @media (max-width: 768px) {
+    width: 60px;
+    right: 20px;
+    top: 20px;
+  }
+
+  @media (max-width: 480px) {
+    width: 50px;
+    right: 10px;
+    top: 10px;
   }
 `;
 

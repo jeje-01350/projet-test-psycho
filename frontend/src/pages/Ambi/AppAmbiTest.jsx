@@ -45,6 +45,22 @@ const QuizContainer = styled.div`
   transition: transform 0.3s ease;
   position: relative;
 
+  @media (max-width: 850px) {
+    max-width: 95%;
+    margin: 60px auto 40px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    margin: 50px auto 30px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1rem;
+    margin: 40px auto 20px;
+    border-radius: 15px;
+  }
+
   &:hover {
     transform: translateY(-5px);
   }
@@ -62,6 +78,17 @@ const QuestionText = styled.div`
   line-height: 1.4;
   padding: 0 1rem;
   
+  @media (max-width: 768px) {
+    font-size: 20px !important;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 18px !important;
+    margin-bottom: 1rem;
+    padding: 0 0.5rem;
+  }
+  
   &::after {
     content: '';
     position: absolute;
@@ -72,6 +99,12 @@ const QuestionText = styled.div`
     height: 3px;
     background: linear-gradient(90deg, #4caf50, #388e3c);
     border-radius: 3px;
+
+    @media (max-width: 480px) {
+      width: 40px;
+      height: 2px;
+      bottom: -8px;
+    }
   }
 `;
 
@@ -82,6 +115,16 @@ const ScaleContainer = styled.div`
   width: 100%;
   margin-top: 30px;
   animation: ${fadeIn} 0.6s ease-out;
+
+  @media (max-width: 768px) {
+    gap: 0.8rem;
+    margin-top: 20px;
+  }
+
+  @media (max-width: 480px) {
+    gap: 0.6rem;
+    margin-top: 15px;
+  }
 `;
 
 const ScaleButton = styled.button`
@@ -98,6 +141,19 @@ const ScaleButton = styled.button`
   cursor: pointer;
   transition: all 0.3s ease;
   font-family: "Nunito", sans-serif;
+
+  @media (max-width: 768px) {
+    padding: 0.8rem;
+    font-size: 0.95rem;
+    margin: 0.4rem 0;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.7rem;
+    font-size: 0.9rem;
+    margin: 0.3rem 0;
+    border-width: 1px;
+  }
 
   &:hover {
     background: ${props => props.$active 
@@ -118,6 +174,15 @@ const NavigationButtons = styled.div`
   margin-top: 2rem;
   width: 100%;
   gap: 1rem;
+
+  @media (max-width: 768px) {
+    margin-top: 1.5rem;
+  }
+
+  @media (max-width: 480px) {
+    margin-top: 1rem;
+    gap: 0.5rem;
+  }
 `;
 
 const PreviousButton = styled.button`
@@ -131,6 +196,17 @@ const PreviousButton = styled.button`
   transition: all 0.3s ease;
   opacity: ${props => props.disabled ? 0.5 : 1};
   pointer-events: ${props => props.disabled ? 'none' : 'auto'};
+
+  @media (max-width: 768px) {
+    padding: 0.7rem 1.2rem;
+    font-size: 0.95rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 8px;
+  }
 
   &:hover {
     background: linear-gradient(135deg, #808080 0%, #666666 100%);
@@ -150,6 +226,17 @@ const NextButton = styled.button`
   opacity: ${props => props.disabled ? 0.5 : 1};
   pointer-events: ${props => props.disabled ? 'none' : 'auto'};
 
+  @media (max-width: 768px) {
+    padding: 0.7rem 1.2rem;
+    font-size: 0.95rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 8px;
+  }
+
   &:hover {
     background: linear-gradient(135deg, #388e3c 0%, #2e7d32 100%);
     transform: translateX(2px);
@@ -160,6 +247,11 @@ const ProgressContainer = styled.div`
   width: 100%;
   margin-bottom: 2rem;
   padding: 0 1rem;
+
+  @media (max-width: 480px) {
+    margin-bottom: 1.5rem;
+    padding: 0 0.5rem;
+  }
 `;
 
 const StyledLinearProgress = styled(LinearProgress)`
@@ -179,6 +271,11 @@ const ProgressText = styled.div`
   text-align: center;
   margin-top: 8px;
   font-weight: 500;
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+    margin-top: 6px;
+  }
 `;
 
 const TimerContainer = styled.div`
@@ -197,9 +294,28 @@ const TimerContainer = styled.div`
   gap: 8px;
   font-size: 14px;
 
+  @media (max-width: 768px) {
+    top: -35px;
+    padding: 6px 12px;
+    font-size: 12px;
+    gap: 6px;
+  }
+
+  @media (max-width: 480px) {
+    top: -30px;
+    padding: 5px 10px;
+    font-size: 11px;
+    gap: 4px;
+    border-radius: 8px;
+  }
+
   &::before {
     content: '⏱️';
     font-size: 14px;
+
+    @media (max-width: 480px) {
+      font-size: 12px;
+    }
   }
 `;
 
@@ -220,6 +336,14 @@ const SliderContainer = styled(Box)`
   padding: 2rem 3.5rem;
   margin-top: 1rem;
   animation: ${fadeIn} 0.6s ease-out;
+
+  @media (max-width: 768px) {
+    padding: 1.5rem 2.5rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1rem 1.5rem;
+  }
 `;
 
 const SliderLabel = styled(Typography)`
@@ -227,6 +351,10 @@ const SliderLabel = styled(Typography)`
   font-family: "Nunito", sans-serif;
   font-size: 0.9rem;
   margin-top: 0.5rem;
+
+  @media (max-width: 480px) {
+    font-size: 0.8rem;
+  }
 `;
 
 const marks = [

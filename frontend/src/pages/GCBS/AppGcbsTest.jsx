@@ -51,6 +51,22 @@ const TestContainer = styled.div`
   transition: transform 0.3s ease;
   position: relative;
 
+  @media (max-width: 850px) {
+    max-width: 95%;
+    margin: 60px auto 40px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 1.5rem;
+    margin: 50px auto 30px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 1rem;
+    margin: 40px auto 20px;
+    border-radius: 15px;
+  }
+
   &:hover {
     transform: translateY(-5px);
   }
@@ -60,6 +76,11 @@ const ProgressContainer = styled.div`
   width: 100%;
   margin-bottom: 2rem;
   padding: 0 1rem;
+
+  @media (max-width: 480px) {
+    margin-bottom: 1.5rem;
+    padding: 0 0.5rem;
+  }
 `;
 
 const StyledLinearProgress = styled(LinearProgress)`
@@ -79,6 +100,11 @@ const ProgressText = styled.div`
   text-align: center;
   margin-top: 8px;
   font-weight: 500;
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+    margin-top: 6px;
+  }
 `;
 
 const QuestionText = styled.div`
@@ -92,6 +118,17 @@ const QuestionText = styled.div`
   animation: ${fadeIn} 0.4s ease-out;
   line-height: 1.4;
   padding: 0 1rem;
+
+  @media (max-width: 768px) {
+    font-size: 20px !important;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 18px !important;
+    margin-bottom: 1rem;
+    padding: 0 0.5rem;
+  }
   
   &::after {
     content: '';
@@ -103,6 +140,12 @@ const QuestionText = styled.div`
     height: 3px;
     background: linear-gradient(90deg, #2196f3, #1976d2);
     border-radius: 3px;
+
+    @media (max-width: 480px) {
+      width: 40px;
+      height: 2px;
+      bottom: -8px;
+    }
   }
 `;
 
@@ -113,6 +156,16 @@ const OptionsContainer = styled.div`
   width: 100%;
   margin-top: 30px;
   animation: ${fadeIn} 0.6s ease-out;
+
+  @media (max-width: 768px) {
+    gap: 0.8rem;
+    margin-top: 20px;
+  }
+
+  @media (max-width: 480px) {
+    gap: 0.6rem;
+    margin-top: 15px;
+  }
 `;
 
 const OptionButton = styled.button`
@@ -129,6 +182,19 @@ const OptionButton = styled.button`
   cursor: pointer;
   transition: all 0.3s ease;
   font-family: "Nunito", sans-serif;
+
+  @media (max-width: 768px) {
+    padding: 0.8rem;
+    font-size: 0.95rem;
+    margin: 0.4rem 0;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.7rem;
+    font-size: 0.9rem;
+    margin: 0.3rem 0;
+    border-width: 1px;
+  }
 
   &:hover {
     background: ${props => props.$active 
@@ -149,6 +215,15 @@ const NavigationButtons = styled.div`
   margin-top: 2rem;
   width: 100%;
   gap: 1rem;
+
+  @media (max-width: 768px) {
+    margin-top: 1.5rem;
+  }
+
+  @media (max-width: 480px) {
+    margin-top: 1rem;
+    gap: 0.5rem;
+  }
 `;
 
 const PreviousButton = styled.button`
@@ -162,6 +237,17 @@ const PreviousButton = styled.button`
   transition: all 0.3s ease;
   opacity: ${props => props.disabled ? 0.5 : 1};
   pointer-events: ${props => props.disabled ? 'none' : 'auto'};
+
+  @media (max-width: 768px) {
+    padding: 0.7rem 1.2rem;
+    font-size: 0.95rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 8px;
+  }
 
   &:hover {
     background: linear-gradient(135deg, #808080 0%, #666666 100%);
@@ -180,6 +266,17 @@ const NextButton = styled.button`
   transition: all 0.3s ease;
   opacity: ${props => props.disabled ? 0.5 : 1};
   pointer-events: ${props => props.disabled ? 'none' : 'auto'};
+
+  @media (max-width: 768px) {
+    padding: 0.7rem 1.2rem;
+    font-size: 0.95rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 8px;
+  }
 
   &:hover {
     background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
@@ -203,9 +300,28 @@ const TimerContainer = styled.div`
   gap: 8px;
   font-size: 14px;
 
+  @media (max-width: 768px) {
+    top: -35px;
+    padding: 6px 12px;
+    font-size: 12px;
+    gap: 6px;
+  }
+
+  @media (max-width: 480px) {
+    top: -30px;
+    padding: 5px 10px;
+    font-size: 11px;
+    gap: 4px;
+    border-radius: 8px;
+  }
+
   &::before {
     content: '⏱️';
     font-size: 14px;
+
+    @media (max-width: 480px) {
+      font-size: 12px;
+    }
   }
 `;
 
@@ -227,6 +343,16 @@ const VocabularyGrid = styled.div`
   gap: 1rem;
   width: 100%;
   margin-top: 2rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.8rem;
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.6rem;
+  }
 `;
 
 const VocabularyItem = styled.div`
@@ -238,6 +364,18 @@ const VocabularyItem = styled.div`
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
+
+  @media (max-width: 768px) {
+    padding: 0.8rem;
+    gap: 0.8rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0.6rem;
+    gap: 0.6rem;
+    font-size: 0.9rem;
+    border-width: 1px;
+  }
 
   &:hover {
     background: #f8f9fa;
