@@ -125,7 +125,6 @@ const UserImage = styled.img`
   transform: rotate(15deg);
   max-width: 300px;
   height: auto;
-  z-index: 1;
 
   @media (max-width: 1200px) {
     max-width: 250px;
@@ -150,7 +149,6 @@ const SenseiImage = styled.img`
   top: 30px;
   width: 100px;
   height: auto;
-  z-index: 1;
 
   @media (max-width: 1024px) {
     width: 80px;
