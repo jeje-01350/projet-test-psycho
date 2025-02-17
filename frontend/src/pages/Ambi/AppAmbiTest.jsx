@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled, { createGlobalStyle, keyframes } from 'styled-components';
-import { LinearProgress } from '@mui/material';
+import { LinearProgress, Slider, Box, Typography } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ambiQuestions, ambiScale } from '../../constants/Ambi/data';
@@ -215,13 +215,37 @@ const SenseiImage = styled.img`
   }
 `;
 
+const SliderContainer = styled(Box)`
+  width: 100%;
+  padding: 2rem 3.5rem;
+  margin-top: 1rem;
+  animation: ${fadeIn} 0.6s ease-out;
+`;
+
+const SliderLabel = styled(Typography)`
+  color: #666;
+  font-family: "Nunito", sans-serif;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+`;
+
+const marks = [
+  { value: 1, label: 'Tout à fait en désaccord' },
+  { value: 2, label: '' },
+  { value: 3, label: '' },
+  { value: 4, label: 'Neutre' },
+  { value: 5, label: '' },
+  { value: 6, label: '' },
+  { value: 7, label: 'Tout à fait d\'accord' },
+];
+
 const AppAmbiTest = () => {
   const navigate = useNavigate();
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState([]);
-  const [selectedAnswers, setSelectedAnswers] = useState(new Array(ambiQuestions.length).fill(null));
-  const [testStartTime] = useState(Date.now());
+  const [answers, setAnswers] = useState({});
   const [questionStartTimes, setQuestionStartTimes] = useState([Date.now()]);
+  const [testStartTime] = useState(Date.now());
+  const [currentTime, setCurrentTime] = useState(Date.now());
   const [randomQuestionOrder] = useState(() => {
     const indices = Array.from({ length: ambiQuestions.length }, (_, i) => i);
     for (let i = indices.length - 1; i > 0; i--) {
@@ -231,6 +255,14 @@ const AppAmbiTest = () => {
     return indices;
   });
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(Date.now());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
   const progress = ((currentQuestion + 1) / ambiQuestions.length) * 100;
 
   useEffect(() => {
@@ -238,10 +270,11 @@ const AppAmbiTest = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentQuestion]);
 
-  const handleAnswerSelect = (value) => {
-    const newSelectedAnswers = [...selectedAnswers];
-    newSelectedAnswers[randomQuestionOrder[currentQuestion]] = value;
-    setSelectedAnswers(newSelectedAnswers);
+  const handleAnswerSelect = (event, value) => {
+    setAnswers(prev => ({
+      ...prev,
+      [currentQuestion]: value
+    }));
   };
 
   const handlePrevious = () => {
@@ -288,27 +321,23 @@ const AppAmbiTest = () => {
   };
 
   const handleNext = async () => {
-    const currentQuestionIndex = randomQuestionOrder[currentQuestion];
-    const currentQuestionData = ambiQuestions[currentQuestionIndex];
-    
-    const currentAnswer = {
-      question: currentQuestionData.question,
-      answer: selectedAnswers[currentQuestionIndex],
-      dimension: currentQuestionData.dimension,
-      isReversed: currentQuestionData.isReversed
-    };
-
-    const newAnswers = [...answers];
-    newAnswers[currentQuestionIndex] = currentAnswer;
-    setAnswers(newAnswers);
-
     if (currentQuestion + 1 < ambiQuestions.length) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
+      const formattedAnswers = Object.entries(answers).map(([index, value]) => {
+        const questionData = ambiQuestions[randomQuestionOrder[parseInt(index)]];
+        return {
+          question: questionData.question,
+          answer: value,
+          dimension: questionData.dimension,
+          isReversed: questionData.isReversed
+        };
+      });
+
       const dimensions = ['E', 'A', 'C', 'S', 'O'];
       const scores = {};
       dimensions.forEach(dim => {
-        scores[dim] = calculateScore(newAnswers, dim);
+        scores[dim] = calculateScore(formattedAnswers, dim);
       });
 
       try {
@@ -319,7 +348,7 @@ const AppAmbiTest = () => {
         });
         const averageResponseTime = Math.round(responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length);
 
-        await submitResults(scores, newAnswers, testDuration, averageResponseTime);
+        await submitResults(scores, formattedAnswers, testDuration, averageResponseTime);
         navigate('/ambi/results', { 
           state: { 
             scores,
@@ -333,8 +362,8 @@ const AppAmbiTest = () => {
     }
   };
 
-  const formatTime = (ms) => {
-    const seconds = Math.floor((Date.now() - ms) / 1000);
+  const formatTime = (startTime) => {
+    const seconds = Math.floor((currentTime - startTime) / 1000);
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
@@ -349,7 +378,19 @@ const AppAmbiTest = () => {
         </TimerContainer>
 
         <ProgressContainer>
-          <StyledLinearProgress variant="determinate" value={progress} />
+          <LinearProgress 
+            variant="determinate" 
+            value={(currentQuestion / ambiQuestions.length) * 100} 
+            sx={{
+              height: 10,
+              borderRadius: 5,
+              backgroundColor: '#e8f5e9',
+              '& .MuiLinearProgress-bar': {
+                backgroundColor: '#4caf50',
+                borderRadius: 5,
+              }
+            }}
+          />
           <ProgressText>
             Question {currentQuestion + 1} sur {ambiQuestions.length}
           </ProgressText>
@@ -359,17 +400,61 @@ const AppAmbiTest = () => {
           {ambiQuestions[randomQuestionOrder[currentQuestion]].question}
         </QuestionText>
 
-        <ScaleContainer>
-          {ambiScale.map((scale) => (
-            <ScaleButton
-              key={scale.value}
-              $active={selectedAnswers[randomQuestionOrder[currentQuestion]] === scale.value}
-              onClick={() => handleAnswerSelect(scale.value)}
-            >
-              {scale.label}
-            </ScaleButton>
-          ))}
-        </ScaleContainer>
+        <SliderContainer>
+          <Slider
+            value={answers[currentQuestion] || 4}
+            onChange={handleAnswerSelect}
+            min={1}
+            max={7}
+            step={1}
+            marks={marks}
+            sx={{
+              '& .MuiSlider-rail': {
+                height: 8,
+                backgroundColor: '#e0e0e0',
+              },
+              '& .MuiSlider-track': {
+                height: 8,
+                backgroundColor: '#4caf50',
+              },
+              '& .MuiSlider-thumb': {
+                width: 24,
+                height: 24,
+                backgroundColor: '#fff',
+                border: '2px solid #4caf50',
+                '&:hover, &.Mui-focusVisible': {
+                  boxShadow: '0 0 0 8px rgba(76, 175, 80, 0.16)',
+                },
+                '&.Mui-active': {
+                  boxShadow: '0 0 0 12px rgba(76, 175, 80, 0.16)',
+                },
+              },
+              '& .MuiSlider-mark': {
+                backgroundColor: '#e0e0e0',
+                height: 8,
+                width: 2,
+                '&.MuiSlider-markActive': {
+                  backgroundColor: '#fff',
+                },
+              },
+              '& .MuiSlider-markLabel': {
+                fontFamily: '"Nunito", sans-serif',
+                fontSize: '0.85rem',
+                color: '#666',
+                marginTop: '10px',
+                whiteSpace: 'nowrap',
+                fontWeight: 500,
+                transform: 'translate(-50%, 0)',
+                '&[data-index="0"]': {
+                  transform: 'translate(0%, 0)',
+                },
+                '&[data-index="6"]': {
+                  transform: 'translate(-100%, 0)',
+                },
+              },
+            }}
+          />
+        </SliderContainer>
 
         <NavigationButtons>
           <PreviousButton
@@ -379,7 +464,7 @@ const AppAmbiTest = () => {
             Précédent
           </PreviousButton>
           <NextButton
-            disabled={selectedAnswers[randomQuestionOrder[currentQuestion]] === null}
+            disabled={answers[currentQuestion] === undefined}
             onClick={handleNext}
           >
             {currentQuestion + 1 === ambiQuestions.length ? 'Terminer' : 'Suivant'}
