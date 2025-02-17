@@ -109,6 +109,16 @@ const availableTests = [
     icon: TestIcons.personality,
     accentColor: '#4caf50',
     path: '/ambi'
+  },
+  {
+    id: 'gcbs',
+    title: 'Test de Style Cognitif et Décisionnel (GCBS)',
+    description: 'Évaluez vos préférences dans la prise de décision et votre style cognitif à travers quatre dimensions : Raisonnement Analytique, Logique Pratique, Mode de Fonctionnement et Validation.',
+    duration: '15-20 minutes',
+    questionCount: 41,
+    icon: TestIcons.cognitive,
+    accentColor: '#2196f3',
+    path: '/gcbs'
   }
 ];
 

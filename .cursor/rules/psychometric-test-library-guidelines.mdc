@@ -1,0 +1,27 @@
+---
+description: Cette règle s'applique à l'ensemble des développements sur la bibliothèque de tests psychométriques. Elle a pour but de garantir que :
+globs: frontend/src/**
+---
+- **Ajout de nouveaux tests :**
+  - Les nouveaux tests doivent s'inspirer des tests existants, tant au niveau du design que des fonctionnalités.
+  - Ils doivent intégrer l'ensemble des fonctionnalités attendues sans omission et conserver l’ergonomie actuelle.
+  
+- **Modification des tests existants :**
+  - Seules les zones explicitement ciblées pour modification doivent être modifiées.
+  - Les modifications doivent respecter strictement les pratiques de codage du projet.
+  - Aucune modification ne doit altérer ou supprimer des fonctionnalités déjà en place dans d'autres tests.
+
+  **Bonnes pratiques complémentaires :**
+1. **Documentation et isolation :**  
+   - Documentez clairement toute modification ou ajout afin de faciliter les revues et la maintenance.
+   - Veillez à réaliser des modifications de manière isolée pour éviter les effets de bord sur d’autres tests.
+2. **Vérification :**  
+   - Exécutez systématiquement l’ensemble de la suite de tests pour vous assurer que rien n’est cassé suite à vos modifications.
+3. **Respect du style :**  
+   - Utilisez le même style de code, conventions de nommage et formatage que ceux déjà en place.
+4. **Communication :**  
+   - En cas de doute sur l’impact d’une modification, sollicitez une revue ou demandez confirmation avant d’aller plus loin.
+
+**Indication de l'application de la règle :**  
+Pour signaler que cette règle est en application lors d’une réponse ou d’un commit, préfixez le message par :  
+`(📝rule:psychometric-test-library-guidelines)`

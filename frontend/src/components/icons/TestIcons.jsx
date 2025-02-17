@@ -31,6 +31,21 @@ export const EmotionalIcon = ({ color = '#33A474', size = 24 }) => (
   </svg>
 );
 
+export const CognitiveIcon = ({ color = '#2196f3', size = 24 }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 7C13.1 7 14 7.9 14 9C14 10.1 13.1 11 12 11C10.9 11 10 10.1 10 9C10 7.9 10.9 7 12 7ZM17 17H7V15C7 13.34 10.33 12 12 12C13.67 12 17 13.34 17 15V17ZM6 13L4 9L8 11L6 13ZM20 9L18 13L16 11L20 9Z"
+      fill={color}
+    />
+  </svg>
+);
+
 PersonalityIcon.propTypes = {
   color: PropTypes.string,
   size: PropTypes.number
@@ -41,7 +56,13 @@ EmotionalIcon.propTypes = {
   size: PropTypes.number
 };
 
+CognitiveIcon.propTypes = {
+  color: PropTypes.string,
+  size: PropTypes.number
+};
+
 export const TestIcons = {
   personality: PersonalityIcon,
-  emotional: EmotionalIcon
+  emotional: EmotionalIcon,
+  cognitive: CognitiveIcon
 }; 
