@@ -30,7 +30,7 @@ const AppRoutes = () => {
       <Route path="/gcbs/results" element={<GcbsResults />} />
 
       {/* Routes pour le test RIASEC */}
-      <Route path="/riasec/intro" element={<IntroRiasec />} />
+      <Route path="/riasec" element={<IntroRiasec />} />
       <Route path="/riasec/test" element={<AppRiasecTest />} />
       <Route path="/riasec/results" element={<ResultRiasec />} />
     </Routes>
