@@ -12,7 +12,9 @@ exports.submitTest = async (req, res) => {
 
     // Créer une nouvelle instance de résultat
     const result = new RiasecResult({
-      responses,
+      result: {
+        userAnswers: responses.riasec,
+      },
       metadata: {
         startTime: new Date(startTime),
         endTime: new Date(endTime),
@@ -21,30 +23,18 @@ exports.submitTest = async (req, res) => {
     });
 
     // Calculer les scores
-    const riasecScores = result.calculateRiasecScores();
-    const tipiScores = result.calculateTipiScores();
-    const vocabularyScore = result.calculateVocabularyScore();
-
-    // Interpréter les résultats
-    const interpretation = result.interpretResults();
-
-    // Mettre à jour les scores et l'interprétation
-    result.scores = {
-      riasec: riasecScores,
-      tipi: tipiScores,
-      vocabulary: vocabularyScore
-    };
-    result.interpretation = interpretation;
+    result.result.scores = result.calculateScores();
 
     // Sauvegarder le résultat
     await result.save();
 
     // Envoyer la réponse
     res.status(201).json({
-      riasecScores,
-      tipiScores,
-      vocabularyScore,
-      ...interpretation
+      result: {
+        scores: result.result.scores,
+        userAnswers: Object.fromEntries(result.result.userAnswers)
+      },
+      duration: testDuration
     });
   } catch (error) {
     console.error('Erreur lors de la soumission du test:', error);
@@ -91,7 +81,13 @@ exports.getResult = async (req, res) => {
       });
     }
 
-    res.json(result);
+    res.json({
+      result: {
+        scores: result.result.scores,
+        userAnswers: Object.fromEntries(result.result.userAnswers)
+      },
+      duration: result.metadata.duration
+    });
   } catch (error) {
     console.error('Erreur lors de la récupération du résultat:', error);
     res.status(500).json({

@@ -360,7 +360,7 @@ const AppRiasecTest = () => {
   const handleNext = async () => {
     if (currentQuestionIndex === totalQuestions - 1) {
       const endTime = Date.now();
-      const testDuration = endTime - startTime;
+      const testDuration = Math.round((endTime - startTime) / 1000); // Durée en secondes
       
       try {
         const response = await fetch(`${import.meta.env.VITE_API_URL}/riasec/submit`, {
@@ -377,8 +377,13 @@ const AppRiasecTest = () => {
         });
 
         if (response.ok) {
-          const result = await response.json();
-          navigate('/riasec/results', { state: { result } });
+          const data = await response.json();
+          navigate('/riasec/results', { 
+            state: { 
+              result: data.result,
+              duration: data.duration
+            } 
+          });
         } else {
           toast.error('Erreur lors de la soumission du test');
         }
