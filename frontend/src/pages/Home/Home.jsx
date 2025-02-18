@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import TestCard from '../../components/TestCard/TestCard';
 import { TestIcons } from '../../components/icons/TestIcons';
+import { GcbsIcon, AmbiIcon, RiasecIcon } from '../../components/icons/TestIcons';
 
 const PageContainer = styled.div`
   min-height: calc(100vh - 70px);
@@ -142,28 +143,39 @@ const CategoryButton = styled.button`
   }
 `;
 
-const availableTests = [
+const tests = [
+  {
+    id: 'gcbs',
+    title: 'Test GCBS',
+    description: 'Generic Conspiracist Beliefs Scale',
+    icon: GcbsIcon,
+    path: '/gcbs/intro',
+    duration: '15-20 minutes',
+    questionCount: 15,
+    accentColor: '#2196f3',
+    category: 'cognitive'
+  },
   {
     id: 'ambi',
-    title: 'Test de Personnalité AMBI',
-    description: 'Évaluez votre personnalité selon cinq dimensions fondamentales : Extraversion, Agréabilité, Conscience, Stabilité Émotionnelle et Ouverture à l\'expérience.',
-    duration: '30-40 minutes',
-    questionCount: 181,
-    icon: TestIcons.personality,
+    title: 'Test Ambi',
+    description: 'Test d\'ambiguïté',
+    icon: AmbiIcon,
+    path: '/ambi/intro',
+    duration: '10-15 minutes',
+    questionCount: 20,
     accentColor: '#4caf50',
-    path: '/ambi',
     category: 'personality'
   },
   {
-    id: 'gcbs',
-    title: 'Test de Style Cognitif et Décisionnel (GCBS)',
-    description: 'Évaluez vos préférences dans la prise de décision et votre style cognitif à travers quatre dimensions : Raisonnement Analytique, Logique Pratique, Mode de Fonctionnement et Validation.',
-    duration: '15-20 minutes',
-    questionCount: 41,
-    icon: TestIcons.cognitive,
-    accentColor: '#2196f3',
-    path: '/gcbs',
-    category: 'cognitive'
+    id: 'riasec',
+    title: 'Test RIASEC',
+    description: 'Test d\'intérêts professionnels',
+    icon: RiasecIcon,
+    path: '/riasec/intro',
+    duration: '10-15 minutes',
+    questionCount: 48,
+    accentColor: '#9c27b0',
+    category: 'personality'
   }
 ];
 
@@ -183,7 +195,7 @@ const Home = () => {
     navigate(testPath);
   };
 
-  const filteredTests = availableTests.filter(test => {
+  const filteredTests = tests.filter(test => {
     const matchesSearch = test.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          test.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || test.category === selectedCategory;

@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { SvgIcon } from '@mui/material';
 
 export const PersonalityIcon = ({ color = '#4298B4', size = 24 }) => (
   <svg
@@ -46,6 +47,24 @@ export const CognitiveIcon = ({ color = '#2196f3', size = 24 }) => (
   </svg>
 );
 
+export const GcbsIcon = (props) => (
+  <SvgIcon {...props}>
+    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" />
+  </SvgIcon>
+);
+
+export const AmbiIcon = (props) => (
+  <SvgIcon {...props}>
+    <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7zm1-11h-2v3H8v2h3v3h2v-3h3v-2h-3V8z" />
+  </SvgIcon>
+);
+
+export const RiasecIcon = (props) => (
+  <SvgIcon {...props}>
+    <path d="M14 6l-4.22 5.63 1.25 1.67L14 9.33 19 16h-8.46l-4.01-5.37L1 16h10.54l1.25-1.67L11.46 16H21l-7-9.33L14 6zm-1.56 4.15l.58-.77L11.75 8l-.58.77 1.27 1.38z" />
+  </SvgIcon>
+);
+
 PersonalityIcon.propTypes = {
   color: PropTypes.string,
   size: PropTypes.number
@@ -64,5 +83,8 @@ CognitiveIcon.propTypes = {
 export const TestIcons = {
   personality: PersonalityIcon,
   emotional: EmotionalIcon,
-  cognitive: CognitiveIcon
+  cognitive: CognitiveIcon,
+  gcbs: GcbsIcon,
+  ambi: AmbiIcon,
+  riasec: RiasecIcon
 }; 
